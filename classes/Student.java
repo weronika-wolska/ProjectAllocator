@@ -46,4 +46,10 @@ public class Student{
     public void setStream(Stream stream) {
         this.stream = stream;
     }
+
+    @Override
+    public String toString() {
+        return "Student [firstName=" + firstName + ", stream=" + stream + ", studentId=" + studentId + ", surname="
+                + surname + "]";
+    }
 }
