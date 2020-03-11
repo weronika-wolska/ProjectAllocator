@@ -1,7 +1,0 @@
-entities\StaffReader.class
-entities\Stream.class
-entities\StaffMember.class
-application\CreateProjectSetsApp.class
-entities\ProjectWriter.class
-entities\Student.class
-entities\Project.class
