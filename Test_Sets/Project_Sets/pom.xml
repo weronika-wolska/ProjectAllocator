@@ -28,6 +28,19 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <targetPath>META-INF/plexus</targetPath>
+                <filtering>false</filtering>
+                <directory>${basedir}/src/main/plexus</directory>
+                <includes>
+                    <include>configuration.xml</include>
+                </includes>
+                <excludes>
+                    <exclude>**/*.properties</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
 
             <plugin>

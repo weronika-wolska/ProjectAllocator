@@ -20,7 +20,7 @@ public class StaffReader {
         System.out.println("In readXLSX");
         faculty = new ArrayList<>(staffCount);
         try {
-            FileInputStream file = new FileInputStream(new File(filePath));
+            FileInputStream file = new FileInputStream(new File("src/main/resources/staff.xlsx"));
             XSSFWorkbook workbook = new XSSFWorkbook(file);
             XSSFSheet sheet = workbook.getSheetAt(0);
             int rowCount = sheet.getLastRowNum();
@@ -30,7 +30,7 @@ public class StaffReader {
                     relevantRowNumbers) {
                 Row row = sheet.getRow(rowNumber);
                 StaffMember newStaff = parseRowIntoStaffMember(row);
-                faculty.set(rowNumber, newStaff);
+                faculty.add(newStaff);
                 System.out.println("Forming a new StaffMember from row:" + rowNumber + " " + newStaff.toString());
             }
         } catch (Exception e) {
@@ -40,33 +40,40 @@ public class StaffReader {
 
     private int[] getRandomRowNumbers(int rowsWanted, int rowsProvided) {
         int[] randomRowNumbers = new int[rowsWanted];
-        Random rand = new Random(rowsProvided);
-        System.out.println("In getRandomRows,rand:" + rand.nextInt() + " and rows wanted/provided:" + rowsWanted + " " + rowsProvided);
+        Random rand = new Random();
+        System.out.println("In getRandomRows,rand:" + rand.nextInt(rowsProvided) + " and rows wanted/provided:" + rowsWanted + " " + rowsProvided);
         for(int i = 0; i < rowsWanted; ++i) {
-            randomRowNumbers[i] = rand.nextInt();
+            randomRowNumbers[i] = rand.nextInt(rowsProvided);
         }
         return randomRowNumbers;
     }
 
     private StaffMember parseRowIntoStaffMember(Row row) {
+        System.out.println("parsing row");
         StaffMember newStaff = new StaffMember();
 
         Cell currentCell = row.getCell(0);
         String cellString = currentCell.getStringCellValue();
+        System.out.println(cellString);
         newStaff.setName(cellString);
 
         currentCell = row.getCell(1);
         cellString = currentCell.getStringCellValue();
+        System.out.println(cellString);
         ArrayList<String> activities = tokenizeByComma(cellString);
         newStaff.setResearchActivities(activities);
 
         currentCell = row.getCell(2);
+        System.out.println(cellString);
         cellString = currentCell.getStringCellValue();
+        System.out.println(cellString);
         ArrayList<String> areas = tokenizeByComma(cellString);
         newStaff.setResearchAreas(areas);
 
         currentCell = row.getCell(3);
-        cellString = currentCell.getStringCellValue();
+        if(currentCell == null) cellString = "";
+        else cellString = currentCell.getStringCellValue();
+        System.out.println(cellString);
         translateFocusForStaffMember(newStaff, cellString);
 
         createStaffMembersProjects(newStaff);
@@ -113,7 +120,7 @@ public class StaffReader {
 
         for (String activity :
                 staff.getResearchActivities()) {
-            project = activity + specialFocus;
+            project = activity + " " + specialFocus;
             if(!projectAlreadyExists(project)) {
                 System.out.println("Project doesn't exist yet, creating it:" + project + " for " + staff.getName());
                 projects.add(project);

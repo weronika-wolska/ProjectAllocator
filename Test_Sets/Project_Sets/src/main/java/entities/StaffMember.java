@@ -60,10 +60,19 @@ public class StaffMember{
         this.projects = projects;
     }
 
+    public String projectsToString() {
+        String projectString = "\nMy projects are:\n";
+        for (String project :
+                projects) {
+            projectString += project + "\n";
+        }
+        return projectString;
+    }
+
     @Override
     public String toString() {
         return "StaffMember [name=" + name + ", researchActivities=" + researchActivities + ", researchAreas=" + researchAreas
-                + ", specialFocus=" + specialFocus + "]";
+                + ", specialFocus=" + specialFocus + "]" + projectsToString();
     }
 
     
