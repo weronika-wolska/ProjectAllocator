@@ -25,12 +25,12 @@ public class StaffReader {
             int rowCount = sheet.getLastRowNum();
             ArrayList<Integer> relevantRowNumbers = getRandomRowNumbers(staffCount, rowCount);
             //System.out.println("File input obtained, random rows:" + Arrays.toString(relevantRowNumbers));
-            for (Integer rowNumber :
-                    relevantRowNumbers) {
-                Row row = sheet.getRow(rowNumber);
+            for (int i = 0; i < staffCount; ++i) {
+                Row row = sheet.getRow(relevantRowNumbers.get(i));
                 StaffMember newStaff = parseRowIntoStaffMember(row);
                 if (newStaff == null) {
-                    relevantRowNumbers.remove(rowNumber);
+                    relevantRowNumbers.remove(i);
+                    --i;
                     relevantRowNumbers.add(getRandomNumber(rowCount));
                 }
                 else {
@@ -122,7 +122,7 @@ public class StaffReader {
         StringTokenizer tokenizer = new StringTokenizer(string,",");
         while(tokenizer.hasMoreTokens()) {
             String token = tokenizer.nextToken();
-            if(!token.equals("")) {
+            if(!token.equals("") && !token.trim().isEmpty()) {
                 tokens.add(token);
             }
         }
@@ -149,7 +149,8 @@ public class StaffReader {
         ArrayList<String> projects = new ArrayList<>();
         String specialFocus, project;
         if(staff.getSpecialFocus() == Stream.DS) specialFocus = "in Dagon-worshipping societies";
-        else specialFocus = "in Cthulhu-worshipping societies";
+        else if(staff.getSpecialFocus() == Stream.CS) specialFocus = "in Cthulhu-worshipping societies";
+        else specialFocus = "in Cthulhu-worshipping societies vs in Dagon-worshipping societies";
 
         for (String activity :
                 staff.getResearchActivities()) {

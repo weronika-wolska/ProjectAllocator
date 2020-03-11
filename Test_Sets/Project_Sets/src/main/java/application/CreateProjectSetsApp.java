@@ -1,22 +1,25 @@
 package application;
 
-import entities.Project;
 import entities.ProjectWriter;
 import entities.StaffMember;
 import entities.StaffReader;
-
-import java.util.ArrayList;
 
 public class CreateProjectSetsApp {
 
     public static void main(String[] args) {
         StaffReader reader = new StaffReader();
-        reader.readXLSX(30, "src/main/resources/staff.xlsx");
-        for (StaffMember staff: reader.getFaculty()) {
-            System.out.println(staff.toString());
-        }
-
         ProjectWriter writer = new ProjectWriter();
-        writer.write("src/main/resources/projects.xlsx",reader.getFaculty());
+
+        reader.readXLSX(30, "src/main/resources/staff.xlsx");
+        writer.write("src/main/resources/projects60.xlsx",reader.getFaculty());
+
+        reader.readXLSX(60, "src/main/resources/staff.xlsx");
+        writer.write("src/main/resources/projects120.xlsx",reader.getFaculty());
+
+        reader.readXLSX(120, "src/main/resources/staff.xlsx");
+        writer.write("src/main/resources/projects240.xlsx",reader.getFaculty());
+
+        reader.readXLSX(250, "src/main/resources/staff.xlsx");
+        writer.write("src/main/resources/projects500.xlsx",reader.getFaculty());
     }
 }
