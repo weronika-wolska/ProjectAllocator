@@ -1,3 +1,5 @@
+package entities;
+
 public class Project{
     private String projectName;
     private Stream stream;

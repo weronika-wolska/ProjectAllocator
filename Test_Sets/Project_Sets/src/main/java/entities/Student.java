@@ -1,3 +1,5 @@
+package entities;
+
 public class Student{
     private String firstName;
     private String surname;
