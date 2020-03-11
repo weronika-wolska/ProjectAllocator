@@ -2,5 +2,6 @@ package entities;
 
 public enum Stream{
     CS,
-    DS
+    DS,
+    CSDS;
 }

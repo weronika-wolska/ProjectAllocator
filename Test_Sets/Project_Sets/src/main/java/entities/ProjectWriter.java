@@ -8,6 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class ProjectWriter {
 
@@ -40,11 +41,18 @@ public class ProjectWriter {
         cell = row.createCell(1);
         cell.setCellValue(project);
         cell = row.createCell(2);
+        writeStreamCell(staff, cell);
+    }
+
+    private void writeStreamCell(StaffMember staff, Cell cell) {
         if(staff.getSpecialFocus() == Stream.DS) {
-            cell.setCellValue("Dagon Studies");
+            cell.setCellValue("DS");
+        }
+        else if(staff.getSpecialFocus() == Stream.CSDS) {
+            cell.setCellValue("CS+DS");
         }
         else {
-            cell.setCellValue((String) null);
+            cell.setCellValue("CS");
         }
     }
 
