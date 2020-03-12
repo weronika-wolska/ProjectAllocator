@@ -147,14 +147,33 @@ public class StaffReader {
     private boolean createsStaffMembersProjects(StaffMember staff) {
         boolean hasAtLeastOneProject = false;
         ArrayList<String> projects = new ArrayList<>();
-        String specialFocus, project;
-        if(staff.getSpecialFocus() == Stream.DS) specialFocus = "in Dagon-worshipping societies";
-        else if(staff.getSpecialFocus() == Stream.CS) specialFocus = "in Cthulhu-worshipping societies";
-        else specialFocus = "in Cthulhu-worshipping societies vs in Dagon-worshipping societies";
+        String activitySpecifier, areaSpecifier, project;
+        if(staff.getSpecialFocus() == Stream.DS) {
+            activitySpecifier = "in Dagon-worshipping societies";
+            areaSpecifier = "and the Dagon mythos";
+        }
+        else if(staff.getSpecialFocus() == Stream.CS) {
+            activitySpecifier = "in Cthulhu-worshipping societies";
+            areaSpecifier = "and the Cthulu mythos";
+        }
+        else {
+            activitySpecifier = "in Cthulhu-worshipping societies vs in Dagon-worshipping societies";
+            areaSpecifier = "and the Cthulu-Dagon mythos";
+        }
+
+        for (String area :
+                staff.getResearchAreas()) {
+            project = area + " " + areaSpecifier;
+            if(!projectAlreadyExists(project)) {
+                //System.out.println("Project doesn't exist yet, creating it:" + project + " for " + staff.getName());
+                hasAtLeastOneProject = true;
+                projects.add(project);
+            }
+        }
 
         for (String activity :
                 staff.getResearchActivities()) {
-            project = activity + " " + specialFocus;
+            project = activity + " " + activitySpecifier;
             if(!projectAlreadyExists(project)) {
                 //System.out.println("Project doesn't exist yet, creating it:" + project + " for " + staff.getName());
                 hasAtLeastOneProject = true;

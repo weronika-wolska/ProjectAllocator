@@ -15,14 +15,18 @@ public class ProjectWriter {
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("Projects and Supervisors");
         createHeader(sheet);
+        int projectCountPerStaff;
         int rowNum = 1;
         for (StaffMember staff :
                 faculty) {
+            projectCountPerStaff = 0;
             for (String projectTitle :
                     staff.getProjects()) {
                 Row row = sheet.createRow(rowNum);
                 writeRow(row, staff, projectTitle);
                 ++rowNum;
+                ++projectCountPerStaff;
+                if (projectCountPerStaff == 3) break;
             }
         }
         try {
