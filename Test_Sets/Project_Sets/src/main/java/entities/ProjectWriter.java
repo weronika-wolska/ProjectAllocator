@@ -37,6 +37,7 @@ public class ProjectWriter {
         int lastRowNum = --rowNum;
         double[] probabilities = calculateProbabilities(lastRowNum);
         writeProbabilities(probabilities, sheet, lastRowNum);
+        System.out.println("Here is the probability check:" + checkProbabilities(probabilities));
 
         try {
             FileOutputStream outputFile = new FileOutputStream(new File(filePath));
@@ -49,16 +50,28 @@ public class ProjectWriter {
 
     private double[] calculateProbabilities(int projectCount) {
         NormalDistribution nb = new NormalDistribution();
-        double[] probabilities = new double[projectCount];
+        double[] probabilities = new double[projectCount + 1];
         double projectSegment = 8 / (double) projectCount;
-        for(int i = 0; i < projectCount; ++i) {
-            double from = i * projectSegment - 4;
-            double to = ( i + 1 ) * projectSegment - 4;
+        probabilities[0] = 0;
+        for(int i = 1; i <= projectCount; ++i) {
+            double from = ( i - 1 ) * projectSegment - 4;
+            double to = i * projectSegment - 4;
             if(from == 4)  from = 4.000000001;
             if(to > 4)  to = 4;
+            System.out.println("Segment is from-to:" + from + "-" + to);
             probabilities[i] = nb.probability(from, to);
+            System.out.println("Probability for index:" + i + " is:" + probabilities[i]);
         }
         return probabilities;
+    }
+
+    private double checkProbabilities(double[] probabilities) {
+        double sum = 0;
+        for (double prb :
+                probabilities) {
+            sum += prb;
+        }
+        return sum;
     }
 
     private void writeProbabilities(double[] probabilities, XSSFSheet sheet, int projectNumber) {
