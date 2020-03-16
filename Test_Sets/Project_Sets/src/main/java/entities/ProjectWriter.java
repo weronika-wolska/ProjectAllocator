@@ -1,5 +1,6 @@
 package entities;
 
+import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -17,6 +18,8 @@ public class ProjectWriter {
         createHeader(sheet);
         int projectCountPerStaff;
         int rowNum = 1;
+
+        // writing projects without probabilities of being chosen
         for (StaffMember staff :
                 faculty) {
             projectCountPerStaff = 0;
@@ -29,12 +32,42 @@ public class ProjectWriter {
                 if (projectCountPerStaff == 3) break;
             }
         }
+
+        // adding probability of being chosen for each project
+        int lastRowNum = --rowNum;
+        double[] probabilities = calculateProbabilities(lastRowNum);
+        writeProbabilities(probabilities, sheet, lastRowNum);
+
         try {
             FileOutputStream outputFile = new FileOutputStream(new File(filePath));
             workbook.write(outputFile);
             outputFile.close();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private double[] calculateProbabilities(int projectCount) {
+        NormalDistribution nb = new NormalDistribution();
+        double[] probabilities = new double[projectCount];
+        double projectSegment = 8 / (double) projectCount;
+        for(int i = 0; i < projectCount; ++i) {
+            double from = i * projectSegment - 4;
+            double to = ( i + 1 ) * projectSegment - 4;
+            if(from == 4)  from = 4.000000001;
+            if(to > 4)  to = 4;
+            probabilities[i] = nb.probability(from, to);
+        }
+        return probabilities;
+    }
+
+    private void writeProbabilities(double[] probabilities, XSSFSheet sheet, int projectNumber) {
+        int probabilityColNum = 3;
+        Cell probabilityCell;
+        for(int i = 1; i <= projectNumber; ++i) {
+            Row row = sheet.getRow(i);
+            probabilityCell = row.createCell(probabilityColNum);
+            probabilityCell.setCellValue(probabilities[i]);
         }
     }
 
@@ -67,5 +100,7 @@ public class ProjectWriter {
         cell.setCellValue("Project");
         cell = row.createCell(2);
         cell.setCellValue("Special Focus");
+        cell = row.createCell(3);
+        cell.setCellValue("Probability");
     }
 }
