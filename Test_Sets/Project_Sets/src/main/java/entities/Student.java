@@ -13,6 +13,10 @@ public class Student{
         this.stream=stream;
     }
 
+    public Student(){
+
+    }
+
 
     public String getFirstName() {
         return firstName;
