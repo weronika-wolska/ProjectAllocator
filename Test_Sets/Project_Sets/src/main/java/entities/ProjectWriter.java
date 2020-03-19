@@ -58,9 +58,9 @@ public class ProjectWriter {
             double to = i * projectSegment - 4;
             if(from == 4)  from = 4.000000001;
             if(to > 4)  to = 4;
-            System.out.println("Segment is from-to:" + from + "-" + to);
+            //System.out.println("Segment is from-to:" + from + "-" + to);
             probabilities[i] = nb.probability(from, to);
-            System.out.println("Probability for index:" + i + " is:" + probabilities[i]);
+            //System.out.println("Probability for index:" + i + " is:" + probabilities[i]);
         }
         return probabilities;
     }

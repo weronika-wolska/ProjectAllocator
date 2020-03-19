@@ -90,6 +90,7 @@
                 <configuration>
                     <classpathScope>test</classpathScope>
                     <mainClass>application.CreateProjectSetsApp</mainClass>
+                    <includePluginDependencies>true</includePluginDependencies>
                 </configuration>
                 <executions>
                     <execution>

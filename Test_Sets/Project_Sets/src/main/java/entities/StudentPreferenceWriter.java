@@ -13,9 +13,9 @@ import java.io.FileOutputStream;
 
 public class StudentPreferenceWriter{
 
-    ArrayList<Project> listOfProjects;
-    double[] projectProbabilities;
-    ArrayList<Project> projectsForStudent;
+    ArrayList<Project> listOfProjects = new ArrayList<Project>();
+    ArrayList<Double> projectProbabilities = new ArrayList<Double>();
+    ArrayList<Project> projectsForStudent = new ArrayList<>();
 
     public StudentPreferenceWriter(){
 
@@ -33,9 +33,9 @@ public class StudentPreferenceWriter{
         int numOfProjects = projects.getLastRowNum();
         for (int i = 1; i <= numOfProjects; i++) {
             XSSFRow row = projects.getRow(i);
-            String supervisor = row.getCell(1).getStringCellValue();
-            String projectName = row.getCell(2).getStringCellValue();
-            String stream = row.getCell(3).getStringCellValue();
+            String supervisor = row.getCell(0).getStringCellValue();
+            String projectName = row.getCell(1).getStringCellValue();
+            String stream = row.getCell(2).getStringCellValue();
             Stream projectStream;
             if (stream == "CS") {
                 projectStream = Stream.CS;
@@ -46,13 +46,14 @@ public class StudentPreferenceWriter{
             } else {
                 projectStream = null;
             }
-            final String probabilty = row.getCell(4).getStringCellValue();
-            final double projectProbability = Double.parseDouble(probabilty);
-            final StaffMember projectSupervisor = new StaffMember();
+            //final String probabilty = row.getCell(3).getStringCellValue();
+            //final double projectProbability = Double.parseDouble(probabilty);
+            double projectProbability = row.getCell(3).getNumericCellValue();
+            StaffMember projectSupervisor = new StaffMember();
             projectSupervisor.setName(supervisor);
-            final Project project = new Project(projectName, projectStream, projectSupervisor);
-            listOfProjects.add(project);
-            projectProbabilities[i - 1] = projectProbability;
+            Project project = new Project(projectName, projectStream, projectSupervisor);
+            listOfProjects.add(i-1, project);
+            projectProbabilities.add(projectProbability);
 
         }
 
@@ -64,10 +65,10 @@ public class StudentPreferenceWriter{
             Row row = preferences.getRow(rowNum);
             while (numOfProjectsForStudent != 10) {
                 double random = Math.random();
-                double max = projectProbabilities[0];
+                double max = projectProbabilities.get(rowNum);
                 double min = 0.0;
 
-                for(int i =0;i<projectProbabilities.length;i++){
+                for(int i =0;i<projectProbabilities.size();i++){
                     if(random>=min && random<=max){
                         projectsForStudent.add(listOfProjects.get(i));
                         numOfProjectsForStudent++;
@@ -75,7 +76,7 @@ public class StudentPreferenceWriter{
                     }
                     double tmp = max;
                     min = max;
-                    max = tmp + projectProbabilities[i+1];
+                    max = tmp + projectProbabilities.get(i+1);
 
                 }
             }
@@ -116,6 +117,7 @@ public class StudentPreferenceWriter{
     }
 
     public void writeRow( Row row, Student student, ArrayList<Project> projects) {
+        
         Cell cell = row.createCell(0);
         cell.setCellValue(student.getFirstName());
         cell = row.createCell(1);

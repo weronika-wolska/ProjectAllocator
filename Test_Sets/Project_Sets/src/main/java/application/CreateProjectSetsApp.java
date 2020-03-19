@@ -39,7 +39,7 @@ public class CreateProjectSetsApp {
         StudentReader studentReader = new StudentReader();
         File proj = new File("src/main/resources/projects500.xlsx");
         FileInputStream fis = new FileInputStream(proj);
-        XSSFWorkbook workbook = new XSSFWorkbook(fis);
+         XSSFWorkbook workbook = new XSSFWorkbook(fis);
         
         XSSFSheet projects = workbook.getSheetAt(0);
 
