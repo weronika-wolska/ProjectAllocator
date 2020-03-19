@@ -64,7 +64,7 @@ public class StudentReader{
 
     // TODO
 
-    private Student parseRowIntoStudent(Row row) {
+    private Student parseRowIntoStudent(Row row) throws IllegalStateException, NumberFormatException {
         //System.out.println("parsing row");
         Student student = new Student();
         Cell currentCell;
@@ -83,11 +83,13 @@ public class StudentReader{
         student.setSurname(cellString);
 
         
+        //long num = Long.parseLong(currentCell.getStringCellValue());
         currentCell = row.getCell(2);
-        if(currentCell == null) cellString = "";
-        else cellString = currentCell.getStringCellValue();
-        Long id = Long.parseLong(cellString);
-        student.setStudentId(id);
+        double id;
+        if(currentCell == null) id=0;
+        else id = currentCell.getNumericCellValue();
+        long studentId = (new Double(id)).longValue();
+        student.setStudentId(studentId);
 
         currentCell = row.getCell(3);
         if(currentCell == null) cellString = "";
