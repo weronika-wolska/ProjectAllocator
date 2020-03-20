@@ -11,17 +11,19 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.File;
 import java.io.FileOutputStream;
 
+
 public class StudentPreferenceWriter{
 
     ArrayList<Project> listOfProjects = new ArrayList<Project>();
     ArrayList<Double> projectProbabilities = new ArrayList<Double>();
     int numOfStudents =1;
+    Student student;
 
     public StudentPreferenceWriter(){
 
     }
 
-    public void write(String filePath, ArrayList<Student> students, int numOfStudents, XSSFSheet projects) {
+    public void write(String filePath, ArrayList<Student> students, int numOfStudents, XSSFSheet projects) throws NullPointerException{
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet preferences = workbook.createSheet("Student preferences");
         createHeader(preferences);
@@ -58,13 +60,14 @@ public class StudentPreferenceWriter{
         }
 
         // Assigning projects to students
-        int n = 0;
+        int n=0;
+        student = students.get(n);
         for (int rowNum = 1; rowNum <= numOfStudents; rowNum++) {
+            if(n>=students.size()) break;
             // Student student = students.get(rowNum);
             int numOfProjectsForStudent = 0;
             ArrayList<Project> projectsForStudent = new ArrayList<>(10);
-            Student student = students.get(n);
-            n++;
+            
            // Row row = preferences.getRow(rowNum);
             while (numOfProjectsForStudent != 10) {
                 double random = Math.random();
@@ -83,11 +86,20 @@ public class StudentPreferenceWriter{
 
                 }
             }
-            //System.out.println("row: " + rowNum + "student:" + students.get(rowNum-1).getFirstName() + "first preference: " + preferences.getRow(rowNum).getCell(4).getStringCellValue());
+           // System.out.println("row: " + rowNum + "student:" + students.get(rowNum-1).getFirstName() + "first preference: " + preferences.getRow(rowNum).getCell(4).getStringCellValue());
+            
             Row row = preferences.createRow(rowNum);
             writeRow(row, student, projectsForStudent);
+            student = students.get(n);
+            n++;
         }
-
+        try {
+            FileOutputStream outputFile = new FileOutputStream(new File(filePath));
+            workbook.write(outputFile);
+            outputFile.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         
     }

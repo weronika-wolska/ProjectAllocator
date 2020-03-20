@@ -16,7 +16,7 @@ public class StudentReader{
 
     public void readXLSX(int studentCount, String filePath) {
         //System.out.println("In readXLSX");
-        ArrayList<Student> students = new ArrayList<Student>(studentCount);
+        students = new ArrayList<Student>(studentCount);
         try {
             FileInputStream file = new FileInputStream(new File(filePath));
             XSSFWorkbook workbook = new XSSFWorkbook(file);
