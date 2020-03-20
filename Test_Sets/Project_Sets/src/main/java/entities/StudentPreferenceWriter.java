@@ -80,7 +80,7 @@ public class StudentPreferenceWriter{
 
                 }
             }
-            writeRow(row, students.get(rowNum-1), projectsForStudent);
+            writeRow(rowNum, students.get(rowNum-1), projectsForStudent, preferences);
         }
     }
 
@@ -116,9 +116,10 @@ public class StudentPreferenceWriter{
         cell.setCellValue("Preference 10");
     }
 
-    public void writeRow( Row row, Student student, ArrayList<Project> projects) {
-        
-        Cell cell = row.createCell(0);
+    public void writeRow( int rownum, Student student, ArrayList<Project> projects, XSSFSheet proj) {
+        Row row = proj.createRow(rownum);
+        Cell cell;
+        cell = row.createCell(0);
         cell.setCellValue(student.getFirstName());
         cell = row.createCell(1);
         cell.setCellValue(student.getSurname());
