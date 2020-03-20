@@ -37,7 +37,7 @@ public class CreateProjectSetsApp {
 
         StudentPreferenceWriter preferenceWriter = new StudentPreferenceWriter();
         StudentReader studentReader = new StudentReader();
-        File proj = new File("src/main/resources/projects500.xlsx");
+        File proj = new File("src/main/resources/projects60.xlsx");
         FileInputStream fis = new FileInputStream(proj);
         XSSFWorkbook workbook = new XSSFWorkbook(fis);
         
@@ -46,11 +46,31 @@ public class CreateProjectSetsApp {
         studentReader.readXLSX(60, "src/main/resources/students.xlsx");
         preferenceWriter.write("src/main/resources/studentPreferences60.xlsx", studentReader.getStudents(), 60, projects );
 
+        proj = new File("src/main/resources/projects120.xlsx");
+        fis = new FileInputStream(proj);
+        workbook = new XSSFWorkbook(fis);
+        
+        projects = workbook.getSheetAt(0);
+
+
         studentReader.readXLSX(120, "src/main/resources/students.xlsx");
         preferenceWriter.write("src/main/resources/studentPreferences120.xlsx", studentReader.getStudents(), 120, projects );
 
+        proj = new File("src/main/resources/projects240.xlsx");
+        fis = new FileInputStream(proj);
+        workbook = new XSSFWorkbook(fis);
+        
+        projects = workbook.getSheetAt(0);
+
+
         studentReader.readXLSX(240, "src/main/resources/students.xlsx");
         preferenceWriter.write("src/main/resources/studentPreferences240.xlsx", studentReader.getStudents(), 240, projects);
+
+        proj = new File("src/main/resources/projects500.xlsx");
+        fis = new FileInputStream(proj);
+        workbook = new XSSFWorkbook(fis);
+        
+        projects = workbook.getSheetAt(0);
 
         studentReader.readXLSX(500, "src/main/resources/students.xlsx");
         preferenceWriter.write("src/main/resources/studentPreferences500.xlsx", studentReader.getStudents(), 500, projects);
