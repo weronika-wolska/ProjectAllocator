@@ -16,7 +16,7 @@ public class StudentReader{
 
     public void readXLSX(int studentCount, String filePath) {
         //System.out.println("In readXLSX");
-        students = new ArrayList<>(studentCount);
+        ArrayList<Student> students = new ArrayList<Student>(studentCount);
         try {
             FileInputStream file = new FileInputStream(new File(filePath));
             XSSFWorkbook workbook = new XSSFWorkbook(file);
@@ -75,6 +75,7 @@ public class StudentReader{
         else cellString = currentCell.getStringCellValue();
         //System.out.println(cellString0);
         student.setFirstName(cellString);
+        System.out.println(student.getFirstName());
 
         
         currentCell = row.getCell(1);
@@ -90,6 +91,7 @@ public class StudentReader{
         else id = currentCell.getNumericCellValue();
         long studentId = (new Double(id)).longValue();
         student.setStudentId(studentId);
+        System.out.println(student.getStudentId());
 
         currentCell = row.getCell(3);
         if(currentCell == null) cellString = "";

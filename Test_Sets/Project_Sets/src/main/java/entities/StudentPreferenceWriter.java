@@ -15,18 +15,18 @@ public class StudentPreferenceWriter{
 
     ArrayList<Project> listOfProjects = new ArrayList<Project>();
     ArrayList<Double> projectProbabilities = new ArrayList<Double>();
-    ArrayList<Project> projectsForStudent = new ArrayList<>();
+    int numOfStudents =1;
 
     public StudentPreferenceWriter(){
 
     }
 
-    public void write(final String filePath, final ArrayList<Student> students, final XSSFSheet projects) {
+    public void write(String filePath, ArrayList<Student> students, int numOfStudents, XSSFSheet projects) {
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet preferences = workbook.createSheet("Student preferences");
         createHeader(preferences);
-        int numOfStudents = students.size();
-
+        //System.out.println("Header created");
+        
         // getting projects into an array list
 
         
@@ -58,11 +58,14 @@ public class StudentPreferenceWriter{
         }
 
         // Assigning projects to students
-        for (int rowNum = 1; rowNum < numOfStudents; rowNum++) {
+        int n = 0;
+        for (int rowNum = 1; rowNum <= numOfStudents; rowNum++) {
             // Student student = students.get(rowNum);
             int numOfProjectsForStudent = 0;
-            
-            Row row = preferences.getRow(rowNum);
+            ArrayList<Project> projectsForStudent = new ArrayList<>(10);
+            Student student = students.get(n);
+            n++;
+           // Row row = preferences.getRow(rowNum);
             while (numOfProjectsForStudent != 10) {
                 double random = Math.random();
                 double max = projectProbabilities.get(rowNum);
@@ -72,22 +75,27 @@ public class StudentPreferenceWriter{
                     if(random>=min && random<=max){
                         projectsForStudent.add(listOfProjects.get(i));
                         numOfProjectsForStudent++;
-                        break;
+                        
                     }
                     double tmp = max;
                     min = max;
-                    max = tmp + projectProbabilities.get(i+1);
+                    max = tmp + projectProbabilities.get(i);
 
                 }
             }
-            writeRow(rowNum, students.get(rowNum-1), projectsForStudent, preferences);
+            //System.out.println("row: " + rowNum + "student:" + students.get(rowNum-1).getFirstName() + "first preference: " + preferences.getRow(rowNum).getCell(4).getStringCellValue());
+            Row row = preferences.createRow(rowNum);
+            writeRow(row, student, projectsForStudent);
         }
+
+
+        
     }
 
     // Helper Funtions
 
     private void createHeader(final XSSFSheet sheet) {
-        final Row row = sheet.createRow(0);
+        Row row = sheet.createRow(0);
         Cell cell = row.createCell(0);
         cell.setCellValue("First Name");
         cell = row.createCell(1);
@@ -116,8 +124,7 @@ public class StudentPreferenceWriter{
         cell.setCellValue("Preference 10");
     }
 
-    public void writeRow( int rownum, Student student, ArrayList<Project> projects, XSSFSheet proj) {
-        Row row = proj.createRow(rownum);
+    public void writeRow( Row row, Student student, ArrayList<Project> projects) {
         Cell cell;
         cell = row.createCell(0);
         cell.setCellValue(student.getFirstName());
