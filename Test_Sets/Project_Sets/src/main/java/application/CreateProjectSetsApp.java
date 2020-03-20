@@ -47,13 +47,13 @@ public class CreateProjectSetsApp {
         preferenceWriter.write("src/main/resources/studentPreferences60.xlsx", studentReader.getStudents(), 60, projects );
 
         studentReader.readXLSX(120, "src/main/resources/students.xlsx");
-       // preferenceWriter.write("src/main/resources/studentPreferences120.xlsx", studentReader.getStudents(), 120, projects );
+        preferenceWriter.write("src/main/resources/studentPreferences120.xlsx", studentReader.getStudents(), 120, projects );
 
         studentReader.readXLSX(240, "src/main/resources/students.xlsx");
-        //preferenceWriter.write("src/main/resources/studentPreferences240.xlsx", studentReader.getStudents(), 240, projects);
+        preferenceWriter.write("src/main/resources/studentPreferences240.xlsx", studentReader.getStudents(), 240, projects);
 
         studentReader.readXLSX(500, "src/main/resources/students.xlsx");
-        //preferenceWriter.write("src/main/resources/studentPreferences500.xlsx", studentReader.getStudents(), 500, projects);
+        preferenceWriter.write("src/main/resources/studentPreferences500.xlsx", studentReader.getStudents(), 500, projects);
 
         
     }
