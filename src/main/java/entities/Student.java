@@ -10,7 +10,6 @@ public class Student{
     private Stream stream;
     private ArrayList<Project> preferences;
     private Project project;
-    private int temperature;
 
     public Student(String firstName, String surname, Long studentId, Stream stream){
         this.firstName=firstName;
@@ -19,17 +18,15 @@ public class Student{
         this.stream=stream;
         preferences = null;
         project = null;
-        temperature = 1000000;
     }
 
-    public Student(String firstName, String surname, Long studentId, Stream stream, ArrayList<Project> preferences, Project project, int temperature) {
+    public Student(String firstName, String surname, Long studentId, Stream stream, ArrayList<Project> preferences, Project project) {
         this.firstName=firstName;
         this.surname=surname;
         this.studentId=studentId;
         this.stream=stream;
         this.preferences = preferences;
         this.project = project;
-        this.temperature = temperature;
     }
 
     public Student(){
@@ -85,14 +82,6 @@ public class Student{
         this.preferences = preferences;
     }
 
-    public int getTemperature() {
-        return temperature;
-    }
-
-    public void setTemperature(int temperature) {
-        this.temperature = temperature;
-    }
-
     private String preferenceToString() {
         String string = "";
         if(preferences != null) {
@@ -107,7 +96,6 @@ public class Student{
     @Override
     public String toString() {
         return "Student [firstName=" + firstName + ", stream=" + stream + ", studentId=" + studentId + ", surname="
-                + surname + ", project=" + project + ", preferences=" + "\n" + preferenceToString()
-                + ", temperature" + temperature + "]";
+                + surname + ", project=" + project + ", preferences=" + "\n" + preferenceToString() + "]";
     }
 }

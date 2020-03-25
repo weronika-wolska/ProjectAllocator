@@ -24,7 +24,7 @@ public class StudentReader{
             int rowCount = sheet.getLastRowNum();
             ArrayList<Integer> relevantRowNumbers = getRandomRowNumbers(studentCount, rowCount);
             //System.out.println("File input obtained, random rows:" + Arrays.toString(relevantRowNumbers));
-            for (int i = 1; i <= studentCount; ++i) {
+            for (int i = 1; i < studentCount; ++i) {
                 Row row = sheet.getRow(relevantRowNumbers.get(i));
                 Student newStudent = parseRowIntoStudent(row);
                 if (newStudent == null) {
