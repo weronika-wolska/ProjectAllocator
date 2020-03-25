@@ -3,7 +3,8 @@ package entities.unit;
 import com.sun.tools.javac.util.Assert;
 import entities.Stream;
 import entities.Student;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+
 
 public class StudentTest {
 
