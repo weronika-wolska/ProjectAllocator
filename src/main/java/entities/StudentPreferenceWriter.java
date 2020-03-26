@@ -62,7 +62,7 @@ public class StudentPreferenceWriter{
         // Assigning projects to students
         int n=0;
         student = students.get(n);
-        for (int rowNum = 1; rowNum <= numOfStudents; rowNum++) {
+        for (int rowNum = 0; rowNum <= numOfStudents; rowNum++) {
             if(n>=students.size()) break;
             // Student student = students.get(rowNum);
             int numOfProjectsForStudent = 0;
