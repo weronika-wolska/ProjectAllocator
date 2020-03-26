@@ -56,13 +56,12 @@ public class StudentIT {
         preferences.add(project2);
         preferences.add(project3);
         Student student = new Student("John", "Smith", (long) 12345678, Stream.CS, preferences, project1);
-
-        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" +
-                    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" +
-                    "This is testingToString" +
-                    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" +
-                    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        System.out.println(student.toString());
-        Assert.assertEquals("toString working incorrectly", "Hello", student.toString());
+        String expected = "Student [firstName=John, stream=CS, studentId=12345678, surname=Sm" +
+                "ith, project=Project [projectName=The CS Project, stream=CS, supervisor=Jane Doe], preferences=Project [projectName=" +
+                "The CS Project, stream=CS, supervisor=Jane Doe]\n" +
+                "Project [projectName=The DS Project, stream=CSDS, supervisor=Jane Doe]\n" +
+                "Project [projectName=The CSDS Project, stream=CSDS, supervisor=Jane Doe]\n" +
+                "]";
+        Assert.assertEquals("toString working incorrectly", expected, student.toString());
     }
 }

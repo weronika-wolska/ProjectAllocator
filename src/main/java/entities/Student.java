@@ -96,6 +96,6 @@ public class Student{
     @Override
     public String toString() {
         return "Student [firstName=" + firstName + ", stream=" + stream + ", studentId=" + studentId + ", surname="
-                + surname + ", project=" + project + ", preferences=" + "\n" + preferenceToString() + "]";
+                + surname + ", project=" + project + ", preferences=" + preferenceToString() + "]";
     }
 }
