@@ -110,11 +110,11 @@ public class StaffReader {
                     staff.getProjects()) {
                 if(projectName.equals(potentialProjectName)) {
                     //System.out.println("An existing project name was generated");
-                    return true;
+                    return false;
                 }
             }
         }
-        return false;
+        return true;
     }
 
     public ArrayList<String> tokenizeByComma(String string) {
@@ -164,7 +164,7 @@ public class StaffReader {
         for (String area :
                 staff.getResearchAreas()) {
             project = area + " " + areaSpecifier;
-            if(!projectAlreadyExists(project)) {
+            if(projectAlreadyExists(project)) {
                 //System.out.println("Project doesn't exist yet, creating it:" + project + " for " + staff.getName());
                 hasAtLeastOneProject = true;
                 projects.add(project);
@@ -174,7 +174,7 @@ public class StaffReader {
         for (String activity :
                 staff.getResearchActivities()) {
             project = activity + " " + activitySpecifier;
-            if(!projectAlreadyExists(project)) {
+            if(projectAlreadyExists(project)) {
                 //System.out.println("Project doesn't exist yet, creating it:" + project + " for " + staff.getName());
                 hasAtLeastOneProject = true;
                 projects.add(project);
