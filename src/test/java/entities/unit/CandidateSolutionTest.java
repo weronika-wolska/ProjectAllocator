@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.function.ThrowingRunnable;
 
 public class CandidateSolutionTest {
     protected ArrayList<Student> students = new ArrayList<>();
@@ -75,5 +76,40 @@ public class CandidateSolutionTest {
         // test findStudentWithProject()
         Assert.assertEquals(student1, candidateSolution.findStudentWithProject(project1));
         Assert.assertEquals(student4, candidateSolution.findStudentWithProject(project4));
-}
+    }
+
+    @Test
+    public void testCandidateSolutionWithInvalidInputs() throws InvalidArgumentException{
+        ArrayList<Project> preferences = new ArrayList<>();
+        preferences.add(project1);
+        preferences.add(project2);
+        preferences.add(project3);
+        preferences.add(project4);
+        preferences.add(project5);
+        preferences.add(project6);
+        preferences.add(project7);
+        preferences.add(project8);
+        preferences.add(project9);
+        preferences.add(project10);
+        student1.setPreferences(preferences);
+        student2.setPreferences(preferences);
+        student3.setPreferences(preferences);
+        students.add(student1);
+        students.add(student2);
+        students.add(student3);
+        projects.add(project1);
+        projects.add(project2);
+        projects.add(project3);
+        projects.add(project4);
+        projects.add(project5);
+
+        
+        Assert.assertThrows(null, InvalidArgumentException.class, new ThrowingRunnable(){
+        
+            @Override
+            public void run() throws Throwable {
+                CandidateSolution candidateSolution = new CandidateSolution(students, projects);
+            }
+        } );
+    }
 }
