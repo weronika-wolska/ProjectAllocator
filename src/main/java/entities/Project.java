@@ -11,6 +11,10 @@ public class Project{
         this.supervisor=supervisor;
     }
 
+    public Project(String projectName){
+        this.projectName=projectName;
+    }
+
     public String getProjectName() {
         return projectName;
     }
