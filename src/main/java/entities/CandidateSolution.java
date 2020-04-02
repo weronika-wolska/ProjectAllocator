@@ -81,6 +81,7 @@ public class CandidateSolution {
             else if(preferences.get(9)== projects.get(i)){
                 fitness+=1;
             }
+            if(!student.canDoProject(projects.get(i))) fitness = students.size() * 100; // if the project is unfitting, make solution unfit
         }
         return fitness;
 

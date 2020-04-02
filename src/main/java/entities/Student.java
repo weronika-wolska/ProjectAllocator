@@ -9,7 +9,7 @@ public class Student{
     private Long studentId;
     private Stream stream;
     private ArrayList<Project> preferences;
-    private Project project;
+    private Project project; // Maybe we can get rid of this?
 
     public Student(String firstName, String surname, Long studentId, Stream stream){
         this.firstName=firstName;
@@ -97,5 +97,13 @@ public class Student{
     public String toString() {
         return "Student [firstName=" + firstName + ", stream=" + stream + ", studentId=" + studentId + ", surname="
                 + surname + ", project=" + project + ", preferences=" + preferenceToString() + "]";
+    }
+
+    public boolean canDoProject(Project project) {
+        if(stream == Stream.CS && project.getStream() == Stream.CS) return true;
+        else if(stream == Stream.DS || stream == Stream.CSDS) {
+            return project.getStream() == Stream.DS || project.getStream() == Stream.CSDS;
+        }
+        return false;
     }
 }
