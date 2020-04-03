@@ -83,14 +83,14 @@ public class Student{
     }
 
     private String preferenceToString() {
-        String string = "";
+        StringBuilder string = new StringBuilder();
         if(preferences != null) {
             for (Project preference :
                     preferences) {
-                string += preference.toString() + "\n";
+                string.append(preference.toString()).append("\n");
             }
         }
-        return string;
+        return string.toString();
     }
 
     @Override

@@ -18,7 +18,7 @@ import java.io.IOException;
 
 public class CreateProjectSetsApp {
 
-    public static void Main(String[] args) throws FileNotFoundException, IOException{
+    public static void main(String[] args) throws FileNotFoundException, IOException{
         StaffReader reader = new StaffReader();
         ProjectWriter writer = new ProjectWriter();
         

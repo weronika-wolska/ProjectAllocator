@@ -1,10 +1,8 @@
 package entities.unit;
 
-import entities.Project;
-import entities.Stream;
-import entities.Student;
+import entities.*;
 import exceptions.InvalidArgumentException;
-import entities.CandidateSolution;
+
 import java.util.ArrayList;
 
 import org.junit.Assert;
@@ -111,5 +109,13 @@ public class CandidateSolutionTest {
                 CandidateSolution candidateSolution = new CandidateSolution(students, projects);
             }
         } );
+    }
+
+    @Test
+    public void testToString() {
+        StaffMember staffCS = new StaffMember();
+        staffCS.setName("Jane CS Doe");
+        StaffMember staffDS = new StaffMember();
+        staffDS.setName("John DS Smith");
     }
 }

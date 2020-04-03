@@ -86,5 +86,17 @@ public class CandidateSolution {
         return fitness;
 
     }
-
+    
+    @Override
+    public String toString() {
+        StringBuilder string = new StringBuilder();
+        for (Map.Entry<Student, Project> pairing :
+                candidateSolution.entrySet()) {
+            string.append(pairing.getKey().toString());
+            string.append(" was assigned\n");
+            string.append(pairing.getValue().toString());
+            string.append("\n");
+        }
+        return string.toString();
+    }
 }
