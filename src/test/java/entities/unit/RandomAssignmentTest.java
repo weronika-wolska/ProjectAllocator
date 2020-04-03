@@ -103,8 +103,12 @@ public class RandomAssignmentTest {
             shufflingSolution.randomize(students, projects);
             newRandomSolution = new CandidateSolution(students, projects);
             String newSolution = newRandomSolution.toString();
-            if(previousSolution.equals(newSolution)) foundDifferentSolution = true;
+            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXith time looking for random solution,i=" + i);
+            System.out.println(previousSolution);
+            System.out.println(newSolution);
+            if(!previousSolution.equals(newSolution)) foundDifferentSolution = true;
         }
+
 
         Assert.assertTrue(foundDifferentSolution);
     }

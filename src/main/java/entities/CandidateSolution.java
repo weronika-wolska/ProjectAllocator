@@ -22,7 +22,8 @@ public class CandidateSolution {
             candidateSolution.put(students.get(i), projects.get(i));
         }
 
-        this.fitness = calculateFitness(students, projects);
+        // TODO allow student to have less then 10 preferences, so no null pointer is thrown in calculateFitness
+        //this.fitness = calculateFitness(students, projects);
     }
 
     public int getFitness(){
