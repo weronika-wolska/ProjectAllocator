@@ -92,10 +92,11 @@ public class CandidateSolution {
         StringBuilder string = new StringBuilder();
         for (Map.Entry<Student, Project> pairing :
                 candidateSolution.entrySet()) {
-            string.append(pairing.getKey().toString());
+            Student student = pairing.getKey();
+            Project project = pairing.getValue();
+            string.append("student ").append(student.getFirstName()).append(" ").append(student.getSurname()).append(" doing ").append(student.getStream());
             string.append(" was assigned\n");
-            string.append(pairing.getValue().toString());
-            string.append("\n");
+            string.append("project ").append(project.getProjectName()).append(" which is in the stream ").append(project.getStream()).append("\n");
         }
         return string.toString();
     }

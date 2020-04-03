@@ -21,7 +21,6 @@ public class StudentTest {
         Assert.assertEquals("student.surname not initialized correctly", "Smith", student.getSurname());
         Assert.assertEquals("student.id not initialized correctly", 12345678, student.getStudentId().longValue());
         Assert.assertEquals("student.stream not initialized correctly", Stream.CS, student.getStream());
-        Assert.assertNull("student.project not initialized correctly", student.getProject());
         Assert.assertNull("student.preferences not initialized correctly", student.getPreferences());
     }
 

@@ -22,7 +22,7 @@ public class StudentIT {
         preferences.add(project1);
         preferences.add(project2);
         preferences.add(project3);
-        Student student = new Student("John", "Smith", (long) 12345678, Stream.CS, preferences, project1);
+        Student student = new Student("John", "Smith", (long) 12345678, Stream.CS, preferences);
 
         if (student.getFirstName() != null) {
             Assert.assertEquals("firstName initialized incorrectly", "John", student.getFirstName());
@@ -39,9 +39,6 @@ public class StudentIT {
         if (student.getPreferences() != null) {
             Assert.assertEquals("preferences initialized incorrectly", preferences, student.getPreferences());
         }
-        if (student.getProject() != null) {
-            Assert.assertEquals("project initialized incorrectly", project1, student.getProject());
-        }
     }
 
     @Test
@@ -55,9 +52,9 @@ public class StudentIT {
         preferences.add(project1);
         preferences.add(project2);
         preferences.add(project3);
-        Student student = new Student("John", "Smith", (long) 12345678, Stream.CS, preferences, project1);
+        Student student = new Student("John", "Smith", (long) 12345678, Stream.CS, preferences);
         String expected = "Student [firstName=John, stream=CS, studentId=12345678, surname=Sm" +
-                "ith, project=Project [projectName=The CS Project, stream=CS, supervisor=Jane Doe], preferences=Project [projectName=" +
+                "ith, stream=CS, supervisor=Jane Doe], preferences=Project [projectName=" +
                 "The CS Project, stream=CS, supervisor=Jane Doe]\n" +
                 "Project [projectName=The DS Project, stream=CSDS, supervisor=Jane Doe]\n" +
                 "Project [projectName=The CSDS Project, stream=CSDS, supervisor=Jane Doe]\n" +
@@ -76,7 +73,7 @@ public class StudentIT {
         preferences.add(project1);
         preferences.add(project2);
         preferences.add(project3);
-        Student student = new Student("John", "Smith", (long) 12345678, Stream.CS, preferences, project1);
+        Student student = new Student("John", "Smith", (long) 12345678, Stream.CS, preferences);
 
         Assert.assertTrue(student.canDoProject(project1));
         Assert.assertFalse(student.canDoProject(project2));

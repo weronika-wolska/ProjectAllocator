@@ -7,7 +7,9 @@ public class RandomAssignment {
     private int projectCount;
 
     // assumes there exists a legal assignment
-    public void RandomAssignment(ArrayList<Student> students, ArrayList<Project> projects) {
+    public RandomAssignment() {}
+
+    public void randomize(ArrayList<Student> students, ArrayList<Project> projects) {
         projectCount = students.size();
         ArrayList<Project> shuffledProjects = new ArrayList<>();
         boolean assignedProject;
@@ -22,11 +24,11 @@ public class RandomAssignment {
                 }
             }
         }
-
+        projects = shuffledProjects; // maybe shuffledProjects list should be object-by-object inserted into projects
     }
 
     private int getRandomProjectIndex() {
         Random rand = new Random();
-        return rand.nextInt(--projectCount);
+        return rand.nextInt(projectCount - 1);
     }
 }

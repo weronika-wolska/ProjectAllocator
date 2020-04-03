@@ -117,5 +117,64 @@ public class CandidateSolutionTest {
         staffCS.setName("Jane CS Doe");
         StaffMember staffDS = new StaffMember();
         staffDS.setName("John DS Smith");
+
+        project1.setStream(Stream.CS);
+        project2.setStream(Stream.CS);
+        project3.setStream(Stream.CS);
+        project1.setSupervisor(staffCS);
+        project2.setSupervisor(staffCS);
+        project3.setSupervisor(staffCS);
+
+        project4.setStream(Stream.DS);
+        project5.setStream(Stream.DS);
+        project4.setSupervisor(staffDS);
+        project5.setSupervisor(staffDS);
+
+        ArrayList<Project> preferences = new ArrayList<>();
+        preferences.add(project1);
+        preferences.add(project2);
+        preferences.add(project3);
+        preferences.add(project4);
+        preferences.add(project5);
+
+        student1.setPreferences(preferences);
+        student2.setPreferences(preferences);
+        student3.setPreferences(preferences);
+        student4.setPreferences(preferences);
+        student5.setPreferences(preferences);
+        students.add(student1);
+        students.add(student2);
+        students.add(student3);
+        students.add(student4);
+        students.add(student5);
+        projects.add(project1);
+        projects.add(project2);
+        projects.add(project3);
+        projects.add(project4);
+        projects.add(project5);
+
+        CandidateSolution candidateSolution;
+        try {
+            candidateSolution = new CandidateSolution(students, projects);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+        Assert.assertEquals("CandidateSolution.toString operating incorrectly", getRequiredStringResult(), candidateSolution.toString());
+    }
+
+    private String getRequiredStringResult() {
+        return "student Jessica Delaney doing CS was assigned\n" +
+                "project create classes which is in the stream CS\n" +
+                "student Robert Murphy doing DS was assigned\n" +
+                "project create tests for classes which is in the stream CS\n" +
+                "student Becky Jones doing CS was assigned\n" +
+                "project create test data which is in the stream CS\n" +
+                "student Tracy Jackson doing DS was assigned\n" +
+                "project create interface which is in the stream DS\n" +
+                "student Bob Johnson doing CS was assigned\n" +
+                "project create more classes which is in the stream DS\n";
     }
 }
