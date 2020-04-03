@@ -54,7 +54,7 @@ public class StudentIT {
         preferences.add(project3);
         Student student = new Student("John", "Smith", (long) 12345678, Stream.CS, preferences);
         String expected = "Student [firstName=John, stream=CS, studentId=12345678, surname=Sm" +
-                "ith, stream=CS, supervisor=Jane Doe], preferences=Project [projectName=" +
+                "ith, preferences=Project [projectName=" +
                 "The CS Project, stream=CS, supervisor=Jane Doe]\n" +
                 "Project [projectName=The DS Project, stream=CSDS, supervisor=Jane Doe]\n" +
                 "Project [projectName=The CSDS Project, stream=CSDS, supervisor=Jane Doe]\n" +

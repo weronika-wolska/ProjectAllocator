@@ -90,7 +90,7 @@ public class RandomAssignmentTest {
     }
 
     @Test
-    public void testRandomAssignment() throws InvalidArgumentException {
+    public void testRandomize() throws InvalidArgumentException {
         setUp();
         RandomAssignment shufflingSolution = new RandomAssignment();
         shufflingSolution.randomize(students, projects);
@@ -103,9 +103,9 @@ public class RandomAssignmentTest {
             shufflingSolution.randomize(students, projects);
             newRandomSolution = new CandidateSolution(students, projects);
             String newSolution = newRandomSolution.toString();
-            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXith time looking for random solution,i=" + i);
-            System.out.println(previousSolution);
-            System.out.println(newSolution);
+            //System.out.println("ith time looking for random solution,i=" + i);
+            //System.out.println(previousSolution);
+            //System.out.println(newSolution);
             if(!previousSolution.equals(newSolution)) foundDifferentSolution = true;
         }
 

@@ -99,7 +99,7 @@
                 <version>1.6.0</version>
                 <configuration>
                     <classpathScope>test</classpathScope>
-                    <mainClass>application.CreateProjectSetsApp</mainClass>
+                    <mainClass>applications.CreateProjectSetsApp</mainClass>
                     <includePluginDependencies>true</includePluginDependencies>
                     
                     
