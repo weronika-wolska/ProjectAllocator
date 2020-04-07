@@ -22,7 +22,8 @@ public class CandidateSolution {
             candidateSolution.put(students.get(i), projects.get(i));
         }
 
-        this.fitness = calculateFitness(students, projects);
+        // TODO allow student to have less then 10 preferences, so no null pointer is thrown in calculateFitness
+        //this.fitness = calculateFitness(students, projects);
     }
 
     public int getFitness(){
@@ -81,9 +82,23 @@ public class CandidateSolution {
             else if(preferences.get(9)== projects.get(i)){
                 fitness+=1;
             }
+            if(!student.canDoProject(projects.get(i))) fitness = students.size() * 100; // if the project is unfitting, make solution unfit
         }
         return fitness;
 
     }
-
+    
+    @Override
+    public String toString() {
+        StringBuilder string = new StringBuilder();
+        for (Map.Entry<Student, Project> pairing :
+                candidateSolution.entrySet()) {
+            Student student = pairing.getKey();
+            Project project = pairing.getValue();
+            string.append("student ").append(student.getFirstName()).append(" ").append(student.getSurname()).append(" doing ").append(student.getStream());
+            string.append(" was assigned\n");
+            string.append("project ").append(project.getProjectName()).append(" which is in the stream ").append(project.getStream()).append("\n");
+        }
+        return string.toString();
+    }
 }

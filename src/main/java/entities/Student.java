@@ -9,7 +9,6 @@ public class Student{
     private Long studentId;
     private Stream stream;
     private ArrayList<Project> preferences;
-    private Project project;
 
     public Student(String firstName, String surname, Long studentId, Stream stream){
         this.firstName=firstName;
@@ -17,16 +16,14 @@ public class Student{
         this.studentId=studentId;
         this.stream=stream;
         preferences = null;
-        project = null;
     }
 
-    public Student(String firstName, String surname, Long studentId, Stream stream, ArrayList<Project> preferences, Project project) {
+    public Student(String firstName, String surname, Long studentId, Stream stream, ArrayList<Project> preferences) {
         this.firstName=firstName;
         this.surname=surname;
         this.studentId=studentId;
         this.stream=stream;
         this.preferences = preferences;
-        this.project = project;
     }
 
     public Student(){
@@ -66,14 +63,6 @@ public class Student{
         this.stream = stream;
     }
 
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
     public ArrayList<Project> getPreferences() {
         return preferences;
     }
@@ -83,19 +72,27 @@ public class Student{
     }
 
     private String preferenceToString() {
-        String string = "";
+        StringBuilder string = new StringBuilder();
         if(preferences != null) {
             for (Project preference :
                     preferences) {
-                string += preference.toString() + "\n";
+                string.append(preference.toString()).append("\n");
             }
         }
-        return string;
+        return string.toString();
     }
 
     @Override
     public String toString() {
         return "Student [firstName=" + firstName + ", stream=" + stream + ", studentId=" + studentId + ", surname="
-                + surname + ", project=" + project + ", preferences=" + preferenceToString() + "]";
+                + surname + ", preferences=" + preferenceToString() + "]";
+    }
+
+    public boolean canDoProject(Project project) {
+        if(stream == Stream.CS && project.getStream() == Stream.CS) return true;
+        else if(stream == Stream.DS || stream == Stream.CSDS) {
+            return project.getStream() == Stream.DS || project.getStream() == Stream.CSDS;
+        }
+        return false;
     }
 }
