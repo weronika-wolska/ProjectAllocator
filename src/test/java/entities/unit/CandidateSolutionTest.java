@@ -112,6 +112,26 @@ public class CandidateSolutionTest {
     }
 
     @Test
+    public void testCalculateFitnessWithAssignedProjectNotInPreferenceList() throws InvalidArgumentException{
+        ArrayList<Project> preferences = new ArrayList<>();
+        preferences.add(project1);
+        preferences.add(project2);
+        preferences.add(project3);
+        preferences.add(project4);
+        preferences.add(project5);
+        preferences.add(project6);
+        preferences.add(project7);
+        preferences.add(project8);
+        preferences.add(project9);
+        preferences.add(project10);
+        student1.setPreferences(preferences);
+        Project p = new Project("this is not a preffered project");
+        projects.add(p);
+        CandidateSolution solution = new CandidateSolution(students, projects);
+        Assert.assertEquals(-50, solution.getFitness());
+    }
+
+    @Test
     public void testToString() {
         StaffMember staffCS = new StaffMember();
         staffCS.setName("Jane CS Doe");
@@ -177,4 +197,6 @@ public class CandidateSolutionTest {
                 "student Bob Johnson doing CS was assigned\n" +
                 "project create more classes which is in the stream DS\n";
     }
+
+
 }

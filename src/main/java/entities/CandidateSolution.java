@@ -3,6 +3,7 @@ package entities;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Map.Entry;
 
 import exceptions.InvalidArgumentException;
@@ -23,7 +24,7 @@ public class CandidateSolution {
         }
 
         // TODO allow student to have less then 10 preferences, so no null pointer is thrown in calculateFitness
-        //this.fitness = calculateFitness(students, projects);
+        this.fitness = calculateFitness(students, projects);
     }
 
     public int getFitness(){
@@ -47,7 +48,27 @@ public class CandidateSolution {
         return null;
     }
 
-    private int calculateFitness(ArrayList<Student> students,  ArrayList<Project> projects){
+
+    // TODO
+
+    private int calculateFitness(Map<Student, Project> map){
+        int score = 0;
+        for(Map.Entry solution : map.entrySet()){
+            Student student = (Student)solution.getKey();
+            ArrayList<Project> studentPreferences = student.getPreferences();
+            Project project = (Project)solution.getValue();
+            for(int i=0;i<10;i++){
+                if(studentPreferences.get(i)==project){
+                    score += (10 -i);
+                } else {score -=50;}
+            }
+            
+        }
+        return score;
+    }
+
+    private int calculateFitness(ArrayList<Student> students,  ArrayList<Project> projects) throws InvalidArgumentException{
+        if(students.size()!=projects.size()){ throw new InvalidArgumentException();}
         int fitness = 0;
         for(int i=0;i<students.size();i++){
             Student student = students.get(i);
@@ -82,10 +103,41 @@ public class CandidateSolution {
             else if(preferences.get(9)== projects.get(i)){
                 fitness+=1;
             }
+            // deduct points if assigned project is not on the student's preference list
+            else{
+                fitness-=50;
+            }
             if(!student.canDoProject(projects.get(i))) fitness = students.size() * 100; // if the project is unfitting, make solution unfit
         }
         return fitness;
 
+    }
+
+    // takes a candidate solution as input and produces a random change
+    // if the change is better, has a higher score, the candidate solution map becomes the solution 
+    // and the method returns true
+    // otherwise, the candidate solution stays the same and the method returns false
+    public boolean changeSolution(Map<Student, Project> candidateSolution, ArrayList<Student> students){
+        Map<Student, Project> alternateSolution = candidateSolution;
+        Random random = new Random();
+        int x, y;
+        do{
+            x = random.nextInt(alternateSolution.size());
+            y = random.nextInt(alternateSolution.size());
+        }while (x!=y);
+        Student student1 = students.get(x);
+        Student student2 = students.get(y);
+        Project project = alternateSolution.get(student1);
+        alternateSolution.put(student1, alternateSolution.get(student2));
+        alternateSolution.put(student2, project);
+
+        // compare the two candidate solutions
+        if(calculateFitness(candidateSolution)>=calculateFitness(alternateSolution)){ return false;}
+        else{
+            this.candidateSolution=alternateSolution;
+            this.fitness=calculateFitness(alternateSolution);
+            return true;
+        }
     }
     
     @Override
@@ -101,4 +153,5 @@ public class CandidateSolution {
         }
         return string.toString();
     }
+
 }
