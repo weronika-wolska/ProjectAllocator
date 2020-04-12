@@ -125,14 +125,66 @@ public class CandidateSolutionTest {
         preferences.add(project9);
         preferences.add(project10);
         student1.setPreferences(preferences);
+        students.clear();
+        students.add(student1);
         Project p = new Project("this is not a preffered project");
+        projects.clear();
         projects.add(p);
         CandidateSolution solution = new CandidateSolution(students, projects);
         Assert.assertEquals(-50, solution.getFitness());
+        System.out.println(students.size());
     }
 
     @Test
-    public void testToString() {
+    public void testChangeSolution() throws InvalidArgumentException{
+        ArrayList<Project> preferences = new ArrayList<>();
+        preferences.add(project1);
+        preferences.add(project2);
+        preferences.add(project3);
+        preferences.add(project4);
+        preferences.add(project5);
+        preferences.add(project6);
+        preferences.add(project7);
+        preferences.add(project8);
+        preferences.add(project9);
+        preferences.add(project10);
+        student1.setPreferences(preferences);
+        student2.setPreferences(preferences);
+        students.clear();
+        students.add(student1);
+        students.add(student2);
+        projects.clear();
+        projects.add(project2);
+        projects.add(project1);
+
+        CandidateSolution cs = new CandidateSolution(students, projects);
+
+        Assert.assertEquals(false, cs.changeSolution(cs.getCandidateSolution(), students));
+
+        ArrayList<Project> preferences2 = new ArrayList<>();
+        preferences2.add(project2);
+        preferences2.add(project1);
+        preferences2.add(project3);
+        preferences2.add(project4);
+        preferences2.add(project5);
+        preferences2.add(project6);
+        preferences2.add(project7);
+        preferences2.add(project8);
+        preferences2.add(project9);
+        preferences2.add(project10);
+        student2.setPreferences(preferences2);
+        students.clear();
+        students.add(student1);
+        students.add(student2);
+        projects.clear();
+        projects.add(project2);
+        projects.add(project1);
+        CandidateSolution cS = new CandidateSolution(students, projects);
+        Assert.assertEquals(true, cS.changeSolution(cS.getCandidateSolution(), students));
+    }
+
+    @Test
+    public void testToString() throws InvalidArgumentException {
         StaffMember staffCS = new StaffMember();
         staffCS.setName("Jane CS Doe");
         StaffMember staffDS = new StaffMember();

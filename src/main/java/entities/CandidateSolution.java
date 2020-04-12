@@ -117,14 +117,17 @@ public class CandidateSolution {
     // if the change is better, has a higher score, the candidate solution map becomes the solution 
     // and the method returns true
     // otherwise, the candidate solution stays the same and the method returns false
-    public boolean changeSolution(Map<Student, Project> candidateSolution, ArrayList<Student> students){
+    public boolean changeSolution(Map<Student, Project> candidateSolution, ArrayList<Student> students) throws InvalidArgumentException{
+        // must be at least two elements in order to perform a change
+        if(candidateSolution.size()<2){ throw new InvalidArgumentException(); }
+
         Map<Student, Project> alternateSolution = candidateSolution;
         Random random = new Random();
         int x, y;
         do{
             x = random.nextInt(alternateSolution.size());
             y = random.nextInt(alternateSolution.size());
-        }while (x!=y);
+        }while (x==y);
         Student student1 = students.get(x);
         Student student2 = students.get(y);
         Project project = alternateSolution.get(student1);

@@ -2,6 +2,10 @@ package entities;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Random;
+
+import exceptions.InvalidArgumentException;
+import repositories.ProjectRepository;
 
 public class Student{
     private String firstName;
@@ -9,6 +13,7 @@ public class Student{
     private Long studentId;
     private Stream stream;
     private ArrayList<Project> preferences;
+    private static ProjectRepository projectRepository;
 
     public Student(String firstName, String surname, Long studentId, Stream stream){
         this.firstName=firstName;
@@ -18,12 +23,12 @@ public class Student{
         preferences = null;
     }
 
-    public Student(String firstName, String surname, Long studentId, Stream stream, ArrayList<Project> preferences) {
+    public Student(String firstName, String surname, Long studentId, Stream stream, ArrayList<Project> preferences) throws InvalidArgumentException {
         this.firstName=firstName;
         this.surname=surname;
         this.studentId=studentId;
         this.stream=stream;
-        this.preferences = preferences;
+        setPreferences(preferences);
     }
 
     public Student(){
@@ -67,8 +72,31 @@ public class Student{
         return preferences;
     }
 
-    public void setPreferences(ArrayList<Project> preferences) {
-        this.preferences = preferences;
+    public void setPreferences(ArrayList<Project> preferences) throws InvalidArgumentException {
+        if(preferences.size()>10){ throw new InvalidArgumentException();}
+        boolean validProjects = true;
+        // check if all the preffered projects match the student's stream
+        for(int i=0;i<preferences.size(); i++){
+            if(stream!=preferences.get(i).getStream() || preferences.get(i).getStream()!=Stream.CSDS){
+                validProjects = false;
+            }
+        }
+        if(validProjects){ this.preferences=preferences;}
+        else{ throw new InvalidArgumentException();}
+
+        // if there is less than 10 preferences in student's list, assign them random projects
+        if(preferences.size()<10){
+            Random r = new Random();
+            for(int i = preferences.size();i<10;i++){
+                Project project;
+                do{
+                    int index = r.nextInt(projectRepository.getSize());
+                    project = projectRepository.getProject(index);
+                    this.preferences.add(i, project);
+                } while (project.getStream()!=this.stream||project.getStream()!=Stream.CSDS);
+            }
+        }
+        
     }
 
     private String preferenceToString() {
