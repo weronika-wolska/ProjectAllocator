@@ -1,6 +1,6 @@
 package entities;
 
-import java.lang.reflect.Array;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -8,32 +8,38 @@ import exceptions.InvalidArgumentException;
 import repositories.ProjectRepository;
 
 public class Student{
+    public static final double FULL_GPA = 4.2;
     private String firstName;
     private String surname;
     private Long studentId;
+    private Double gpa;
     private Stream stream;
-    private ArrayList<Project> preferences;
+    private ArrayList<Project> preferences = new ArrayList<>();
     private static ProjectRepository projectRepository;
 
-    public Student(String firstName, String surname, Long studentId, Stream stream){
-        this.firstName=firstName;
-        this.surname=surname;
-        this.studentId=studentId;
-        this.stream=stream;
-        preferences = null;
+    public Student(String firstName, String surname, Long studentId, Stream stream) throws InvalidArgumentException{
+        this(firstName, surname, studentId, 2.1, stream, null);
     }
 
-    public Student(String firstName, String surname, Long studentId, Stream stream, ArrayList<Project> preferences) throws InvalidArgumentException {
+    public Student(String firstName, String surname, Long studentId, Stream stream, ArrayList<Project> preferences) throws InvalidArgumentException{
+        this(firstName, surname, studentId, 2.1, stream, preferences);
+    }
+
+    public Student() throws InvalidArgumentException{
+        this("DefaultName", "DefaultSurname", (long) 12345678, 2.1, Stream.CS, null);
+    }
+
+    public Student(String firstName, String surname, Long studentId, Double gpa, Stream stream, ArrayList<Project> preferences) throws InvalidArgumentException {
         this.firstName=firstName;
         this.surname=surname;
         this.studentId=studentId;
+        setGpa(gpa);
         this.stream=stream;
+        if(preferences==null){ preferences = new ArrayList<Project>();}
         setPreferences(preferences);
     }
 
-    public Student(){
 
-    }
 
 
     public String getFirstName() {
@@ -73,11 +79,12 @@ public class Student{
     }
 
     public void setPreferences(ArrayList<Project> preferences) throws InvalidArgumentException {
+        if(getStream()==null){ this.preferences=preferences;}
         if(preferences.size()>10){ throw new InvalidArgumentException();}
         boolean validProjects = true;
         // check if all the preffered projects match the student's stream
         for(int i=0;i<preferences.size(); i++){
-            if(stream!=preferences.get(i).getStream() || preferences.get(i).getStream()!=Stream.CSDS){
+            if(stream!=preferences.get(i).getStream() || preferences.get(i).getStream()!=Stream.CSDS || preferences.get(i).getStream()!=null){
                 validProjects = false;
             }
         }
@@ -93,10 +100,24 @@ public class Student{
                     int index = r.nextInt(projectRepository.getSize());
                     project = projectRepository.getProject(index);
                     this.preferences.add(i, project);
-                } while (project.getStream()!=this.stream||project.getStream()!=Stream.CSDS);
+                } while (project.getStream()!=this.stream||project.getStream()!=Stream.CSDS || project.getStream()!=null);
             }
         }
         
+    }
+
+    public Double getGpa() {
+        return gpa;
+    }
+
+    public void setGpa(Double gpa) {
+        if(gpa > Student.FULL_GPA) {
+            gpa = Student.FULL_GPA;
+        }
+        else if(gpa < 0) {
+            gpa = (double) 0;
+        }
+        this.gpa = gpa;
     }
 
     private String preferenceToString() {

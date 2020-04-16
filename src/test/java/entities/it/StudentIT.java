@@ -4,15 +4,19 @@ import entities.Project;
 import entities.StaffMember;
 import entities.Stream;
 import entities.Student;
+import exceptions.InvalidArgumentException;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
 
+import javax.activity.InvalidActivityException;
+
 public class StudentIT {
 
     @Test
-    public void testConstructor8Parameters() {
+    public void testConstructor8Parameters() throws InvalidArgumentException{
         StaffMember supervisor = new StaffMember();
         supervisor.setName("Jane Doe");
         Project project1 = new Project("The CS Project", Stream.CS, supervisor);
@@ -42,7 +46,7 @@ public class StudentIT {
     }
 
     @Test
-    public void testToString() {
+    public void testToString() throws InvalidArgumentException{
         StaffMember supervisor = new StaffMember();
         supervisor.setName("Jane Doe");
         Project project1 = new Project("The CS Project", Stream.CS, supervisor);
@@ -63,7 +67,7 @@ public class StudentIT {
     }
 
     @Test
-    public void testCanDoProject() {
+    public void testCanDoProject() throws InvalidArgumentException {
         StaffMember supervisor = new StaffMember();
         supervisor.setName("Jane Doe");
         Project project1 = new Project("The CS Project", Stream.CS, supervisor);

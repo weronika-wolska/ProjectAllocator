@@ -9,17 +9,16 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 
-public class CandidateSolutionTest {
+public class CandidateSolutionTest{
     protected ArrayList<Student> students = new ArrayList<>();
     protected ArrayList<Project> projects = new ArrayList<>();
     protected ArrayList<Student> students2 = new ArrayList<>();
 
-    Student student1 = new Student("Becky", "Jones", (long) 12345, Stream.CS);
-    Student student2 = new Student("Jessica", "Delaney", (long) 23456, Stream.CS);
-    Student student3 = new Student("Robert", "Murphy", (long) 34567, Stream.DS);
-    Student student4 = new Student("Bob", "Johnson", (long) 45678, Stream.CS);
-    Student student5 = new Student("Tracy", "Jackson", (long) 56789, Stream.DS);
-
+    Student student1;
+    Student student2;
+    Student student3;
+    Student student4;
+    Student student5;
     Project project1 = new Project("create test data");
     Project project2 = new Project("create classes");
     Project project3 = new Project("create tests for classes");
@@ -31,8 +30,27 @@ public class CandidateSolutionTest {
     Project project9 = new Project("do another thing");
     Project project10 = new Project("create something");
 
+    private void setUp() throws InvalidArgumentException {
+        project1.setStream(Stream.CS);
+        project2.setStream(Stream.CS);
+        project3.setStream(Stream.DS);
+        project4.setStream(Stream.CS);
+        project5.setStream(Stream.DS);
+        project6.setStream(Stream.CS);
+        project7.setStream(Stream.CS);
+        project8.setStream(Stream.CS);
+        project9.setStream(Stream.CS);
+        project10.setStream(Stream.CS);
+        Student student1 = new Student("Becky", "Jones", (long) 12345, Stream.CS);
+        Student student2 = new Student("Jessica", "Delaney", (long) 23456, Stream.CS);
+        Student student3 = new Student("Robert", "Murphy", (long) 34567, Stream.DS);
+        Student student4 = new Student("Bob", "Johnson", (long) 45678, Stream.CS);
+        Student student5 = new Student("Tracy", "Jackson", (long) 56789, Stream.DS);
+    }
+
     @Test
     public void testCandidateSolutionWithValidInputs() throws InvalidArgumentException{
+        setUp();
         // setting up array lists
         ArrayList<Project> preferences = new ArrayList<>();
         preferences.add(project1);
@@ -111,8 +129,10 @@ public class CandidateSolutionTest {
         } );
     }
 
+
     @Test
     public void testCalculateFitnessWithAssignedProjectNotInPreferenceList() throws InvalidArgumentException{
+        setUp();
         ArrayList<Project> preferences = new ArrayList<>();
         preferences.add(project1);
         preferences.add(project2);
@@ -125,15 +145,352 @@ public class CandidateSolutionTest {
         preferences.add(project9);
         preferences.add(project10);
         student1.setPreferences(preferences);
+        Project p = new Project("this is not a preferred project");
+        p.setStream(Stream.CS);
+        projects.add(p);
+        students.add(student1);
+        CandidateSolution solution = new CandidateSolution(students, projects);
+        Assert.assertEquals(-50, solution.getFitness(), 0.01);
+    }
+
+    @Test
+    public void testGetEnergy() throws InvalidArgumentException {
+        setUp();
+        ArrayList<Project> preferences = new ArrayList<>();
+        preferences.add(project1);
+        preferences.add(project2);
+        preferences.add(project3);
+        preferences.add(project4);
+        preferences.add(project5);
+        preferences.add(project6);
+        preferences.add(project7);
+        preferences.add(project8);
+        preferences.add(project9);
+        preferences.add(project10);
+        student1.setPreferences(preferences);
+        student2.setPreferences(preferences);
+        student3.setPreferences(preferences);
+        student4.setPreferences(preferences);
+        student5.setPreferences(preferences);
+        students.add(student1);
+        students.add(student2);
+        students.add(student3);
+        students.add(student4);
+        students.add(student5);
+        projects.add(project1);
+        projects.add(project2);
+        projects.add(project3);
+        projects.add(project4);
+        projects.add(project5);
+
+        CandidateSolution candidateSolution = new CandidateSolution(students, projects);
+        Assert.assertEquals(40, candidateSolution.getFitness(), 0.01);
+        Assert.assertEquals(25, candidateSolution.getEnergy(), 0.01);
+    }
+
+    @Test
+    public void testGpaWeight() throws InvalidArgumentException {
+        setUp();
+        ArrayList<Project> preferences = new ArrayList<>();
+        preferences.add(project1);
+        preferences.add(project2);
+        preferences.add(project3);
+        preferences.add(project4);
+        preferences.add(project5);
+        preferences.add(project6);
+        preferences.add(project7);
+        preferences.add(project8);
+        preferences.add(project9);
+        preferences.add(project10);
+        student1.setPreferences(preferences);
+        student2.setPreferences(preferences);
+        student3.setPreferences(preferences);
+        student4.setPreferences(preferences);
+        student5.setPreferences(preferences);
+        students.add(student1);
+        students.add(student2);
+        students.add(student3);
+        students.add(student4);
+        students.add(student5);
+        projects.add(project1);
+        projects.add(project2);
+        projects.add(project3);
+        projects.add(project4);
+        projects.add(project5);
+
+        CandidateSolution candidateSolution = new CandidateSolution(students, projects);
+        Assert.assertEquals("gpaWeight not initialized correctly in 2 parameter constructor", 0, candidateSolution.getGpaWeight(), 0.01);
+        candidateSolution = new CandidateSolution(students, projects, 0.5);
+        Assert.assertEquals("gpaWeight not initialized correctly with legal 3 parameter constructor", 0.5, candidateSolution.getGpaWeight(), 0.01);
+        candidateSolution = new CandidateSolution(students, projects, 0);
+        Assert.assertEquals("gpaWeight not initialized correctly with legal 3 parameter constructor, bottom bound", 0, candidateSolution.getGpaWeight(), 0.01);
+        candidateSolution = new CandidateSolution(students, projects, 1);
+        Assert.assertEquals("gpaWeight not initialized correctly with legal 3 parameter constructor, top bound", 1, candidateSolution.getGpaWeight(), 0.01);
+        candidateSolution = new CandidateSolution(students, projects, -0.5);
+        Assert.assertEquals("gpaWeight not initialized correctly with illegal 3 parameter constructor, bottom spillage", 0, candidateSolution.getGpaWeight(), 0.01);
+        candidateSolution = new CandidateSolution(students, projects, 1.5);
+        Assert.assertEquals("gpaWeight not initialized correctly with illegal 3 parameter constructor, top spillage", 1, candidateSolution.getGpaWeight(), 0.01);
+    }
+
+    @Test
+    public void testFitnessGpaMatters() throws InvalidArgumentException {
+        setUp();
+        ArrayList<Project> preferences = new ArrayList<>();
+        preferences.add(project1);
+        preferences.add(project2);
+        preferences.add(project3);
+        preferences.add(project4);
+        preferences.add(project5);
+        preferences.add(project6);
+        preferences.add(project7);
+        preferences.add(project8);
+        preferences.add(project9);
+        preferences.add(project10);
+        student1.setPreferences(preferences);
+        student1.setGpa(4.2);
+        student2.setPreferences(preferences);
+        student2.setGpa(4.0);
+        student3.setPreferences(preferences);
+        student3.setGpa(3.9);
+        student4.setPreferences(preferences);
+        student4.setGpa(1.1);
+        student5.setPreferences(preferences);
+        student5.setGpa(1.0);
+        students.add(student1);
+        students.add(student2);
+        students.add(student3);
+        students.add(student4);
+        students.add(student5);
+        projects.add(project1);
+        projects.add(project2);
+        projects.add(project3);
+        projects.add(project4);
+        projects.add(project5);
+
+        CandidateSolution candidateSolutionHighFit = new CandidateSolution(students, projects,0.9);
+
+        student1.setGpa(1.0);
+        student2.setGpa(1.1);
+        student3.setGpa(3.9);
+        student4.setGpa(4.0);
+        student5.setGpa(4.2);
         students.clear();
         students.add(student1);
-        Project p = new Project("this is not a preffered project");
-        projects.clear();
-        projects.add(p);
-        CandidateSolution solution = new CandidateSolution(students, projects);
-        Assert.assertEquals(-50, solution.getFitness());
-        System.out.println(students.size());
+        students.add(student2);
+        students.add(student3);
+        students.add(student4);
+        students.add(student5);
+
+        CandidateSolution candidateSolutionLowFit = new CandidateSolution(students, projects,0.9);
+
+        boolean isFirstFitLargerThanSecond = candidateSolutionHighFit.getFitness() > candidateSolutionLowFit.getFitness();
+        boolean isFirstEnergySmallerThanSecond = candidateSolutionHighFit.getEnergy() < candidateSolutionLowFit.getEnergy();
+        Assert.assertTrue("fitness doesn't make sense when gpa matters", isFirstFitLargerThanSecond);
+        Assert.assertTrue("energy doesn't make sense when gpa matters", isFirstEnergySmallerThanSecond);
     }
+
+    @Test
+    public void testFitnessGpaDoesNotMatter() throws InvalidArgumentException {
+        setUp();
+        ArrayList<Project> preferences = new ArrayList<>();
+        preferences.add(project1);
+        preferences.add(project2);
+        preferences.add(project3);
+        preferences.add(project4);
+        preferences.add(project5);
+        preferences.add(project6);
+        preferences.add(project7);
+        preferences.add(project8);
+        preferences.add(project9);
+        preferences.add(project10);
+        student1.setPreferences(preferences);
+        student1.setGpa(4.2);
+        student2.setPreferences(preferences);
+        student2.setGpa(4.0);
+        student3.setPreferences(preferences);
+        student3.setGpa(3.0);
+        student4.setPreferences(preferences);
+        student4.setGpa(2.0);
+        student5.setPreferences(preferences);
+        student5.setGpa(1.0);
+        students.add(student1);
+        students.add(student2);
+        students.add(student3);
+        students.add(student4);
+        students.add(student5);
+        projects.add(project1);
+        projects.add(project2);
+        projects.add(project3);
+        projects.add(project4);
+        projects.add(project5);
+
+        CandidateSolution candidateSolution1 = new CandidateSolution(students, projects,0);
+
+        student1.setGpa(1.0);
+        student2.setGpa(1.1);
+        student3.setGpa(3.9);
+        student4.setGpa(4.0);
+        student5.setGpa(4.2);
+        students.clear();
+        students.add(student1);
+        students.add(student2);
+        students.add(student3);
+        students.add(student4);
+        students.add(student5);
+
+        CandidateSolution candidateSolution2 = new CandidateSolution(students, projects,0);
+
+        boolean areTheEnergiesTheSame = candidateSolution1.getEnergy() == candidateSolution2.getEnergy();
+        Assert.assertTrue("energy does not make sense when gpa does not matter", areTheEnergiesTheSame);
+    }
+
+    @Test
+    public void testFitnessGpaMattersSlightly() throws InvalidArgumentException {
+        setUp();
+        ArrayList<Project> preferences = new ArrayList<>();
+        preferences.add(project1);
+        preferences.add(project2);
+        preferences.add(project3);
+        preferences.add(project4);
+        preferences.add(project5);
+        preferences.add(project6);
+        preferences.add(project7);
+        preferences.add(project8);
+        preferences.add(project9);
+        preferences.add(project10);
+        student1.setPreferences(preferences);
+        student1.setGpa(4.2);
+        student2.setPreferences(preferences);
+        student2.setGpa(4.0);
+        student3.setPreferences(preferences);
+        student3.setGpa(3.9);
+        student4.setPreferences(preferences);
+        student4.setGpa(1.1);
+        student5.setPreferences(preferences);
+        student5.setGpa(1.0);
+        students.add(student1);
+        students.add(student2);
+        students.add(student3);
+        students.add(student4);
+        students.add(student5);
+        projects.add(project1);
+        projects.add(project2);
+        projects.add(project3);
+        projects.add(project4);
+        projects.add(project5);
+
+        CandidateSolution candidateSolutionHighFit = new CandidateSolution(students, projects,0.5);
+
+        student1.setGpa(1.0);
+        student2.setGpa(1.1);
+        student3.setGpa(3.9);
+        student4.setGpa(4.0);
+        student5.setGpa(4.2);
+        students.clear();
+        students.add(student1);
+        students.add(student2);
+        students.add(student3);
+        students.add(student4);
+        students.add(student5);
+
+        CandidateSolution candidateSolutionLowFit = new CandidateSolution(students, projects,0.5);
+
+        boolean isFirstFitLargerThanSecond = candidateSolutionHighFit.getFitness() > candidateSolutionLowFit.getFitness();
+        boolean isFirstEnergySmallerThanSecond = candidateSolutionHighFit.getEnergy() < candidateSolutionLowFit.getEnergy();
+        Assert.assertTrue("fitness doesn't make sense when gpa matters", isFirstFitLargerThanSecond);
+        Assert.assertTrue("energy doesn't make sense when gpa matters", isFirstEnergySmallerThanSecond);
+    }
+
+    @Test
+    public void testFitnessWithDifferentGpas() throws InvalidArgumentException{
+        setUp();
+        ArrayList<Project> preferences = new ArrayList<>();
+        preferences.add(project1);
+        preferences.add(project2);
+        preferences.add(project3);
+        preferences.add(project4);
+        preferences.add(project5);
+        preferences.add(project6);
+        preferences.add(project7);
+        preferences.add(project8);
+        preferences.add(project9);
+        preferences.add(project10);
+        student1.setPreferences(preferences);
+        student1.setGpa(4.2);
+        student2.setPreferences(preferences);
+        student2.setGpa(4.2);
+        student3.setPreferences(preferences);
+        student3.setGpa(4.2);
+        student4.setPreferences(preferences);
+        student4.setGpa(4.0);
+        student5.setPreferences(preferences);
+        student5.setGpa(0.1);
+        students.add(student1);
+        students.add(student2);
+        students.add(student3);
+        students.add(student4);
+        students.add(student5);
+        projects.add(project1);
+        projects.add(project2);
+        projects.add(project3);
+        projects.add(project4);
+        projects.add(project5);
+
+        CandidateSolution candidateSolutionHighGpaWeight = new CandidateSolution(students, projects,0.9);
+        CandidateSolution candidateSolutionLowGpaWeight = new CandidateSolution(students, projects,0.1);
+
+
+        System.out.println("Here they are:" + candidateSolutionHighGpaWeight.getFitness() + " and " + candidateSolutionLowGpaWeight.getFitness());
+        boolean isSecondFitLargerThanFirst = candidateSolutionHighGpaWeight.getFitness() < candidateSolutionLowGpaWeight.getFitness();
+        boolean isSecondEnergySmallerThanFirst = candidateSolutionHighGpaWeight.getEnergy() > candidateSolutionLowGpaWeight.getEnergy();
+        Assert.assertTrue("fitness doesn't make sense when gpa matters", isSecondFitLargerThanFirst);
+        Assert.assertTrue("energy doesn't make sense when gpa matters", isSecondEnergySmallerThanFirst);
+    }
+
+    @Test
+    public void testIsThereDuplicateProjects() throws InvalidArgumentException{
+        setUp();
+        ArrayList<Project> preferences = new ArrayList<>();
+        preferences.add(project1);
+        preferences.add(project2);
+        preferences.add(project3);
+        preferences.add(project4);
+        preferences.add(project5);
+        preferences.add(project6);
+        preferences.add(project7);
+        preferences.add(project8);
+        preferences.add(project9);
+        preferences.add(project10);
+        student1.setPreferences(preferences);
+        student1.setGpa(4.2);
+        student2.setPreferences(preferences);
+        student2.setGpa(4.2);
+        student3.setPreferences(preferences);
+        student3.setGpa(4.2);
+        student4.setPreferences(preferences);
+        student4.setGpa(4.0);
+        student5.setPreferences(preferences);
+        student5.setGpa(0.1);
+        students.add(student1);
+        students.add(student2);
+        students.add(student3);
+        students.add(student4);
+        students.add(student5);
+        projects.add(project4);
+        projects.add(project4);
+        projects.add(project4);
+        projects.add(project4);
+        projects.add(project4);
+
+        Assert.assertThrows(null, InvalidArgumentException.class, new ThrowingRunnable(){
+
+            @Override
+            public void run() throws Throwable {
+                CandidateSolution candidateSolution = new CandidateSolution(students, projects,0.9);
+            }
+        } );
+        }
+
 
     @Test
     public void testChangeSolution() throws InvalidArgumentException{

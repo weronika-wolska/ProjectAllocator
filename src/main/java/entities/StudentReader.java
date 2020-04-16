@@ -5,6 +5,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import exceptions.InvalidArgumentException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -64,7 +66,7 @@ public class StudentReader{
 
     // TODO
 
-    private Student parseRowIntoStudent(Row row) throws IllegalStateException, NumberFormatException {
+    private Student parseRowIntoStudent(Row row) throws IllegalStateException, NumberFormatException, InvalidArgumentException {
         //System.out.println("parsing row");
         Student student = new Student();
         Cell currentCell;

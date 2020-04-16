@@ -9,27 +9,45 @@ import java.util.Map.Entry;
 import exceptions.InvalidArgumentException;
 
 public class CandidateSolution {
+    public static final int FULL_STUDENT_FITNESS = 10;
     private Map<Student, Project> candidateSolution;
     private int fitness;
+    private double gpaWeight;
 
     public CandidateSolution(ArrayList<Student> students, ArrayList<Project> projects) throws InvalidArgumentException{
+        this(students, projects, 0);
+    }
+
+    public double getGpaWeight() {
+        return gpaWeight;
+    }
+
+
+    public CandidateSolution(ArrayList<Student> students, ArrayList<Project> projects, double gpaWeight) throws InvalidArgumentException{
         if(students.size()!=projects.size()){
             throw new InvalidArgumentException();
         }
-
+        setGpaWeight(gpaWeight);
         this.candidateSolution = new HashMap<Student, Project>(students.size());
 
         for(int i=0;i<students.size();i++){
             candidateSolution.put(students.get(i), projects.get(i));
         }
 
-        // TODO allow student to have less then 10 preferences, so no null pointer is thrown in calculateFitness
+        if (isThereDuplicateProjects()) {
+            throw new InvalidArgumentException();
+        }
+
+
         this.fitness = calculateFitness(students, projects);
     }
 
     public int getFitness(){
         return this.fitness;
     }
+
+
+    public double getEnergy() { return ( (double) 1 / this.fitness ) * 1000; }
 
     public Map getCandidateSolution(){
         return this.candidateSolution;
@@ -48,6 +66,15 @@ public class CandidateSolution {
         return null;
     }
 
+    public void setGpaWeight(double gpaWeight) {
+        if(gpaWeight < 0) {
+            gpaWeight = 0;
+        }
+        else if(gpaWeight > 1) {
+            gpaWeight = 1;
+        }
+        this.gpaWeight = gpaWeight;
+    }
 
     // TODO
 
@@ -66,6 +93,24 @@ public class CandidateSolution {
         }
         return score;
     }
+
+    private boolean isThereDuplicateProjects() {
+        for (Project project :
+                candidateSolution.values()) {
+            int count = 0;
+            for (Project otherProject :
+                    candidateSolution.values()) {
+                if (otherProject.getProjectName().equals(project.getProjectName())) {
+                    ++count;
+                }
+            }
+            if(count > 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     private int calculateFitness(ArrayList<Student> students,  ArrayList<Project> projects) throws InvalidArgumentException{
         if(students.size()!=projects.size()){ throw new InvalidArgumentException();}
@@ -156,5 +201,14 @@ public class CandidateSolution {
         }
         return string.toString();
     }
+
+    private double calculateStudentsFitness(double preferencePoints, double gpa) {
+        double overallFitnessPoints;
+        double pointsFromPreferencesAlone = (1 - gpaWeight) * preferencePoints;
+        double pointsFromGpaAlone = gpaWeight * CandidateSolution.FULL_STUDENT_FITNESS * (gpa / Student.FULL_GPA);
+        overallFitnessPoints = pointsFromPreferencesAlone + pointsFromGpaAlone + pointsFromGpaAlone * pointsFromPreferencesAlone;
+        return overallFitnessPoints;
+    }
+
 
 }

@@ -33,7 +33,7 @@ public class RandomAssignmentTest {
     //Project project9;
     //Project project10;
 
-    public void setUp() {
+    public void setUp() throws InvalidArgumentException{
         students = new ArrayList<>();
         projects = new ArrayList<>();
         //students2 = new ArrayList<>();

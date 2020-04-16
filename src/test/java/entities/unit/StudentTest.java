@@ -20,23 +20,23 @@ public class StudentTest {
     static ProjectRepository projectRepository = new ProjectRepository();
 
     @Test
-    public void testDefaultConstructor() {
+    public void testDefaultConstructor() throws InvalidArgumentException {
         Student student = new Student();
         Assert.assertNotNull("default constructor not working correctly", student);
     }
 
     @Test
-    public void testConstructor4Parameters() {
+    public void testConstructor4Parameters() throws InvalidArgumentException {
         Student student = new Student("John", "Smith", (long) 12345678, Stream.CS);
         Assert.assertEquals("student.name not initialized correctly", "John", student.getFirstName());
         Assert.assertEquals("student.surname not initialized correctly", "Smith", student.getSurname());
         Assert.assertEquals("student.id not initialized correctly", 12345678, student.getStudentId().longValue());
         Assert.assertEquals("student.stream not initialized correctly", Stream.CS, student.getStream());
-        Assert.assertNull("student.preferences not initialized correctly", student.getPreferences());
+        Assert.assertEquals("student.preferences not initialized correctly",0 ,student.getPreferences().size());
     }
 
     @Test
-    public void testSetters() {
+    public void testSetters() throws InvalidArgumentException{
         Student student = new Student("Jane", "Doe", (long) 87654321, Stream.DS);
 
         student.setFirstName("John");
@@ -47,6 +47,7 @@ public class StudentTest {
         Assert.assertEquals("student.name not initialized correctly", "John", student.getFirstName());
         Assert.assertEquals("student.surname not initialized correctly", "Smith", student.getSurname());
         Assert.assertEquals("student.id not initialized correctly", 12345678, student.getStudentId().longValue());
+        Assert.assertEquals("student.gpa not initialized correctly", 2.1, student.getGpa(), 0.01);
         Assert.assertEquals("student.stream not initialized correctly", Stream.CS, student.getStream());
     }
 
@@ -198,4 +199,109 @@ public class StudentTest {
             }
         });
     }
+    @Test
+    public void testConstructor6Parameters() throws InvalidArgumentException{
+        StaffMember supervisor = new StaffMember();
+        supervisor.setName("Jane Doe");
+        Project project1 = new Project("The CS Project", Stream.CS, supervisor);
+        Project project2 = new Project("The DS Project", Stream.CSDS, supervisor);
+        Project project3 = new Project("The CSDS Project", Stream.CSDS, supervisor);
+        ArrayList<Project> preferences = new ArrayList<>();
+        preferences.add(project1);
+        preferences.add(project2);
+        preferences.add(project3);
+        Student student = new Student("John", "Smith", (long) 12345678, Stream.CS, preferences);
+
+        if (student.getFirstName() != null) {
+            Assert.assertEquals("firstName initialized incorrectly", "John", student.getFirstName());
+        }
+        if (student.getSurname() != null) {
+            Assert.assertEquals("surname initialized incorrectly", "Smith", student.getSurname());
+        }
+        if (student.getStudentId() != null) {
+            Assert.assertEquals("", 12345678, student.getStudentId().longValue());
+        }
+        if (student.getGpa() != null) {
+            Assert.assertEquals("", 2.1, student.getGpa(), 0.01);
+        }
+        if (student.getStream() != null) {
+            Assert.assertEquals("surname initialized incorrectly", Stream.CS, student.getStream());
+        }
+        if (student.getPreferences() != null) {
+            Assert.assertEquals("preferences initialized incorrectly", preferences, student.getPreferences());
+        }
+    }
+
+    @Test
+    public void testToString() throws InvalidArgumentException {
+        StaffMember supervisor = new StaffMember();
+        supervisor.setName("Jane Doe");
+        Project project1 = new Project("The CS Project", Stream.CS, supervisor);
+        Project project2 = new Project("The DS Project", Stream.CSDS, supervisor);
+        Project project3 = new Project("The CSDS Project", Stream.CSDS, supervisor);
+        ArrayList<Project> preferences = new ArrayList<>();
+        preferences.add(project1);
+        preferences.add(project2);
+        preferences.add(project3);
+        Student student = new Student("John", "Smith", (long) 12345678, Stream.CS, preferences);
+        String expected = "Student [firstName=John, stream=CS, studentId=12345678, surname=Sm" +
+                "ith, gpa=2.1, preferences=Project [projectName=" +
+                "The CS Project, stream=CS, supervisor=Jane Doe]\n" +
+                "Project [projectName=The DS Project, stream=CSDS, supervisor=Jane Doe]\n" +
+                "Project [projectName=The CSDS Project, stream=CSDS, supervisor=Jane Doe]\n" +
+                "]";
+        Assert.assertEquals("toString working incorrectly", expected, student.toString());
+    }
+
+    @Test
+    public void testCanDoProject() throws InvalidArgumentException{
+        StaffMember supervisor = new StaffMember();
+        supervisor.setName("Jane Doe");
+        Project project1 = new Project("The CS Project", Stream.CS, supervisor);
+        Project project2 = new Project("The DS Project", Stream.DS, supervisor);
+        Project project3 = new Project("The CSDS Project", Stream.CSDS, supervisor);
+        ArrayList<Project> preferences = new ArrayList<>();
+        preferences.add(project1);
+        preferences.add(project2);
+        preferences.add(project3);
+        Student student = new Student("John", "Smith", (long) 12345678, Stream.CS, preferences);
+
+        Assert.assertTrue(student.canDoProject(project1));
+        Assert.assertFalse(student.canDoProject(project2));
+        Assert.assertFalse(student.canDoProject(project3));
+
+        student.setStream(Stream.DS);
+
+        Assert.assertFalse(student.canDoProject(project1));
+        Assert.assertTrue(student.canDoProject(project2));
+        Assert.assertTrue(student.canDoProject(project3));
+
+        student.setStream(Stream.CSDS);
+
+        Assert.assertFalse(student.canDoProject(project1));
+        Assert.assertTrue(student.canDoProject(project2));
+        Assert.assertTrue(student.canDoProject(project3));
+    }
+
+    @Test
+    public void testConstructingWithIllegalGpa() throws InvalidArgumentException{
+        StaffMember supervisor = new StaffMember();
+        supervisor.setName("Jane Doe");
+        Project project1 = new Project("The CS Project", Stream.CS, supervisor);
+        Project project2 = new Project("The DS Project", Stream.CSDS, supervisor);
+        Project project3 = new Project("The CSDS Project", Stream.CSDS, supervisor);
+        ArrayList<Project> preferences = new ArrayList<>();
+        preferences.add(project1);
+        preferences.add(project2);
+        preferences.add(project3);
+        Student student = new Student("John", "Smith", (long) 12345678, (double) 0, Stream.CS, preferences);
+        Assert.assertEquals("lower bound of gpa assignment allowed", 0, student.getGpa(), 0.1);
+        student = new Student("John", "Smith", (long) 12345678, Student.FULL_GPA, Stream.CS, preferences);
+        Assert.assertEquals("upper bound of gpa assignment allowed", Student.FULL_GPA, student.getGpa(), 0.1);
+        student = new Student("John", "Smith", (long) 12345678, -0.1, Stream.CS, preferences);
+        Assert.assertEquals("lower bound of gpa assignment maintained", 0, student.getGpa(), 0.1);
+        student = new Student("John", "Smith", (long) 12345678, Student.FULL_GPA + 0.1, Stream.CS, preferences);
+        Assert.assertEquals("upper bound of gpa assignment maintained", Student.FULL_GPA, student.getGpa(), 0.1);
+    }
+
 }
