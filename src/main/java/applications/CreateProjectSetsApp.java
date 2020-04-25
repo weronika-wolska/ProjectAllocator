@@ -5,6 +5,9 @@ import entities.StaffMember;
 import entities.StaffReader;
 import entities.StudentPreferenceWriter;
 import entities.StudentReader;
+import exceptions.InvalidArgumentException;
+import repositories.ProjectRepository;
+import repositories.StaffRepository;
 import entities.*;
 
 
@@ -18,9 +21,12 @@ import java.io.IOException;
 
 public class CreateProjectSetsApp {
 
-    public static void main(String[] args) throws FileNotFoundException, IOException{
+    public static void main(String[] args) throws FileNotFoundException, IOException, InvalidArgumentException{
         StaffReader reader = new StaffReader();
         ProjectWriter writer = new ProjectWriter();
+        ProjectReader projectReader = new ProjectReader();
+        ProjectRepository projectRepository;
+        StaffRepository staffRepository;
         
 
         reader.readXLSX(30, "src/main/resources/staff.xlsx");
@@ -32,11 +38,12 @@ public class CreateProjectSetsApp {
         reader.readXLSX(120, "src/main/resources/staff.xlsx");
         writer.write("src/main/resources/projects240.xlsx",reader.getFaculty());
 
-        reader.readXLSX(250, "src/main/resources/staff.xlsx");
+        staffRepository= reader.readXLSX(250, "src/main/resources/staff.xlsx");
         writer.write("src/main/resources/projects500.xlsx",reader.getFaculty());
 
         StudentPreferenceWriter preferenceWriter = new StudentPreferenceWriter();
-        StudentReader studentReader = new StudentReader();
+        projectRepository = projectReader.read("src/main/resources/projects500.xlsx", staffRepository);
+        StudentReader studentReader = new StudentReader(projectRepository);
         File proj = new File("src/main/resources/projects60.xlsx");
         FileInputStream fis = new FileInputStream(proj);
         XSSFWorkbook workbook = new XSSFWorkbook(fis);

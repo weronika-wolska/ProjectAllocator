@@ -7,7 +7,7 @@ public class ProjectRepository{
     private ArrayList<Project> projects;
 
     public ProjectRepository(){
-
+        this.projects = new ArrayList<Project>();
     }
 
     public void addProject(Project project) throws NullPointerException{

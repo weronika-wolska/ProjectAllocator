@@ -5,6 +5,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import repositories.StaffRepository;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -14,8 +16,11 @@ import java.util.StringTokenizer;
 public class StaffReader {
 
     private ArrayList<StaffMember> faculty;
+    private StaffRepository staffRepository = new StaffRepository();
 
-    public void readXLSX(int staffCount, String filePath) {
+    public StaffReader(){};
+
+    public StaffRepository readXLSX(int staffCount, String filePath) {
         //System.out.println("In readXLSX");
         faculty = new ArrayList<>(staffCount);
         try {
@@ -35,12 +40,15 @@ public class StaffReader {
                 }
                 else {
                     faculty.add(newStaff);
+                    staffRepository.addStaffMember(newStaff);
                 }
                 //System.out.println("Forming a new StaffMember from row:" + rowNumber + " " + newStaff.toString());
             }
+            return staffRepository;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     private ArrayList<Integer> getRandomRowNumbers(int rowsWanted, int rowsProvided) {

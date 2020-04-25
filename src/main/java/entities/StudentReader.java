@@ -6,6 +6,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import exceptions.InvalidArgumentException;
+import repositories.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,8 +14,13 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.StringTokenizer;
 
+
 public class StudentReader{
     private ArrayList<Student> students;
+    private ProjectRepository projectRepository;
+    public StudentReader(ProjectRepository projectRepository){
+        this.projectRepository=projectRepository;
+    }
 
     public void readXLSX(int studentCount, String filePath) {
         //System.out.println("In readXLSX");
@@ -68,7 +74,7 @@ public class StudentReader{
 
     private Student parseRowIntoStudent(Row row) throws IllegalStateException, NumberFormatException, InvalidArgumentException {
         //System.out.println("parsing row");
-        Student student = new Student();
+        Student student = new Student(projectRepository);
         Cell currentCell;
 
         String cellString;

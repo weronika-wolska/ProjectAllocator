@@ -13,6 +13,8 @@ public class CandidateSolution {
     private Map<Student, Project> candidateSolution;
     private int fitness;
     private double gpaWeight;
+    private ArrayList<Student> students;
+    private ArrayList<Project> projects;
 
     public CandidateSolution(ArrayList<Student> students, ArrayList<Project> projects) throws InvalidArgumentException{
         this(students, projects, 0);
@@ -22,6 +24,14 @@ public class CandidateSolution {
         return gpaWeight;
     }
 
+    public ArrayList getStudents(){
+        return this.students;
+    }
+
+    public ArrayList getProjects(){
+        return this.projects;
+    }
+
 
     public CandidateSolution(ArrayList<Student> students, ArrayList<Project> projects, double gpaWeight) throws InvalidArgumentException{
         if(students.size()!=projects.size()){
@@ -29,6 +39,8 @@ public class CandidateSolution {
         }
         setGpaWeight(gpaWeight);
         this.candidateSolution = new HashMap<Student, Project>(students.size());
+        this.students=students;
+        this.projects=projects;
 
         for(int i=0;i<students.size();i++){
             candidateSolution.put(students.get(i), projects.get(i));
@@ -78,23 +90,37 @@ public class CandidateSolution {
 
     // TODO
 
+    private int calculateIndividualFitness(Map.Entry<Student, Project> entry){
+        int fitness=0;
+        Student student = entry.getKey();
+        Project project = entry.getValue();
+        // assumes student has exactly 10 preferences
+        for(int i = 0; i<10;i++){
+            if(student.getPreferences().get(i)==project){
+                fitness = 10 - i;       // if the assigned project is first preference, fitness is 10, if it's second, fitness is 9 etc.
+            }
+        }
+        if(fitness<1){fitness = -50;} // if the assigned project is not in student's preferences, penalise 50 fitness points
+        return fitness;
+    }
+
     private int calculateFitness(Map<Student, Project> map){
         int score = 0;
         for(Map.Entry solution : map.entrySet()){
-            Student student = (Student)solution.getKey();
+           /* Student student = (Student)solution.getKey();
             ArrayList<Project> studentPreferences = student.getPreferences();
             Project project = (Project)solution.getValue();
             for(int i=0;i<10;i++){
                 if(studentPreferences.get(i)==project){
                     score += (10 -i);
                 } else {score -=50;}
-            }
-            
+            } */
+            score += calculateIndividualFitness(solution);
         }
         return score;
     }
 
-    private boolean isThereDuplicateProjects() {
+    public boolean isThereDuplicateProjects() {
         for (Project project :
                 candidateSolution.values()) {
             int count = 0;
@@ -110,7 +136,6 @@ public class CandidateSolution {
         }
         return false;
     }
-
 
     private int calculateFitness(ArrayList<Student> students,  ArrayList<Project> projects) throws InvalidArgumentException{
         if(students.size()!=projects.size()){ throw new InvalidArgumentException();}
@@ -201,14 +226,5 @@ public class CandidateSolution {
         }
         return string.toString();
     }
-
-    private double calculateStudentsFitness(double preferencePoints, double gpa) {
-        double overallFitnessPoints;
-        double pointsFromPreferencesAlone = (1 - gpaWeight) * preferencePoints;
-        double pointsFromGpaAlone = gpaWeight * CandidateSolution.FULL_STUDENT_FITNESS * (gpa / Student.FULL_GPA);
-        overallFitnessPoints = pointsFromPreferencesAlone + pointsFromGpaAlone + pointsFromGpaAlone * pointsFromPreferencesAlone;
-        return overallFitnessPoints;
-    }
-
 
 }

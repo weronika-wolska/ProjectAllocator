@@ -4,9 +4,11 @@ import java.io.FileInputStream;
 import org.junit.Assert;
 import org.junit.Test;
 
-
+import entities.Project;
+import entities.StaffMember;
 import entities.Stream;
 import entities.Student;
+import repositories.ProjectRepository;
 import repositories.StudentRepository;
 
 
@@ -20,9 +22,47 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 public class StudentRepositoryTest{
+
+    public ProjectRepository setupRepository(){
+        ProjectRepository projectRepository = new ProjectRepository();
+        StaffMember supervisor = new StaffMember();
+        Project project = new Project("projectName", Stream.CSDS, supervisor);
+        Project project2 = new Project("projectName", Stream.CS, supervisor);
+        Project project3 = new Project("project", Stream.DS, supervisor);
+        Project project4 = new Project("project", Stream.DS, supervisor);
+        Project project5 = new Project("project", Stream.DS, supervisor);
+        Project project6 = new Project("projectName", Stream.CS, supervisor);
+        Project project7 = new Project("projectName", Stream.CS, supervisor);
+        Project project8 = new Project("projectName", Stream.CS, supervisor);
+        Project project9 = new Project("projectName", Stream.CSDS, supervisor);
+        Project project10 = new Project("projectName", Stream.CSDS, supervisor);
+        Project project11 = new Project("projectName", Stream.CSDS, supervisor);
+        Project project12 = new Project("projectName", Stream.CSDS, supervisor);
+        Project project13 = new Project("projectName", Stream.CS, supervisor);
+        Project project14 = new Project("project", Stream.DS, supervisor);
+        Project project15 = new Project("project", Stream.DS, supervisor);
+        projectRepository.addProject(project);
+        projectRepository.addProject(project2);
+        projectRepository.addProject(project3);
+        projectRepository.addProject(project4);
+        projectRepository.addProject(project5);
+        projectRepository.addProject(project6);
+        projectRepository.addProject(project7);
+        projectRepository.addProject(project8);
+        projectRepository.addProject(project9);
+        projectRepository.addProject(project10);
+        projectRepository.addProject(project11);
+        projectRepository.addProject(project12);
+        projectRepository.addProject(project13);
+        projectRepository.addProject(project14);
+        projectRepository.addProject(project15);
+        return projectRepository;
+    }
+
     @Test 
     public void addStudentFromFileTest(){
         StudentRepository studentRepository = new StudentRepository();
+        ProjectRepository projectRepository = setupRepository();
         try {
             FileInputStream file = new FileInputStream("src/main/resources/students.xlsx");
             XSSFWorkbook workbook = new XSSFWorkbook(file);
@@ -55,7 +95,7 @@ public class StudentRepositoryTest{
                 else if(cellString=="DS") stream=Stream.DS;
                 else stream = null;
 
-                Student newStudent = new Student(firstName, surname, studentId, stream);
+                Student newStudent = new Student(firstName, surname, studentId, stream, projectRepository);
                 studentRepository.addStudent(newStudent);
             }
 
@@ -78,6 +118,7 @@ public class StudentRepositoryTest{
     @Test 
     public void removeStudentFromFileTest(){
         StudentRepository studentRepository = new StudentRepository();
+        ProjectRepository projectRepository = setupRepository();
         try {
             FileInputStream file = new FileInputStream("src/main/resources/students.xlsx");
             XSSFWorkbook workbook = new XSSFWorkbook(file);
@@ -110,7 +151,7 @@ public class StudentRepositoryTest{
                 else if(cellString=="DS") stream=Stream.DS;
                 else stream = null;
 
-                Student newStudent = new Student(firstName, surname, studentId, stream);
+                Student newStudent = new Student(firstName, surname, studentId, stream, projectRepository);
                 studentRepository.addStudent(newStudent);
             }
 

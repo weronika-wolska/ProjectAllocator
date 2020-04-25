@@ -8,6 +8,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import repositories.ProjectRepository;
+
 import java.io.File;
 import java.io.FileOutputStream;
 
@@ -15,6 +18,7 @@ import java.io.FileOutputStream;
 public class StudentPreferenceWriter{
 
     ArrayList<Project> listOfProjects = new ArrayList<Project>();
+    ProjectRepository projectRepository = new ProjectRepository();
     ArrayList<Double> projectProbabilities = new ArrayList<Double>();
     int numOfStudents =1;
     Student student;
@@ -23,7 +27,7 @@ public class StudentPreferenceWriter{
 
     }
 
-    public void write(String filePath, ArrayList<Student> students, int numOfStudents, XSSFSheet projects) throws NullPointerException{
+    public ProjectRepository write(String filePath, ArrayList<Student> students, int numOfStudents, XSSFSheet projects) throws NullPointerException{
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet preferences = workbook.createSheet("Student preferences");
         createHeader(preferences);
@@ -55,6 +59,7 @@ public class StudentPreferenceWriter{
             projectSupervisor.setName(supervisor);
             Project project = new Project(projectName, projectStream, projectSupervisor);
             listOfProjects.add(i-1, project);
+            projectRepository.addProject(project);
             projectProbabilities.add(projectProbability);
 
         }
@@ -101,7 +106,7 @@ public class StudentPreferenceWriter{
             e.printStackTrace();
         }
 
-        
+        return projectRepository;        
     }
 
     // Helper Funtions

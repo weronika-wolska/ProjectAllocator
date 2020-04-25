@@ -2,6 +2,8 @@ package entities.unit;
 
 import entities.*;
 import exceptions.InvalidArgumentException;
+import repositories.ProjectRepository;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -33,17 +35,54 @@ public class RandomAssignmentTest {
     //Project project9;
     //Project project10;
 
+    public ProjectRepository setupRepository(){
+        ProjectRepository projectRepository = new ProjectRepository();
+        StaffMember supervisor = new StaffMember();
+        Project project = new Project("projectName", Stream.CSDS, supervisor);
+        Project project2 = new Project("projectName", Stream.CS, supervisor);
+        Project project3 = new Project("project", Stream.DS, supervisor);
+        Project project4 = new Project("project", Stream.DS, supervisor);
+        Project project5 = new Project("project", Stream.DS, supervisor);
+        Project project6 = new Project("projectName", Stream.CS, supervisor);
+        Project project7 = new Project("projectName", Stream.CS, supervisor);
+        Project project8 = new Project("projectName", Stream.CS, supervisor);
+        Project project9 = new Project("projectName", Stream.CSDS, supervisor);
+        Project project10 = new Project("projectName", Stream.CSDS, supervisor);
+        Project project11 = new Project("projectName", Stream.CSDS, supervisor);
+        Project project12 = new Project("projectName", Stream.CSDS, supervisor);
+        Project project13 = new Project("projectName", Stream.CS, supervisor);
+        Project project14 = new Project("project", Stream.DS, supervisor);
+        Project project15 = new Project("project", Stream.DS, supervisor);
+        projectRepository.addProject(project);
+        projectRepository.addProject(project2);
+        projectRepository.addProject(project3);
+        projectRepository.addProject(project4);
+        projectRepository.addProject(project5);
+        projectRepository.addProject(project6);
+        projectRepository.addProject(project7);
+        projectRepository.addProject(project8);
+        projectRepository.addProject(project9);
+        projectRepository.addProject(project10);
+        projectRepository.addProject(project11);
+        projectRepository.addProject(project12);
+        projectRepository.addProject(project13);
+        projectRepository.addProject(project14);
+        projectRepository.addProject(project15);
+        return projectRepository;
+    }
+
     public void setUp() throws InvalidArgumentException{
         students = new ArrayList<>();
         projects = new ArrayList<>();
         //students2 = new ArrayList<>();
+        ProjectRepository projectRepository = setupRepository();
 
-        student1 = new Student("Becky", "Jones", (long) 12345, Stream.CS);
-        student2 = new Student("Jessica", "Delaney", (long) 23456, Stream.CS);
-        student3 = new Student("Robert", "Murphy", (long) 34567, Stream.CS);
-        student4 = new Student("Bob", "Johnson", (long) 45678, Stream.CSDS);
-        student5 = new Student("Tracy", "Jackson", (long) 56789, Stream.DS);
-        student6 = new Student("Bella", "Lagosi", (long) 56790, Stream.CSDS);
+        student1 = new Student("Becky", "Jones", (long) 12345, Stream.CS, projectRepository);
+        student2 = new Student("Jessica", "Delaney", (long) 23456, Stream.CS, projectRepository);
+        student3 = new Student("Robert", "Murphy", (long) 34567, Stream.CS, projectRepository);
+        student4 = new Student("Bob", "Johnson", (long) 45678, Stream.CSDS, projectRepository);
+        student5 = new Student("Tracy", "Jackson", (long) 56789, Stream.DS, projectRepository);
+        student6 = new Student("Bella", "Lagosi", (long) 56790, Stream.CSDS, projectRepository);
 
         staffCS = new StaffMember();
         staffCS.setName("Jane CS Doe");
@@ -76,6 +115,12 @@ public class RandomAssignmentTest {
         projects.add(project4);
         projects.add(project5);
         projects.add(project6);
+        projectRepository.addProject(project1);
+        projectRepository.addProject(project2);
+        projectRepository.addProject(project3);
+        projectRepository.addProject(project4);
+        projectRepository.addProject(project5);
+        projectRepository.addProject(project6);
 
         students.add(student1);
         students.add(student2);

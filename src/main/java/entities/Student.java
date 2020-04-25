@@ -15,26 +15,27 @@ public class Student{
     private Double gpa;
     private Stream stream;
     private ArrayList<Project> preferences = new ArrayList<>();
-    private static ProjectRepository projectRepository;
+    private ProjectRepository projectRepository;
 
-    public Student(String firstName, String surname, Long studentId, Stream stream) throws InvalidArgumentException{
-        this(firstName, surname, studentId, 2.1, stream, null);
+    public Student(String firstName, String surname, Long studentId, Stream stream, ProjectRepository projectRepository) throws InvalidArgumentException{
+        this(firstName, surname, studentId, 2.1, stream, null, projectRepository);
     }
 
-    public Student(String firstName, String surname, Long studentId, Stream stream, ArrayList<Project> preferences) throws InvalidArgumentException{
-        this(firstName, surname, studentId, 2.1, stream, preferences);
+    public Student(String firstName, String surname, Long studentId, Stream stream, ArrayList<Project> preferences, ProjectRepository projectRepository) throws InvalidArgumentException{
+        this(firstName, surname, studentId, 2.1, stream, preferences, projectRepository);
     }
 
-    public Student() throws InvalidArgumentException{
-        this("DefaultName", "DefaultSurname", (long) 12345678, 2.1, Stream.CS, null);
+    public Student(ProjectRepository projectRepository) throws InvalidArgumentException{
+        this("DefaultName", "DefaultSurname", (long) 12345678, 2.1, Stream.CS, null, projectRepository);
     }
 
-    public Student(String firstName, String surname, Long studentId, Double gpa, Stream stream, ArrayList<Project> preferences) throws InvalidArgumentException {
+    public Student(String firstName, String surname, Long studentId, Double gpa, Stream stream, ArrayList<Project> preferences, ProjectRepository projectRepository) throws InvalidArgumentException {
         this.firstName=firstName;
         this.surname=surname;
         this.studentId=studentId;
         setGpa(gpa);
         this.stream=stream;
+        this.projectRepository=projectRepository;
         if(preferences==null){ preferences = new ArrayList<Project>();}
         setPreferences(preferences);
     }

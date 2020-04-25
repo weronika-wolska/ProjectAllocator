@@ -11,7 +11,7 @@ public class StudentRepository{
     private ArrayList<Student> students;
 
     public StudentRepository(){
-
+        this.students = new ArrayList<Student>();
     }
 
     public void addStudent(Student student) throws NullPointerException{
