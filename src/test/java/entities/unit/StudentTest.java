@@ -69,6 +69,7 @@ public class StudentTest {
         ProjectRepository projectRepository = setupRepository();
         Student student = new Student(projectRepository);
         Assert.assertNotNull("default constructor not working correctly", student);
+        Assert.assertEquals("preferences not set", 10, student.getPreferences().size());
     }
 
     @Test
@@ -140,11 +141,11 @@ public class StudentTest {
         preferencesDS.add(project11);
         preferencesDS.add(project12);
         preferencesDS.add(project9);
-
+        ProjectRepository repository = setupRepository();
         // test with full preferences and correct streams
-        Student studentCS = new Student("firstName", "surname", (long) 12345, Stream.CS, preferencesCS, setupRepository());
+        Student studentCS = new Student("firstName", "surname", (long) 12345, Stream.CS, preferencesCS, repository);
         Assert.assertEquals(preferencesCS, studentCS.getPreferences());
-        Student studentDS = new Student("firstName", "surname", (long) 123456, Stream.DS, preferencesDS, setupRepository());
+        Student studentDS = new Student("firstName", "surname", (long) 123456, Stream.DS, preferencesDS, repository);
         Assert.assertEquals(preferencesDS, studentDS.getPreferences());
 
         ArrayList<Project> preferencesCSShort = new ArrayList<>();
@@ -161,9 +162,9 @@ public class StudentTest {
         preferencesDSShort.add(project14);
 
         // test with <10 preferences
-        Student studentCSS = new Student("firstName", "surname", (long) 2345, Stream.CS, preferencesCSShort, setupRepository());
+        Student studentCSS = new Student("firstName", "surname", (long) 2345, Stream.CS, preferencesCSShort, repository);
         Assert.assertEquals(10, studentCSS.getPreferences().size());
-        Student studentDSS = new Student("firstName", "surname", (long) 23456, Stream.DS, preferencesDSShort, setupRepository());
+        Student studentDSS = new Student("firstName", "surname", (long) 23456, Stream.DS, preferencesDSShort, repository);
         Assert.assertEquals(10, studentDSS.getPreferences().size());
 
         // test invalid projects
@@ -204,7 +205,8 @@ public class StudentTest {
                 invalidPreferences.add(project8);
                 invalidPreferences.add(project9);
                 invalidPreferences.add(project10);
-                Student badStudent = new Student("firstName", "surname",(long) 345677, Stream.CS, invalidPreferences, setupRepository());
+                ProjectRepository pRepository = setupRepository();
+                Student badStudent = new Student("firstName", "surname",(long) 345677, Stream.CS, invalidPreferences, pRepository);
                 
             }
         });
@@ -239,8 +241,8 @@ public class StudentTest {
                 tooManyPreferences.add(project11);
                 tooManyPreferences.add(project12);
                 tooManyPreferences.add(project13);
-
-                Student s = new Student("firstName", "surname", (long) 583534, Stream.CS, tooManyPreferences,setupRepository());
+                ProjectRepository pRepository = setupRepository();
+                Student s = new Student("firstName", "surname", (long) 583534, Stream.CS, tooManyPreferences,pRepository);
                 
             }
         });

@@ -10,7 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 
-public class CandidateSolutionTest{ /*
+public class CandidateSolutionTest{ 
     protected ArrayList<Student> students = new ArrayList<>();
     protected ArrayList<Project> projects = new ArrayList<>();
     protected ArrayList<Student> students2 = new ArrayList<>();
@@ -119,10 +119,10 @@ public class CandidateSolutionTest{ /*
 
 
         CandidateSolution candidateSolution = new CandidateSolution(students, projects);
-        */
-        /*// test getFitness()
-        Assert.assertEquals(40, candidateSolution.getFitness());*/
-        /*
+        
+        // test getFitness()
+        Assert.assertEquals(40, candidateSolution.getFitness());
+        
         // test findProjectAssignedToStudent()
         Assert.assertEquals(project1, candidateSolution.findProjectAssignedToStudent(student1));
         Assert.assertEquals(project5, candidateSolution.findProjectAssignedToStudent(student5));
@@ -646,4 +646,4 @@ public class CandidateSolutionTest{ /*
     }
 
 
-*/ }
+ }

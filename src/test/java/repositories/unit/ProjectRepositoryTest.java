@@ -23,7 +23,7 @@ import java.io.FileInputStream;
 
 public class ProjectRepositoryTest {
     //ProjectRepository projectRepository = new ProjectRepository();
-/*
+
     @Test
     public void addProjectTest(){
         ProjectRepository projectRepository = new ProjectRepository();
@@ -38,7 +38,7 @@ public class ProjectRepositoryTest {
         Assert.assertEquals("Project name is incorrect", "test", projectRepository.getProject(0).getProjectName());
         Assert.assertEquals("Stream incorrect", Stream.CS, projectRepository.getProject(0).getStream());
     }
-*/
+
     @Test
     public void addProjectFromFileTest(){
         ProjectRepository projectRepository = new ProjectRepository();
@@ -76,15 +76,15 @@ public class ProjectRepositoryTest {
         
             Assert.assertEquals("projects not added correctly", projectRepository.getSize(), 5);
             
-            Assert.assertEquals("projects not added correctly", projectRepository.getProject(0).getProjectName(), "Reality TV and the Cthulu-Dagon mythos");
+            Assert.assertEquals("projects not added correctly", projectRepository.getProject(0).getProjectName(), "Pop music and the Cthulu-Dagon mythos");
             
-            Assert.assertEquals("projects not added correctly", projectRepository.getProject(1).getProjectName(), "monetizing celebrity status in Cthulhu-worshipping societies vs in Dagon-worshipping societies");
+            Assert.assertEquals("projects not added correctly", projectRepository.getProject(1).getProjectName(), "singing pop songs in Cthulhu-worshipping societies vs in Dagon-worshipping societies");
             
-            Assert.assertEquals("projects not added correctly", projectRepository.getProject(2).getProjectName(), "making unauthorized sex tapes in Cthulhu-worshipping societies vs in Dagon-worshipping societies");
+            Assert.assertEquals("projects not added correctly", projectRepository.getProject(2).getProjectName(), " writing pop songs in Cthulhu-worshipping societies vs in Dagon-worshipping societies");
             
-            Assert.assertEquals("projects not added correctly", projectRepository.getProject(3).getProjectName(), "Sherlock Holmes and the Dagon mythos");
+            Assert.assertEquals("projects not added correctly", projectRepository.getProject(3).getProjectName(), " Love songs and the Cthulu-Dagon mythos");
             
-            Assert.assertEquals("projects not added correctly", projectRepository.getProject(4).getProjectName(), " Detective fiction and the Dagon mythos");
+            Assert.assertEquals("projects not added correctly", projectRepository.getProject(4).getProjectName(), " the Beach Boys and the Cthulu-Dagon mythos");
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -130,13 +130,13 @@ public class ProjectRepositoryTest {
         
             Assert.assertEquals("projects not removed correctly", projectRepository.getSize(), 4);
             
-            Assert.assertEquals("projects not removed correctly", projectRepository.getProject(0).getProjectName(), "Reality TV and the Cthulu-Dagon mythos");
+            Assert.assertEquals("projects not removed correctly", projectRepository.getProject(0).getProjectName(), "Pop music and the Cthulu-Dagon mythos");
             
-            Assert.assertEquals("projects not removed correctly", projectRepository.getProject(1).getProjectName(), "monetizing celebrity status in Cthulhu-worshipping societies vs in Dagon-worshipping societies");
+            Assert.assertEquals("projects not removed correctly", projectRepository.getProject(1).getProjectName(), "singing pop songs in Cthulhu-worshipping societies vs in Dagon-worshipping societies");
             
-            Assert.assertEquals("projects not removed correctly", projectRepository.getProject(2).getProjectName(), "making unauthorized sex tapes in Cthulhu-worshipping societies vs in Dagon-worshipping societies");
+            Assert.assertEquals("projects not removed correctly", projectRepository.getProject(2).getProjectName(), " writing pop songs in Cthulhu-worshipping societies vs in Dagon-worshipping societies");
             
-            Assert.assertEquals("projects not removed correctly", projectRepository.getProject(3).getProjectName(), "Sherlock Holmes and the Dagon mythos");
+            Assert.assertEquals("projects not removed correctly", projectRepository.getProject(3).getProjectName(), " Love songs and the Cthulu-Dagon mythos");
 
             Assert.assertEquals("project not removed correctly", projectRepository.getProject(4), null);
             

@@ -22,9 +22,10 @@ public class StudentReader{
         this.projectRepository=projectRepository;
     }
 
-    public void readXLSX(int studentCount, String filePath) {
+    public StudentRepository readXLSX(int studentCount, String filePath) {
         //System.out.println("In readXLSX");
         students = new ArrayList<Student>(studentCount);
+        StudentRepository repository = new StudentRepository();
         try {
             FileInputStream file = new FileInputStream(new File(filePath));
             XSSFWorkbook workbook = new XSSFWorkbook(file);
@@ -42,12 +43,14 @@ public class StudentReader{
                 }
                 else {
                     students.add(newStudent);
+                    repository.addStudent(newStudent);
                 }
                
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return repository;
     }
     
 

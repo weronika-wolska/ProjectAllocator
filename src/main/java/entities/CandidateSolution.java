@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.Map.Entry;
 
 import exceptions.InvalidArgumentException;
+import exceptions.NoRandomChangeWasMadeException;
 
 public class CandidateSolution {
     public static final int FULL_STUDENT_FITNESS = 10;
@@ -15,6 +16,7 @@ public class CandidateSolution {
     private double gpaWeight;
     private ArrayList<Student> students;
     private ArrayList<Project> projects;
+    private Map<Student, Project> backupSolution;
 
     public CandidateSolution(ArrayList<Student> students, ArrayList<Project> projects) throws InvalidArgumentException{
         this(students, projects, 0);
@@ -226,5 +228,112 @@ public class CandidateSolution {
         }
         return string.toString();
     }
+    public Map<Student, Project> getBackupSolution() throws NoRandomChangeWasMadeException{
+        if(backupSolution == null) {
+            throw new NoRandomChangeWasMadeException();
+        }
+        else {
+            return backupSolution;
+        }
+    }
+
+    /*// makes deep copy of map and points one of CandidateSolution's fields to it
+    private void saveBackupSolution() {
+        System.out.println("STARTING SAVEBACKUPSOLUTION HERE");
+        Gson gson = new Gson();
+        //String backupString = gson.toJson(candidateSolution);
+        //System.out.println(candidateSolution);
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+        //System.out.println(backupString);
+        //Type type = new TypeToken<HashMap<Student, Project>>(){}.getType();
+        //backupSolution = gson.fromJson(backupString, type);
+        backupSolution = gson.fromJson(gson.toJson(candidateSolution), HashMap.class);
+        System.out.println("ENDING SAVEBACKUPSOLUTION HERE");
+    }*/
+
+    private void saveBackupSolution() {
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n\n");
+        //System.out.println("STARTING SAVEBACKUPSOLUTION HERE");
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n\n");
+        backupSolution = new HashMap<>();
+        for (Map.Entry<Student, Project> solution:
+            candidateSolution.entrySet()) {
+            backupSolution.put(solution.getKey(), solution.getValue());
+        }
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n\n");
+        //System.out.println("ENDING SAVEBACKUPSOLUTION HERE");
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n\n");
+    }
+
+    public void makeRandomChange() throws InvalidArgumentException {
+        // TODO test
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n\n");
+        //System.out.println("STARTING MAKERANDOMCHANGE HERE");
+        //System.out.println("unchanged solution:" + "\n" + toString());
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n");
+        if(candidateSolution.size()<2) throw new InvalidArgumentException();
+        saveBackupSolution();
+        Random random = new Random();
+        int x, y;
+        Student studentX, studentY;
+        do {
+            do{
+                x = random.nextInt(candidateSolution.size());
+                y = random.nextInt(candidateSolution.size());
+            }while (x==y);
+            studentX = (Student) candidateSolution.keySet().toArray()[x];
+            studentY = (Student) candidateSolution.keySet().toArray()[y];
+        } while (!doStudentsStudySameStream(studentX, studentY));
+        Project project = candidateSolution.get(studentX);
+        candidateSolution.put(studentX, candidateSolution.get(studentY));
+        candidateSolution.put(studentY, project);
+        fitness = calculateFitness(candidateSolution);
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n");
+        //System.out.println("changed current solution:" + toString());
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n\n");
+        //System.out.println("backup:" + backupSolution);
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n");
+        //System.out.println("ENDING MAKERANDOMCHANGE HERE");
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    }
+
+    public void undoRandomChange() throws NoRandomChangeWasMadeException {
+        //System.out.println("STARTING UNDORANDOMCHANGE HERE");
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+        //System.out.println("changed solution:" + candidateSolution);
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+        //System.out.println("backup:" + backupSolution);
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+        // TODO test
+        if(backupSolution == null) {
+            throw new NoRandomChangeWasMadeException();
+        }
+        else {
+            candidateSolution = backupSolution;
+            backupSolution = null;
+            //System.out.println("new current sol (backup was restored):" + candidateSolution);
+            //System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+            fitness = calculateFitness(candidateSolution);
+            //System.out.println("fitness should be:");
+            //System.out.print(fitness);
+            //System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+
+        }
+        //System.out.println("ENDING UNDORANDOMCHANGE HERE");
+    }
+
+    private boolean doStudentsStudySameStream(Student a, Student b) {
+        if(a == null || b == null) {
+            return false;
+        }
+        else {
+            return a.getStream() == b.getStream() ||
+                    a.getStream() == Stream.commonTesting ||
+                    b.getStream() == Stream.commonTesting ||
+                    (a.getStream() == Stream.CSDS && b.getStream() == Stream.DS) ||
+                    (a.getStream() == Stream.DS && b.getStream() == Stream.CSDS);
+        }
+    }
+
 
 }

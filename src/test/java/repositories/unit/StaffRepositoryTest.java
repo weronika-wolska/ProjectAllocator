@@ -27,10 +27,11 @@ public class StaffRepositoryTest{
             FileInputStream file = new FileInputStream("src/main/resources/staff.xlsx");
             XSSFWorkbook workbook = new XSSFWorkbook(file);
             XSSFSheet sheet = workbook.getSheetAt(0);
-            StaffMember newStaff = new StaffMember();
+            
             
             // starts at 1 because row 0 consists of column headers
             for (int i = 1; i < 3;i++) {
+                StaffMember newStaff = new StaffMember();
                 Row row = sheet.getRow(i);
                 String cellString;
                 Cell currentCell = row.getCell(0);
@@ -74,10 +75,11 @@ public class StaffRepositoryTest{
             FileInputStream file = new FileInputStream("src/main/resources/staff.xlsx");
             XSSFWorkbook workbook = new XSSFWorkbook(file);
             XSSFSheet sheet = workbook.getSheetAt(0);
-            StaffMember newStaff = new StaffMember();
+            
             
             // starts at 1 because row 0 consists of column headers
             for (int i = 1; i < 3;i++) {
+                StaffMember newStaff = new StaffMember();
                 Row row = sheet.getRow(i);
                 String cellString;
                 Cell currentCell = row.getCell(0);

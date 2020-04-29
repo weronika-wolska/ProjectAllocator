@@ -79,23 +79,24 @@ public class Student{
         return preferences;
     }
 
-    public void setPreferences(ArrayList<Project> preferences) throws InvalidArgumentException {
-        if(getStream()==null){ this.preferences=preferences;}
-        if(preferences.size()>10){ throw new InvalidArgumentException();}
+    public void setPreferences(ArrayList<Project> spreferences) throws InvalidArgumentException {
+        if(this.stream==null){ this.preferences=spreferences;}
+        if(spreferences.size()>10){ throw new InvalidArgumentException();}
         boolean validProjects = true;
         // check if all the preffered projects match the student's stream
-        for(int i=0;i<preferences.size(); i++){
-            if(stream!=preferences.get(i).getStream() || preferences.get(i).getStream()!=Stream.CSDS || preferences.get(i).getStream()!=null){
-                validProjects = false;
+        for(int i=0;i<spreferences.size(); i++){
+            if(stream!=spreferences.get(i).getStream() || spreferences.get(i).getStream()!=Stream.CSDS || spreferences.get(i).getStream()!=null){
+                spreferences.remove(i);
+                i--;
             }
         }
-        if(validProjects){ this.preferences=preferences;}
-        else{ throw new InvalidArgumentException();}
+        this.preferences=spreferences;
+        //else{ throw new InvalidArgumentException();}
 
         // if there is less than 10 preferences in student's list, assign them random projects
-        if(preferences.size()<10){
+        if(this.preferences.size()<10){
             Random r = new Random();
-            for(int i = preferences.size();i<10;i++){
+            for(int i = this.preferences.size();i<10;i++){
                 Project project;
                 do{
                     int index = r.nextInt(projectRepository.getSize());
