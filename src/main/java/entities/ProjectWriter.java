@@ -105,7 +105,7 @@ public class ProjectWriter {
         }
     }
 
-    private void createHeader(XSSFSheet sheet) {
+    public void createHeader(XSSFSheet sheet) {
         Row row = sheet.createRow(0);
         Cell cell = row.createCell(0);
         cell.setCellValue("Supervisor");

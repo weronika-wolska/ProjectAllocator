@@ -17,6 +17,8 @@ public class Student{
     private ArrayList<Project> preferences = new ArrayList<>();
     private ProjectRepository projectRepository;
 
+    public Student(){}
+
     public Student(String firstName, String surname, Long studentId, Stream stream, ProjectRepository projectRepository) throws InvalidArgumentException{
         this(firstName, surname, studentId, 2.1, stream, null, projectRepository);
     }
@@ -85,7 +87,7 @@ public class Student{
         boolean validProjects = true;
         // check if all the preffered projects match the student's stream
         for(int i=0;i<spreferences.size(); i++){
-            if(stream!=spreferences.get(i).getStream() || spreferences.get(i).getStream()!=Stream.CSDS || spreferences.get(i).getStream()!=null){
+            if(!canDoProject(spreferences.get(i))){
                 spreferences.remove(i);
                 i--;
             }
@@ -101,12 +103,35 @@ public class Student{
                 do{
                     int index = r.nextInt(projectRepository.getSize());
                     project = projectRepository.getProject(index);
-                    this.preferences.add(i, project);
-                } while (project.getStream()!=this.stream||project.getStream()!=Stream.CSDS || project.getStream()!=null);
+                    //this.preferences.add(i, project);
+                } while (!canDoProject(project));
+                this.preferences.add(i, project);
             }
         }
         
     }
+
+    public boolean hasNoPreferences() {
+        if(preferences == null) {
+            return true;
+        }
+        else return preferences.size() == 0;
+    }
+
+    public boolean hasFirstName(String firstName) {
+        return firstName.trim().toLowerCase().equals(this.firstName.trim().toLowerCase());
+    }
+
+    public boolean hasSurname(String surname) {
+        return surname.trim().toLowerCase().equals(this.surname.trim().toLowerCase());
+    }
+
+    public boolean hasName(String firstName, String surname) {
+        return surname.trim().toLowerCase().equals(this.surname.trim().toLowerCase()) &&
+                firstName.trim().toLowerCase().equals(this.firstName.trim().toLowerCase());
+    }
+
+
 
     public Double getGpa() {
         return gpa;

@@ -25,4 +25,33 @@ public class ProjectRepository{
     public int getSize(){
         return projects.size();
     }
+    public boolean hasProjectByName(String projectName) {
+        boolean status = false;
+        for (Project project :
+                projects) {
+            if (project.isTheSameProject(projectName)) {
+                status = true;
+                break;
+            }
+        }
+        return status;
+    }
+
+    public ArrayList<Project> getProjects(){
+        return this.projects;
+    }
+    public Project getProjectByName(String projectName) {
+        Project projectWanted = null;
+        for (Project project :
+                projects) {
+            if (project.isTheSameProject(projectName)) {
+                projectWanted = project;
+                break;
+            }
+        }
+        if(projectWanted != null) return projectWanted;
+        else throw new IllegalArgumentException();
+    }
+
+
 }

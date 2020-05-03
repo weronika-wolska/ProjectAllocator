@@ -20,6 +20,15 @@ public class StaffReader {
 
     public StaffReader(){};
 
+    public StaffRepository getStaffRepository() {
+        return staffRepository;
+    }
+
+    public StaffRepository readXLSX(String filePath) {
+        return readXLSX(0, filePath);
+    }
+
+
     public StaffRepository readXLSX(int staffCount, String filePath) {
         //System.out.println("In readXLSX");
         faculty = new ArrayList<>(staffCount);

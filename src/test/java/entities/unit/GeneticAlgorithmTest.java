@@ -19,7 +19,9 @@ public class GeneticAlgorithmTest {
     public static void main(String[] args) throws FileNotFoundException, IOException, InvalidArgumentException{
         CandidateSolution solution = setup();
         for(int i=0;i<500;i++){
-
+            Student student = (Student) solution.getStudents().get(i);
+            Project project = (Project) solution.getProjects().get(i);
+            System.out.println(student.getFirstName() + student.getSurname() + project.getProjectName());
         }
     }
 

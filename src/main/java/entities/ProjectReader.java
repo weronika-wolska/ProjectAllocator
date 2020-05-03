@@ -36,6 +36,11 @@ public class ProjectReader {
         return null;
     }
 
+    public ProjectRepository getProjectRepository() {
+        return projectRepository;
+    }
+
+
     private Project parseRowIntoProject(Row row, StaffRepository staffRepository){
         Project project = new Project("");
         Cell currCell = row.getCell(0);

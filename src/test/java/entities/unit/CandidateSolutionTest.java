@@ -34,22 +34,22 @@ public class CandidateSolutionTest{
     public ProjectRepository setupRepository(){
         ProjectRepository projectRepository = new ProjectRepository();
         StaffMember supervisor = new StaffMember();
-        Project project = new Project("projectName", Stream.CSDS, supervisor);
-        Project project2 = new Project("projectName", Stream.CS, supervisor);
-        Project project3 = new Project("project", Stream.DS, supervisor);
-        Project project4 = new Project("project", Stream.DS, supervisor);
-        Project project5 = new Project("project", Stream.DS, supervisor);
-        Project project6 = new Project("projectName", Stream.CS, supervisor);
-        Project project7 = new Project("projectName", Stream.CS, supervisor);
-        Project project8 = new Project("projectName", Stream.CS, supervisor);
-        Project project9 = new Project("projectName", Stream.CSDS, supervisor);
-        Project project10 = new Project("projectName", Stream.CSDS, supervisor);
+        Project project1 = new Project("create test data");
+        Project project2 = new Project("create classes");
+        Project project3 = new Project("create tests for classes");
+        Project project4 = new Project("create more classes");
+        Project project5 = new Project("create interface");
+        Project project6 = new Project("create application");
+        Project project7 = new Project("do something");
+        Project project8 = new Project("do something else");
+        Project project9 = new Project("do another thing");
+        Project project10 = new Project("create something");
         Project project11 = new Project("projectName", Stream.CSDS, supervisor);
         Project project12 = new Project("projectName", Stream.CSDS, supervisor);
         Project project13 = new Project("projectName", Stream.CS, supervisor);
         Project project14 = new Project("project", Stream.DS, supervisor);
         Project project15 = new Project("project", Stream.DS, supervisor);
-        projectRepository.addProject(project);
+        projectRepository.addProject(project1);
         projectRepository.addProject(project2);
         projectRepository.addProject(project3);
         projectRepository.addProject(project4);
@@ -88,7 +88,9 @@ public class CandidateSolutionTest{
 
     @Test
     public void testCandidateSolutionWithValidInputs() throws InvalidArgumentException{
-        setUp();
+        ProjectRepository projectRepository = setupRepository();
+        ArrayList<Student> studentss = new ArrayList<>();
+        ArrayList<Project> projectss = new ArrayList<>();
         // setting up array lists
         ArrayList<Project> preferences = new ArrayList<>();
         preferences.add(project1);
@@ -101,24 +103,25 @@ public class CandidateSolutionTest{
         preferences.add(project8);
         preferences.add(project9);
         preferences.add(project10);
-        student1.setPreferences(preferences);
-        student2.setPreferences(preferences);
-        student3.setPreferences(preferences);
-        student4.setPreferences(preferences);
-        student5.setPreferences(preferences);
-        students.add(student1);
-        students.add(student2);
-        students.add(student3);
-        students.add(student4);
-        students.add(student5);
-        projects.add(project1);
-        projects.add(project2);
-        projects.add(project3);
-        projects.add(project4);
-        projects.add(project5);
+        //Student student = new Student(firstName, surname, studentId, gpa, stream, preferences, projectRepository)
+        Student student1 = new Student("Becky", "Jones", (long) 12345, Stream.CS, preferences, projectRepository);
+        Student student2 = new Student("Jessica", "Delaney", (long) 23456, Stream.CS, preferences, projectRepository);
+        Student student3 = new Student("Robert", "Murphy", (long) 34567, Stream.DS, preferences, projectRepository);
+        Student student4 = new Student("Bob", "Johnson", (long) 45678, Stream.CS, preferences, projectRepository);
+        Student student5 = new Student("Tracy", "Jackson", (long) 56789, Stream.DS, preferences, projectRepository);
+        studentss.add(student1);
+        studentss.add(student2);
+        studentss.add(student3);
+        studentss.add(student4);
+        studentss.add(student5);
+        projectss.add(project1);
+        projectss.add(project2);
+        projectss.add(project3);
+        projectss.add(project4);
+        projectss.add(project5);
 
 
-        CandidateSolution candidateSolution = new CandidateSolution(students, projects);
+        CandidateSolution candidateSolution = new CandidateSolution(studentss, projectss);
         
         // test getFitness()
         Assert.assertEquals(40, candidateSolution.getFitness());
@@ -133,8 +136,32 @@ public class CandidateSolutionTest{
     }
 
     @Test
-    public void testCandidateSolutionWithInvalidInputs() throws InvalidArgumentException{
+    public void testCalculateFitness()throws InvalidArgumentException{
+        Student student = new Student(setupRepository());
         ArrayList<Project> preferences = new ArrayList<>();
+        ArrayList<Student> students = new ArrayList<>();
+        students.add(student);
+        ArrayList<Project> projects = new ArrayList<>();
+        projects.add(setupRepository().getProject(1));
+        preferences.add(setupRepository().getProject(1));
+        CandidateSolution solution = new CandidateSolution(students, projects);
+        Assert.assertEquals(10, solution.getFitness());
+    }
+
+    @Test
+    public void testCandidateSolutionWithInvalidInputs() throws InvalidArgumentException{
+        ProjectRepository projectRepository = setupRepository();
+        ArrayList<Project> preferences = new ArrayList<>();
+        Project project1 = new Project("create test data");
+        Project project2 = new Project("create classes");
+        Project project3 = new Project("create tests for classes");
+        Project project4 = new Project("create more classes");
+        Project project5 = new Project("create interface");
+        Project project6 = new Project("create application");
+        Project project7 = new Project("do something");
+        Project project8 = new Project("do something else");
+        Project project9 = new Project("do another thing");
+        Project project10 = new Project("create something");
         preferences.add(project1);
         preferences.add(project2);
         preferences.add(project3);
@@ -145,9 +172,9 @@ public class CandidateSolutionTest{
         preferences.add(project8);
         preferences.add(project9);
         preferences.add(project10);
-        student1.setPreferences(preferences);
-        student2.setPreferences(preferences);
-        student3.setPreferences(preferences);
+        Student student1 = new Student("Becky", "Jones", (long) 12345, Stream.CS, preferences, projectRepository);
+        Student student2 = new Student("Jessica", "Delaney", (long) 23456, Stream.CS, preferences, projectRepository);
+        Student student3 = new Student("Robert", "Murphy", (long) 34567, Stream.DS, preferences, projectRepository);
         students.add(student1);
         students.add(student2);
         students.add(student3);
@@ -170,8 +197,18 @@ public class CandidateSolutionTest{
 
     @Test
     public void testCalculateFitnessWithAssignedProjectNotInPreferenceList() throws InvalidArgumentException{
-        setUp();
+        ProjectRepository projectRepository = setupRepository();
         ArrayList<Project> preferences = new ArrayList<>();
+        Project project1 = new Project("create test data");
+        Project project2 = new Project("create classes");
+        Project project3 = new Project("create tests for classes");
+        Project project4 = new Project("create more classes");
+        Project project5 = new Project("create interface");
+        Project project6 = new Project("create application");
+        Project project7 = new Project("do something");
+        Project project8 = new Project("do something else");
+        Project project9 = new Project("do another thing");
+        Project project10 = new Project("create something");
         preferences.add(project1);
         preferences.add(project2);
         preferences.add(project3);
@@ -182,7 +219,7 @@ public class CandidateSolutionTest{
         preferences.add(project8);
         preferences.add(project9);
         preferences.add(project10);
-        student1.setPreferences(preferences);
+        Student student1 = new Student("Becky", "Jones", (long) 12345, Stream.CS,preferences, projectRepository);
         Project p = new Project("this is not a preferred project");
         p.setStream(Stream.CS);
         projects.add(p);
@@ -193,8 +230,20 @@ public class CandidateSolutionTest{
 
     @Test
     public void testGetEnergy() throws InvalidArgumentException {
-        setUp();
+        ProjectRepository projectRepository = setupRepository();
+        ArrayList<Student> students = new ArrayList<>();
+        ArrayList<Project> projects = new ArrayList<>();
         ArrayList<Project> preferences = new ArrayList<>();
+        Project project1 = new Project("create test data");
+        Project project2 = new Project("create classes");
+        Project project3 = new Project("create tests for classes");
+        Project project4 = new Project("create more classes");
+        Project project5 = new Project("create interface");
+        Project project6 = new Project("create application");
+        Project project7 = new Project("do something");
+        Project project8 = new Project("do something else");
+        Project project9 = new Project("do another thing");
+        Project project10 = new Project("create something");
         preferences.add(project1);
         preferences.add(project2);
         preferences.add(project3);
@@ -205,11 +254,11 @@ public class CandidateSolutionTest{
         preferences.add(project8);
         preferences.add(project9);
         preferences.add(project10);
-        student1.setPreferences(preferences);
-        student2.setPreferences(preferences);
-        student3.setPreferences(preferences);
-        student4.setPreferences(preferences);
-        student5.setPreferences(preferences);
+        Student student1 = new Student("Becky", "Jones", (long) 12345, Stream.CS,preferences, projectRepository);
+        Student student2 = new Student("Jessica", "Delaney", (long) 23456, Stream.CS, preferences, projectRepository);
+        Student student3 = new Student("Robert", "Murphy", (long) 34567, Stream.DS, preferences, projectRepository);
+        Student student4 = new Student("Bob", "Johnson", (long) 45678, Stream.CS, preferences, projectRepository);
+        Student student5 = new Student("Tracy", "Jackson", (long) 56789, Stream.DS, preferences, projectRepository);
         students.add(student1);
         students.add(student2);
         students.add(student3);
@@ -228,7 +277,7 @@ public class CandidateSolutionTest{
 
     @Test
     public void testGpaWeight() throws InvalidArgumentException {
-        setUp();
+        ProjectRepository projectRepository = setupRepository();
         ArrayList<Project> preferences = new ArrayList<>();
         preferences.add(project1);
         preferences.add(project2);
@@ -240,11 +289,12 @@ public class CandidateSolutionTest{
         preferences.add(project8);
         preferences.add(project9);
         preferences.add(project10);
-        student1.setPreferences(preferences);
-        student2.setPreferences(preferences);
-        student3.setPreferences(preferences);
-        student4.setPreferences(preferences);
-        student5.setPreferences(preferences);
+        Student student1 = new Student("Becky", "Jones", (long) 12345, Stream.CS,preferences, projectRepository);
+        Student student2 = new Student("Jessica", "Delaney", (long) 23456, Stream.CS, preferences,projectRepository);
+        Student student3 = new Student("Robert", "Murphy", (long) 34567, Stream.DS, preferences, projectRepository);
+        Student student4 = new Student("Bob", "Johnson", (long) 45678, Stream.CS, preferences, projectRepository);
+        Student student5 = new Student("Tracy", "Jackson", (long) 56789, Stream.DS, preferences, projectRepository);
+        
         students.add(student1);
         students.add(student2);
         students.add(student3);
@@ -272,7 +322,7 @@ public class CandidateSolutionTest{
 
     @Test
     public void testFitnessGpaMatters() throws InvalidArgumentException {
-        setUp();
+        ProjectRepository projectRepository = setupRepository();
         ArrayList<Project> preferences = new ArrayList<>();
         preferences.add(project1);
         preferences.add(project2);
@@ -284,16 +334,11 @@ public class CandidateSolutionTest{
         preferences.add(project8);
         preferences.add(project9);
         preferences.add(project10);
-        student1.setPreferences(preferences);
-        student1.setGpa(4.2);
-        student2.setPreferences(preferences);
-        student2.setGpa(4.0);
-        student3.setPreferences(preferences);
-        student3.setGpa(3.9);
-        student4.setPreferences(preferences);
-        student4.setGpa(1.1);
-        student5.setPreferences(preferences);
-        student5.setGpa(1.0);
+        Student student1 = new Student("Becky", "Jones", (long) 12345,1.0, Stream.CS,preferences, projectRepository);
+        Student student2 = new Student("Jessica", "Delaney", (long) 23456, 1.1, Stream.CS,preferences, projectRepository);
+        Student student3 = new Student("Robert", "Murphy", (long) 34567, 3.9, Stream.DS,preferences, projectRepository);
+        Student student4 = new Student("Bob", "Johnson", (long) 45678, 4.0,Stream.CS,preferences, projectRepository);
+        Student student5 = new Student("Tracy", "Jackson", (long) 56789, 4.2, Stream.DS,preferences, projectRepository);
         students.add(student1);
         students.add(student2);
         students.add(student3);
@@ -307,11 +352,11 @@ public class CandidateSolutionTest{
 
         CandidateSolution candidateSolutionHighFit = new CandidateSolution(students, projects,0.9);
 
-        student1.setGpa(1.0);
-        student2.setGpa(1.1);
-        student3.setGpa(3.9);
-        student4.setGpa(4.0);
-        student5.setGpa(4.2);
+        //student1.setGpa(1.0);
+        //student2.setGpa(1.1);
+        //student3.setGpa(3.9);
+        //student4.setGpa(4.0);
+        //student5.setGpa(4.2);
         students.clear();
         students.add(student1);
         students.add(student2);
@@ -329,7 +374,7 @@ public class CandidateSolutionTest{
 
     @Test
     public void testFitnessGpaDoesNotMatter() throws InvalidArgumentException {
-        setUp();
+        ProjectRepository projectRepository = setupRepository();
         ArrayList<Project> preferences = new ArrayList<>();
         preferences.add(project1);
         preferences.add(project2);
@@ -341,16 +386,11 @@ public class CandidateSolutionTest{
         preferences.add(project8);
         preferences.add(project9);
         preferences.add(project10);
-        student1.setPreferences(preferences);
-        student1.setGpa(4.2);
-        student2.setPreferences(preferences);
-        student2.setGpa(4.0);
-        student3.setPreferences(preferences);
-        student3.setGpa(3.0);
-        student4.setPreferences(preferences);
-        student4.setGpa(2.0);
-        student5.setPreferences(preferences);
-        student5.setGpa(1.0);
+        Student student1 = new Student("Becky", "Jones", (long) 12345, 4.2, Stream.CS, preferences, projectRepository);
+        Student student2 = new Student("Jessica", "Delaney", (long) 23456, 4.0, Stream.CS, preferences, projectRepository);
+        Student student3 = new Student("Robert", "Murphy", (long) 34567, 3.0, Stream.DS, preferences, projectRepository);
+        Student student4 = new Student("Bob", "Johnson", (long) 45678, 2.0, Stream.CS, preferences, projectRepository);
+        Student student5 = new Student("Tracy", "Jackson", (long) 56789, 1.0, Stream.DS, preferences, projectRepository);
         students.add(student1);
         students.add(student2);
         students.add(student3);
@@ -384,7 +424,7 @@ public class CandidateSolutionTest{
 
     @Test
     public void testFitnessGpaMattersSlightly() throws InvalidArgumentException {
-        setUp();
+        ProjectRepository projectRepository = setupRepository();
         ArrayList<Project> preferences = new ArrayList<>();
         preferences.add(project1);
         preferences.add(project2);
@@ -396,16 +436,11 @@ public class CandidateSolutionTest{
         preferences.add(project8);
         preferences.add(project9);
         preferences.add(project10);
-        student1.setPreferences(preferences);
-        student1.setGpa(4.2);
-        student2.setPreferences(preferences);
-        student2.setGpa(4.0);
-        student3.setPreferences(preferences);
-        student3.setGpa(3.9);
-        student4.setPreferences(preferences);
-        student4.setGpa(1.1);
-        student5.setPreferences(preferences);
-        student5.setGpa(1.0);
+        Student student1 = new Student("Becky", "Jones", (long) 12345, 4.2, Stream.CS, preferences, projectRepository);
+        Student student2 = new Student("Jessica", "Delaney", (long) 23456, 4.0, Stream.CS, preferences, projectRepository);
+        Student student3 = new Student("Robert", "Murphy", (long) 34567, 3.9, Stream.DS, preferences, projectRepository);
+        Student student4 = new Student("Bob", "Johnson", (long) 45678, 1.1, Stream.CS, preferences, projectRepository);
+        Student student5 = new Student("Tracy", "Jackson", (long) 56789, 1.0, Stream.DS, preferences, projectRepository);
         students.add(student1);
         students.add(student2);
         students.add(student3);
@@ -441,7 +476,7 @@ public class CandidateSolutionTest{
 
     @Test
     public void testFitnessWithDifferentGpas() throws InvalidArgumentException{
-        setUp();
+        ProjectRepository projectRepository = setupRepository();
         ArrayList<Project> preferences = new ArrayList<>();
         preferences.add(project1);
         preferences.add(project2);
@@ -453,16 +488,11 @@ public class CandidateSolutionTest{
         preferences.add(project8);
         preferences.add(project9);
         preferences.add(project10);
-        student1.setPreferences(preferences);
-        student1.setGpa(4.2);
-        student2.setPreferences(preferences);
-        student2.setGpa(4.2);
-        student3.setPreferences(preferences);
-        student3.setGpa(4.2);
-        student4.setPreferences(preferences);
-        student4.setGpa(4.0);
-        student5.setPreferences(preferences);
-        student5.setGpa(0.1);
+        Student student1 = new Student("Becky", "Jones", (long) 12345, 4.2, Stream.CS, preferences, projectRepository);
+        Student student2 = new Student("Jessica", "Delaney", (long) 23456, 4.2, Stream.CS, preferences, projectRepository);
+        Student student3 = new Student("Robert", "Murphy", (long) 34567, 4.2, Stream.DS, preferences, projectRepository);
+        Student student4 = new Student("Bob", "Johnson", (long) 45678, 4.0, Stream.CS, preferences, projectRepository);
+        Student student5 = new Student("Tracy", "Jackson", (long) 56789, 0.1, Stream.DS, preferences, projectRepository);
         students.add(student1);
         students.add(student2);
         students.add(student3);
@@ -487,7 +517,7 @@ public class CandidateSolutionTest{
 
     @Test
     public void testIsThereDuplicateProjects() throws InvalidArgumentException{
-        setUp();
+        ProjectRepository projectRepository = setupRepository();
         ArrayList<Project> preferences = new ArrayList<>();
         preferences.add(project1);
         preferences.add(project2);
@@ -499,16 +529,11 @@ public class CandidateSolutionTest{
         preferences.add(project8);
         preferences.add(project9);
         preferences.add(project10);
-        student1.setPreferences(preferences);
-        student1.setGpa(4.2);
-        student2.setPreferences(preferences);
-        student2.setGpa(4.2);
-        student3.setPreferences(preferences);
-        student3.setGpa(4.2);
-        student4.setPreferences(preferences);
-        student4.setGpa(4.0);
-        student5.setPreferences(preferences);
-        student5.setGpa(0.1);
+        Student student1 = new Student("Becky", "Jones", (long) 12345, 4.2, Stream.CS, preferences, projectRepository);
+        Student student2 = new Student("Jessica", "Delaney", (long) 23456, 4.2, Stream.CS, preferences, projectRepository);
+        Student student3 = new Student("Robert", "Murphy", (long) 34567, 4.2, Stream.DS, preferences, projectRepository);
+        Student student4 = new Student("Bob", "Johnson", (long) 45678, 4.0, Stream.CS, preferences, projectRepository);
+        Student student5 = new Student("Tracy", "Jackson", (long) 56789, 0.1, Stream.DS, preferences,projectRepository);
         students.add(student1);
         students.add(student2);
         students.add(student3);
@@ -543,6 +568,7 @@ public class CandidateSolutionTest{
         preferences.add(project8);
         preferences.add(project9);
         preferences.add(project10);
+
         student1.setPreferences(preferences);
         student2.setPreferences(preferences);
         students.clear();
@@ -596,19 +622,18 @@ public class CandidateSolutionTest{
         project5.setStream(Stream.DS);
         project4.setSupervisor(staffDS);
         project5.setSupervisor(staffDS);
-
+        ProjectRepository projectRepository = setupRepository();
         ArrayList<Project> preferences = new ArrayList<>();
         preferences.add(project1);
         preferences.add(project2);
         preferences.add(project3);
         preferences.add(project4);
         preferences.add(project5);
-
-        student1.setPreferences(preferences);
-        student2.setPreferences(preferences);
-        student3.setPreferences(preferences);
-        student4.setPreferences(preferences);
-        student5.setPreferences(preferences);
+        Student student1 = new Student("Becky", "Jones", (long) 12345, Stream.CS,preferences, projectRepository);
+        Student student2 = new Student("Jessica", "Delaney", (long) 23456, Stream.CS, preferences, projectRepository);
+        Student student3 = new Student("Robert", "Murphy", (long) 34567, Stream.DS, preferences, projectRepository);
+        Student student4 = new Student("Bob", "Johnson", (long) 45678, Stream.CS, preferences,projectRepository);
+        Student student5 = new Student("Tracy", "Jackson", (long) 56789, Stream.DS, preferences, projectRepository);
         students.add(student1);
         students.add(student2);
         students.add(student3);
@@ -633,17 +658,18 @@ public class CandidateSolutionTest{
     }
 
     private String getRequiredStringResult() {
-        return "student Tracy Jackson doing DS was assigned\n" +
-                "project create interface which is in the stream DS\n" +
-                "student Robert Murphy doing DS was assigned\n" +
-                "project create tests for classes which is in the stream CS\n" +
-                "student Becky Jones doing CS was assigned\n" +
+        return "student Becky Jones doing CS was assigned\n" +
                 "project create test data which is in the stream CS\n" +
                 "student Jessica Delaney doing CS was assigned\n" +
                 "project create classes which is in the stream CS\n" +
+                "student Robert Murphy doing DS was assigned\n" +
+                "project create tests for classes which is in the stream CS\n" +
                 "student Bob Johnson doing CS was assigned\n" +
-                "project create more classes which is in the stream DS\n";
+                "project create more classes which is in the stream DS\n"+
+                "student Tracy Jackson doing DS was assigned\n" +
+                "project create interface which is in the stream DS\n";
+                
     }
 
-
+    
  }

@@ -53,7 +53,7 @@ public class CandidateSolution {
         }
 
 
-        this.fitness = calculateFitness(students, projects);
+        this.fitness = calculateFitness(this.candidateSolution);
     }
 
     public int getFitness(){
@@ -90,15 +90,18 @@ public class CandidateSolution {
         this.gpaWeight = gpaWeight;
     }
 
-    // TODO
 
     private int calculateIndividualFitness(Map.Entry<Student, Project> entry){
         int fitness=0;
         Student student = entry.getKey();
         Project project = entry.getValue();
+        ArrayList<Project> preferences = student.getPreferences();
         // assumes student has exactly 10 preferences
         for(int i = 0; i<10;i++){
-            if(student.getPreferences().get(i)==project){
+            if(student.getPreferences().get(1)==project){
+                fitness = fitness + 10;
+            }
+            if(preferences.get(i).getProjectName()==project.getProjectName()){
                 fitness = 10 - i;       // if the assigned project is first preference, fitness is 10, if it's second, fitness is 9 etc.
             }
         }
@@ -109,13 +112,13 @@ public class CandidateSolution {
     private int calculateFitness(Map<Student, Project> map){
         int score = 0;
         for(Map.Entry solution : map.entrySet()){
-           /* Student student = (Student)solution.getKey();
+            /*Student student = (Student)solution.getKey();
             ArrayList<Project> studentPreferences = student.getPreferences();
             Project project = (Project)solution.getValue();
             for(int i=0;i<10;i++){
                 if(studentPreferences.get(i)==project){
                     score += (10 -i);
-                } else {score -=50;}
+                } //else {score -=50;}
             } */
             score += calculateIndividualFitness(solution);
         }
@@ -215,13 +218,12 @@ public class CandidateSolution {
         }
     }
     
-    @Override
-    public String toString() {
+    
+    public String toString(){
         StringBuilder string = new StringBuilder();
-        for (Map.Entry<Student, Project> pairing :
-                candidateSolution.entrySet()) {
-            Student student = pairing.getKey();
-            Project project = pairing.getValue();
+        for(int i=0;i<this.candidateSolution.size();i++){
+            Student student = students.get(i);
+            Project project = projects.get(i);
             string.append("student ").append(student.getFirstName()).append(" ").append(student.getSurname()).append(" doing ").append(student.getStream());
             string.append(" was assigned\n");
             string.append("project ").append(project.getProjectName()).append(" which is in the stream ").append(project.getStream()).append("\n");
@@ -335,5 +337,20 @@ public class CandidateSolution {
         }
     }
 
+    public Double getAverageStudentSatisfaction() {
+        double satisfactionSum = 0;
+        for(Map.Entry solution : candidateSolution.entrySet()){
+            Project project = (Project) solution.getValue();
+            Student student = (Student) solution.getKey();
+            ArrayList<Project> studentPreferences = student.getPreferences();
+            for(int i = 0; (i < FULL_STUDENT_FITNESS) && (i < student.getPreferences().size()); i++){
+                if(studentPreferences.get(i)==project){
+                    satisfactionSum += (10 - i);
+                    break;
+                }
+            }
+        }
+        return satisfactionSum / candidateSolution.size();
+    }
 
 }

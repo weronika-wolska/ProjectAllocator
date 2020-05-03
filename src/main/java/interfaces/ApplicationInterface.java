@@ -1,9 +1,12 @@
 package interfaces;
 
 import entities.CandidateSolution;
+import exceptions.InvalidArgumentException;
 import repositories.ProjectRepository;
 import repositories.StaffRepository;
 import repositories.StudentRepository;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 
 public interface ApplicationInterface{
 
@@ -13,9 +16,9 @@ public interface ApplicationInterface{
 
     public StudentRepository readStrudentInput(String filePath, ProjectRepository projectRepository);
 
-    public StudentRepository readStudentPreferencesInput(String filePath, StudentRepository studentRepository, ProjectRepository projectRepository);
+    public StudentRepository readStudentPreferencesInput(String filePath, StudentRepository studentRepository, ProjectRepository projectRepository) throws InvalidArgumentException;
 
-    public void getGPAWeight(double weight);
+    public double getGPAWeight(double weight);
 
     public CandidateSolution applyGeneticAlgorithm(StudentRepository studentRepository, ProjectRepository projectRepository);
 
@@ -25,8 +28,15 @@ public interface ApplicationInterface{
 
     public double getAverageStudentSatisfaction(CandidateSolution bestSolutionFound);
 
-    public void showCandidateSolution(CandidateSolution candidateSolution);
+    public TableView showCandidateSolution(CandidateSolution candidateSolution);
 
     public void downloadCandidateSolution(String filePath, CandidateSolution candidateSolution);
+
+    public void downloadStudentTemplate(String filePath);
+
+    public void downloadProjectTemplate(String filePath);
+
+    public void downloadStaffTemplate(String filePath);
+
 
 }

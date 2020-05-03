@@ -111,7 +111,7 @@ public class StudentPreferenceWriter{
 
     // Helper Funtions
 
-    private void createHeader(final XSSFSheet sheet) {
+    public void createHeader(final XSSFSheet sheet) {
         Row row = sheet.createRow(0);
         Cell cell = row.createCell(0);
         cell.setCellValue("First Name");
