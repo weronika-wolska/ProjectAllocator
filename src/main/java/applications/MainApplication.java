@@ -194,49 +194,60 @@ public class MainApplication extends Application {
              appInterface.downloadStaffTemplate(path);
          });
          goToGPA.setOnAction(e -> {
+             
+             
              String staffPath = getStaff.getText();
-             staff = appInterface.readStaffInput("src/main/resources/staff.xlsx");
+             System.out.println("Staff Path: " +staffPath);
+             //staff = appInterface.readStaffInput("src/main/resources/staff.xlsx");
              String projectPath = getProjects.getText();
-             projects = appInterface.readProjectInput("src/main/resources/projects500.xlsx", staff);
+             System.out.println("Project Path: "+projectPath);
+             //projects = appInterface.readProjectInput("src/main/resources/projects500.xlsx", staff);
              String studentPath = getStudents.getText();
-             students = appInterface.readStrudentInput("src/main/resources/students.xlsx", projects);
-             String preferencesPath = getPreferences.getText();
+             System.out.println("Student Path: " + studentPath);
+             //students = appInterface.readStrudentInput("src/main/resources/students.xlsx", projects);
+             String preferencesPath = getPreferences.getText(); 
+             System.out.println("Preferences Path: " + preferencesPath);
              //students = appInterface.readStudentPreferencesInput("src/main/resources/studentPreferences60.xlsx", students, projects);
-             try {
+             /*try {
                  students = appInterface.readStudentPreferencesInput("src/main/resources/studentPreferences60.xlsx", students, projects);
              } catch (InvalidArgumentException e2) {
                  
                  errorBox.displayErrorBox();
                  primaryStage.setScene(scene);
-             } 
+             } */
              primaryStage.setScene(gpaScene);
          });
          setWeight.setOnAction(e -> {
              double weight = getGpaWeight.getValue();
+             System.out.println("GPA weight: " + weight);
              appInterface.getGPAWeight(weight);
              primaryStage.setScene(chooseAlgorithmScene);
          });
          
          geneticAlgorithm.setOnAction(e -> {
-             bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
+             System.out.println("Genetic Algorithm was chosen");
+             //bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
              //solution = appInterface.showCandidateSolution(bestSolutionFound);
              primaryStage.setScene(displaySolutionScene);
          });
          simulatedAnnealing.setOnAction(e -> {
-             bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
-             bestSolutionFound = appInterface.applySimulatedAnnealing(bestSolutionFound);
+             //bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
+             //bestSolutionFound = appInterface.applySimulatedAnnealing(bestSolutionFound);
              //solution = appInterface.showCandidateSolution(bestSolutionFound);
+             System.out.println("Simulated Annealing was chosen");
              primaryStage.setScene(displaySolutionScene);
          });
          hillClimbing.setOnAction(e -> {
-             bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
-             bestSolutionFound = appInterface.applyHillClimbing(bestSolutionFound);
+            // bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
+             //bestSolutionFound = appInterface.applyHillClimbing(bestSolutionFound);
              //solution = appInterface.showCandidateSolution(bestSolutionFound);
+             System.out.println("Hill Climbing was chosen");
              primaryStage.setScene(displaySolutionScene);
          });
          downloadSolution.setOnAction(e -> {
              String path = pathInput.displayBox();
-             appInterface.downloadCandidateSolution(path, bestSolutionFound);
+             System.out.println("Download solution request made ");
+             //appInterface.downloadCandidateSolution(path, bestSolutionFound);
          });
  
         // primaryStage.show();
