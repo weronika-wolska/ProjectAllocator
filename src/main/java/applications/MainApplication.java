@@ -195,19 +195,20 @@ public class MainApplication extends Application {
          });
          goToGPA.setOnAction(e -> {
              String staffPath = getStaff.getText();
-             staff = appInterface.readStaffInput(staffPath);
+             staff = appInterface.readStaffInput("src/main/resources/staff.xlsx");
              String projectPath = getProjects.getText();
-             projects = appInterface.readProjectInput(projectPath, staff);
+             projects = appInterface.readProjectInput("src/main/resources/projects500.xlsx", staff);
              String studentPath = getStudents.getText();
-             students = appInterface.readStrudentInput(studentPath, projects);
+             students = appInterface.readStrudentInput("src/main/resources/students.xlsx", projects);
              String preferencesPath = getPreferences.getText();
+             //students = appInterface.readStudentPreferencesInput("src/main/resources/studentPreferences60.xlsx", students, projects);
              try {
-                 students = appInterface.readStudentPreferencesInput(preferencesPath, students, projects);
+                 students = appInterface.readStudentPreferencesInput("src/main/resources/studentPreferences60.xlsx", students, projects);
              } catch (InvalidArgumentException e2) {
                  
                  errorBox.displayErrorBox();
                  primaryStage.setScene(scene);
-             }
+             } 
              primaryStage.setScene(gpaScene);
          });
          setWeight.setOnAction(e -> {

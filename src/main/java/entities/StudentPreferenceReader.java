@@ -45,14 +45,15 @@ public class StudentPreferenceReader {
             FileInputStream file = new FileInputStream(new File(filePath));
             XSSFWorkbook workbook = new XSSFWorkbook(file);
             XSSFSheet sheet = workbook.getSheetAt(0);
-            int rowCount = sheet.getLastRowNum() + 1;
+            int rowCount = sheet.getLastRowNum(); // + 1;
             //System.out.println("File input obtained, row count:" + rowCount);
-            for (int i = 0; i < rowCount; ++i) {
+            for (int i = 0; i < students.getSize(); i++) {
                 Row row = sheet.getRow(i);
                 Student newStudent;
                 try {
                     newStudent = parseRowIntoStudent(row);
-                    transferPreferencesBetweenStudents(newStudent, students.getStudent(newStudent));
+                    //transferPreferencesBetweenStudents(newStudent, students.getStudent(newStudent));
+                    transferPreferencesBetweenStudents(newStudent, students.getStudentById(newStudent.getStudentId()));
                     //System.out.println("Just added prefs for:" + newStudent.getFirstName());
                 }
                 catch (IllegalArgumentException e) {
@@ -64,7 +65,7 @@ public class StudentPreferenceReader {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        setPreferencesOfUnpreferringStudents();
+        //setPreferencesOfUnpreferringStudents();
     }
 
     private void transferPreferencesBetweenStudents(Student from, Student to) throws InvalidArgumentException {
@@ -73,7 +74,7 @@ public class StudentPreferenceReader {
 
     private Student parseRowIntoStudent(Row row) throws InvalidArgumentException {
         //System.out.println("parsing row");
-        Student newStudent = new Student();
+        Student newStudent = new Student(projects);
         Cell currentCell;
 
         String cellString0;
@@ -131,17 +132,17 @@ public class StudentPreferenceReader {
         }
         newStudent.setPreferences(preferences); // should randomize leftover slots
 
-        if(students.hasStudent(newStudent)) {
+        if(students.hasStudentById(newStudent.getStudentId())) {
             return newStudent;
         }
         else throw new IllegalArgumentException();
     }
-
+/*
     private void setPreferencesOfUnpreferringStudents() throws InvalidArgumentException {
         ArrayList<Student> boringStudents = students.getStudentsWithoutPreferences();
         for (Student student :
                 boringStudents) {
             student.setPreferences(new ArrayList<>());
         }
-    }
+    } */
 }

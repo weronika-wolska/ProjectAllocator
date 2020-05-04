@@ -163,9 +163,15 @@ public class GeneticAlgorithm {
             Arrays.sort(this.population, new Comparator<CandidateSolution>() {
                 @Override
                 public int compare(CandidateSolution firstIndividual, CandidateSolution secondIndividual){
-                    if(firstIndividual.getFitness()>secondIndividual.getFitness()){ return -1;}
-                    if(firstIndividual.getFitness()<secondIndividual.getFitness()){ return 1;}
-                    return 0;
+                    if(firstIndividual.getFitness()>secondIndividual.getFitness()){
+                         return -1;
+                    }
+                    else if(firstIndividual.getFitness()<secondIndividual.getFitness()){ 
+                        return 1;
+                    }
+                    else{
+                        return 0;
+                    }
                 }
             });
 
