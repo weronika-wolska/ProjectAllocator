@@ -14,7 +14,7 @@ public interface ApplicationInterface{
 
     public ProjectRepository readProjectInput(String filepath, StaffRepository staffRepository);
 
-    public StudentRepository readStrudentInput(String filePath, ProjectRepository projectRepository);
+    public StudentRepository readStudentInput(String filePath, ProjectRepository projectRepository);
 
     public StudentRepository readStudentPreferencesInput(String filePath, StudentRepository studentRepository, ProjectRepository projectRepository) throws InvalidArgumentException;
 

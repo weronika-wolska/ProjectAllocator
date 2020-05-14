@@ -10,6 +10,10 @@ public class ProjectRepository{
         this.projects = new ArrayList<Project>();
     }
 
+    public ProjectRepository(ArrayList<Project> projects){
+        this.projects = projects;
+    }
+
     public void addProject(Project project) throws NullPointerException{
         projects.add(project);
     }

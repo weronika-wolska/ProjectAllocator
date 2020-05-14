@@ -11,16 +11,19 @@ import repositories.StaffRepository;
 import repositories.StudentRepository;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import java.util.Map;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.File;
 import java.io.FileOutputStream;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import repositories.ProjectRepository;
 import repositories.StaffRepository;
 import repositories.StudentRepository;
-import java.util.Map;
+
 import java.util.Random;
 import java.util.Map.Entry;
 
@@ -34,6 +37,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
 public class ApplicationInterfaceImplementation implements ApplicationInterface {
+    private double GPAWeight=0.5;
+    @FXML
+    private TableView<TableRow> table;
+
+    public double getGPAWeight(){
+        return this.GPAWeight;
+    }
     @Override
     public StaffRepository readStaffInput(String filePath) {
         StaffReader reader = new StaffReader();
@@ -44,13 +54,14 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
     @Override
     public ProjectRepository readProjectInput(String filepath, StaffRepository staffRepository) {
         ProjectReader reader = new ProjectReader();
+        ProjectRepository projectRepository = new ProjectRepository();
         try {
-            reader.read(filepath, staffRepository);
+            projectRepository = reader.read(filepath, staffRepository);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
-        return reader.getProjectRepository();
+        return projectRepository;
     }
 
     @Override
@@ -63,6 +74,7 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
 
     @Override
     public double getGPAWeight(double weight) {
+        this.GPAWeight = weight;
         return weight;
     }
 
@@ -72,7 +84,7 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
             ProjectRepository projectRepository) {
         GeneticAlgorithm algorithm;
         try {
-            algorithm = new GeneticAlgorithm(studentRepository, projectRepository);
+            algorithm = new GeneticAlgorithm(studentRepository, projectRepository, this.GPAWeight);
         } catch (InvalidArgumentException e) {
             e.printStackTrace();
             return null;
@@ -122,7 +134,7 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
     public TableView showCandidateSolution(CandidateSolution candidateSolution) {
         try{
             Map<Student, Project> map = candidateSolution.getCandidateSolution();
-            TableView displaySolution = new TableView<TableRow>();
+            table = new TableView<TableRow>();
             TableColumn<TableRow, Long> studentIDColumn = new TableColumn("Student ID");
             studentIDColumn.setMaxWidth(100);
             studentIDColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -135,7 +147,7 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
             ObservableList<TableRow> solution = FXCollections.observableArrayList();
             //ArrayList<Student> students = candidateSolution.getStudents();
             //ArrayList<Project> projects = candidateSolution.getProjects(); 
-            displaySolution.getColumns().addAll(studentIDColumn, studentNameColumn, projectColumn);
+            table.getColumns().addAll(studentIDColumn, studentNameColumn, projectColumn);
             /*for(int i=0;i<candidateSolution.getStudents().size();i++){
                 String name = students.get(i).getFirstName() + " " + students.get(i).getSurname();
                 TableRow newRow = new TableRow(students.get(i).getStudentId(), name, projects.get(i).getProjectName());
@@ -148,8 +160,8 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
                 TableRow newRow = new TableRow(student.getStudentId(), name, project.getProjectName());
                 solution.add(newRow);
             }
-            displaySolution.setItems(solution);
-            return displaySolution;
+            table.setItems(solution);
+            return table;
         } catch (NullPointerException e){
             return null;
         }
@@ -235,11 +247,14 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
         }
     }
 
+    
     @Override
-    public StudentRepository readStrudentInput(String filePath, ProjectRepository projectRepository) {
-        // TODO Auto-generated method stub
-        return null;
+    public StudentRepository readStudentInput(String filePath,
+                                              ProjectRepository projectRepository) {
+        StudentReader reader = new StudentReader(projectRepository);
+        return reader.readXLSX(filePath);
     }
+
 
     class TableRow{
         private long id;

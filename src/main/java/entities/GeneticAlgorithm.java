@@ -19,10 +19,13 @@ public class GeneticAlgorithm {
     private ProjectRepository projectRepository;
     private final int populationSize = 1000;
     private Population population;
+    private double gpaweight;
+    boolean iterationsReachedLimit = false;
 
-    public GeneticAlgorithm(StudentRepository studentRepository, ProjectRepository projectRepository)throws InvalidArgumentException{
+    public GeneticAlgorithm(StudentRepository studentRepository, ProjectRepository projectRepository, double gpaweight)throws InvalidArgumentException{
         this.studentRepository = studentRepository;
         this.projectRepository = projectRepository;
+        this.gpaweight=gpaweight;
         this.population = new Population(populationSize, studentRepository, projectRepository);
         this.bestSolutionFound = population.getNthFittest(1);
     }
@@ -43,8 +46,9 @@ public class GeneticAlgorithm {
         int a, b;
         this.bestSolutionFound = this.population.getNthFittest(1);
         int iterations = 0;
-        while(!isTerminatingCoditionMet(population)){
+        while(!isTerminatingCoditionMet(bestSolutionFound)){
             if(iterations==1000){ 
+                this.iterationsReachedLimit = true;
                 this.bestSolutionFound = population.getNthFittest(1);
                 return this.bestSolutionFound;
             }
@@ -62,38 +66,52 @@ public class GeneticAlgorithm {
         return this.bestSolutionFound;
     }
 
+    public boolean getIterationLimitReached(){
+        return this.iterationsReachedLimit;
+    }
+
 
     // terminating condition is that all assigned projects are different and each student
     // gets a project that's in their preference list
-    private boolean isTerminatingCoditionMet(Population population){ 
-        boolean met = true;
-        for(int i=0;i<population.getPopulationSize();i++){
-            if(this.population.getPopulation()[i].getFitness()<1){
-                met = false;
-            }
+    private boolean isTerminatingCoditionMet(CandidateSolution solution){ 
+        try{
+            return solution.everyStudentHasProjectInPreference;
+        } catch(Exception e){
+            e.getCause();
         }
+        return false;
+    }
 
-        return met;
+    public boolean wasTerminatedConditionMet(){
+        return isTerminatingCoditionMet(this.bestSolutionFound);
     }
 
     // picks a random number "index" between 0 and number of students, keeps the first 0-(index-1) elements of the first solution and adds elements at index - number
     // of students from the second solution, creates and returns a new CandidateSolution from the above data
     private CandidateSolution mutate(CandidateSolution firstIndividual, CandidateSolution secondIndividual)throws IndexOutOfBoundsException, InvalidArgumentException{
         Random rand = new Random();
-        ArrayList<Student> newStudents = firstIndividual.getStudents();
-        ArrayList<Project> newProjects = firstIndividual.getProjects();
-        ArrayList<Student> secondStudents = secondIndividual.getStudents();
-        ArrayList<Project> secondProjects = secondIndividual.getProjects();
-        int index = rand.nextInt(firstIndividual.getCandidateSolution().size());
-        for(int i=index;i<firstIndividual.getCandidateSolution().size();i++){
-            newStudents.remove(i);
-            newStudents.add(i, secondStudents.get(i));
-            newProjects.remove(i);
-            newProjects.add(i, secondProjects.get(i));
-        }
-        CandidateSolution newSolution = new CandidateSolution(newStudents, newProjects);
+        try{
+            ArrayList<Student> newStudents = firstIndividual.getStudents();
+            ArrayList<Project> newProjects = firstIndividual.getProjects();
+            ArrayList<Student> secondStudents = secondIndividual.getStudents();
+            ArrayList<Project> secondProjects = secondIndividual.getProjects();
+            int index = rand.nextInt(firstIndividual.getCandidateSolution().size());
+            for(int i=index;i<firstIndividual.getCandidateSolution().size();i++){
+                newStudents.remove(i);
+                newStudents.add(i, secondStudents.get(i));
+                newProjects.remove(i);
+                newProjects.add(i, secondProjects.get(i));
+            }
+            CandidateSolution newSolution = new CandidateSolution(newStudents, newProjects);
+            newSolution.setGpaWeight(gpaweight);
 
-        return newSolution;
+            return newSolution;
+        } catch (Exception e){
+            e.getCause();
+            return null;
+        }
+        
+        
     }
 
     
@@ -143,6 +161,7 @@ public class GeneticAlgorithm {
                     projects.add(projectRepository.getProject(b));
                 }
                 CandidateSolution potentialSolution = new CandidateSolution(students, projects);
+                potentialSolution.setGpaWeight(gpaweight);
                 // if the solution has no duplicate projects and all students have a project, the solution is viable
                 if(isViable(potentialSolution)){
                     population[i] = potentialSolution;
@@ -155,23 +174,32 @@ public class GeneticAlgorithm {
 
         }
 
-        private boolean isViable(CandidateSolution potentialSolution){
-            return (!potentialSolution.isThereDuplicateProjects()&&potentialSolution.getCandidateSolution().size()==this.studentRepository.getSize());
+        public boolean isViable(CandidateSolution potentialSolution){
+            try{
+                return (!potentialSolution.isThereDuplicateProjects()&&potentialSolution.getCandidateSolution().size()==this.studentRepository.getSize());
+            } catch (Exception e){
+                e.getCause();
+                return false;
+            }
+           
         }
 
         public CandidateSolution getNthFittest(int n){
             Arrays.sort(this.population, new Comparator<CandidateSolution>() {
                 @Override
                 public int compare(CandidateSolution firstIndividual, CandidateSolution secondIndividual){
-                    if(firstIndividual.getFitness()>secondIndividual.getFitness()){
-                         return -1;
+                    if(secondIndividual!=null){
+                        if(firstIndividual.getFitness()>secondIndividual.getFitness()){
+                            return -1;
+                       }
+                       else if(firstIndividual.getFitness()<secondIndividual.getFitness()){ 
+                           return 1;
+                       }
+                       else{
+                           return 0;
+                       }
                     }
-                    else if(firstIndividual.getFitness()<secondIndividual.getFitness()){ 
-                        return 1;
-                    }
-                    else{
-                        return 0;
-                    }
+                    return 0;
                 }
             });
 

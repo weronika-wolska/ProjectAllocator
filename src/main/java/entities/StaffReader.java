@@ -34,8 +34,12 @@ public class StaffReader {
         faculty = new ArrayList<>(staffCount);
         try {
             FileInputStream file = new FileInputStream(new File(filePath));
+        
             XSSFWorkbook workbook = new XSSFWorkbook(file);
             XSSFSheet sheet = workbook.getSheetAt(0);
+            if(staffCount==0){
+                staffCount = sheet.getLastRowNum()-1;
+            }
             int rowCount = sheet.getLastRowNum();
             ArrayList<Integer> relevantRowNumbers = getRandomRowNumbers(staffCount, rowCount);
             //System.out.println("File input obtained, random rows:" + Arrays.toString(relevantRowNumbers));

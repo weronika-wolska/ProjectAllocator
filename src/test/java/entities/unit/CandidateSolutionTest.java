@@ -124,7 +124,8 @@ public class CandidateSolutionTest{
         CandidateSolution candidateSolution = new CandidateSolution(studentss, projectss);
         
         // test getFitness()
-        Assert.assertEquals(40, candidateSolution.getFitness());
+        Assert.assertEquals(90, candidateSolution.getFitness());
+        Assert.assertEquals(true, candidateSolution.everyStudentHasProjectInPreference);
         
         // test findProjectAssignedToStudent()
         Assert.assertEquals(project1, candidateSolution.findProjectAssignedToStudent(student1));
@@ -137,15 +138,25 @@ public class CandidateSolutionTest{
 
     @Test
     public void testCalculateFitness()throws InvalidArgumentException{
-        Student student = new Student(setupRepository());
+        ProjectRepository projectss = setupRepository();
+        //Student student = new Student(projectss);
         ArrayList<Project> preferences = new ArrayList<>();
         ArrayList<Student> students = new ArrayList<>();
-        students.add(student);
+        //students.add(student);
         ArrayList<Project> projects = new ArrayList<>();
-        projects.add(setupRepository().getProject(1));
-        preferences.add(setupRepository().getProject(1));
+        projects.add(projectss.getProjectByName("create something"));
+        preferences.add(projectss.getProjectByName("create something"));
+        Student student = new Student("firstName", "surname", (long) 123, 2.2, Stream.CS, preferences, projectss);
+        students.add(student);
+        Assert.assertEquals(1, students.size());
+        Assert.assertEquals(1, projects.size());
+        Assert.assertEquals(10, student.getPreferences().size());
+        Assert.assertEquals(projects.get(0).getProjectName(), student.getPreferences().get(0).getProjectName());
         CandidateSolution solution = new CandidateSolution(students, projects);
-        Assert.assertEquals(10, solution.getFitness());
+        Assert.assertEquals(1, solution.getCandidateSolution().size());
+        
+        Assert.assertEquals(20, solution.getFitness());
+        Assert.assertEquals(true, solution.everyStudentHasProjectInPreference);
     }
 
     @Test

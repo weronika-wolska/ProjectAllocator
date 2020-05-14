@@ -198,23 +198,23 @@ public class MainApplication extends Application {
              
              String staffPath = getStaff.getText();
              System.out.println("Staff Path: " +staffPath);
-             //staff = appInterface.readStaffInput("src/main/resources/staff.xlsx");
+             staff = appInterface.readStaffInput("src/main/resources/staff.xlsx");
              String projectPath = getProjects.getText();
              System.out.println("Project Path: "+projectPath);
-             //projects = appInterface.readProjectInput("src/main/resources/projects500.xlsx", staff);
+             projects = appInterface.readProjectInput("src/main/resources/projects500.xlsx", staff);
              String studentPath = getStudents.getText();
              System.out.println("Student Path: " + studentPath);
-             //students = appInterface.readStrudentInput("src/main/resources/students.xlsx", projects);
+             students = appInterface.readStudentInput("src/main/resources/students.xlsx", projects);
              String preferencesPath = getPreferences.getText(); 
              System.out.println("Preferences Path: " + preferencesPath);
-             //students = appInterface.readStudentPreferencesInput("src/main/resources/studentPreferences60.xlsx", students, projects);
-             /*try {
+            // students = appInterface.readStudentPreferencesInput("src/main/resources/studentPreferences60.xlsx", students, projects);
+            try {
                  students = appInterface.readStudentPreferencesInput("src/main/resources/studentPreferences60.xlsx", students, projects);
              } catch (InvalidArgumentException e2) {
                  
                  errorBox.displayErrorBox();
                  primaryStage.setScene(scene);
-             } */
+             } 
              primaryStage.setScene(gpaScene);
          });
          setWeight.setOnAction(e -> {
@@ -226,14 +226,22 @@ public class MainApplication extends Application {
          
          geneticAlgorithm.setOnAction(e -> {
              System.out.println("Genetic Algorithm was chosen");
-             //bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
-             //solution = appInterface.showCandidateSolution(bestSolutionFound);
-             primaryStage.setScene(displaySolutionScene);
+             try{
+                bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
+                bestSolutionFound.setGpaWeight(appInterface.getGPAWeight());
+                solution = appInterface.showCandidateSolution(bestSolutionFound);
+                primaryStage.setScene(displaySolutionScene);
+             } catch (Exception e4){
+                 e4.getCause();
+                 primaryStage.setScene(scene);
+             }
+             
          });
          simulatedAnnealing.setOnAction(e -> {
-             //bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
-             //bestSolutionFound = appInterface.applySimulatedAnnealing(bestSolutionFound);
-             //solution = appInterface.showCandidateSolution(bestSolutionFound);
+             bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
+             bestSolutionFound = appInterface.applySimulatedAnnealing(bestSolutionFound);
+             solution = appInterface.showCandidateSolution(bestSolutionFound);
+             bestSolutionFound.setGpaWeight(appInterface.getGPAWeight());
              System.out.println("Simulated Annealing was chosen");
              primaryStage.setScene(displaySolutionScene);
          });
@@ -247,7 +255,7 @@ public class MainApplication extends Application {
          downloadSolution.setOnAction(e -> {
              String path = pathInput.displayBox();
              System.out.println("Download solution request made ");
-             //appInterface.downloadCandidateSolution(path, bestSolutionFound);
+             appInterface.downloadCandidateSolution(path, bestSolutionFound);
          });
  
         // primaryStage.show();

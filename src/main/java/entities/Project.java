@@ -39,10 +39,10 @@ public class Project{
         this.supervisor = supervisor;
     }
 
-    @Override
+   /* @Override
     public String toString() {
         return "Project [projectName=" + projectName + ", stream=" + stream + ", supervisor=" + supervisor.getName() + "]";
-    }
+    }*/
 
     public boolean isTheSameProject(String projectName) {
         //System.out.println("Entered isTheSameProject in:" + this.projectName + "_with_" + projectName + "_");

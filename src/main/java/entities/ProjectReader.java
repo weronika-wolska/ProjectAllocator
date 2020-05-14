@@ -24,7 +24,7 @@ public class ProjectReader {
             FileInputStream file = new FileInputStream(new File(filePath));
             XSSFWorkbook workbook = new XSSFWorkbook(file);
             XSSFSheet sheet = workbook.getSheetAt(0);
-            int numOfProjects = sheet.getLastRowNum(); 
+            int numOfProjects = sheet.getLastRowNum() +1; 
             for (int i = 1; i<numOfProjects;i++){   // assuming first row is the header
                 Project project = parseRowIntoProject(sheet.getRow(i), staffRepository);
                 projectRepository.addProject(project);

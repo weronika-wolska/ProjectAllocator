@@ -17,7 +17,8 @@ public class CandidateSolution {
     private ArrayList<Student> students;
     private ArrayList<Project> projects;
     private Map<Student, Project> backupSolution;
-
+    public boolean everyStudentHasProjectInPreference = true;
+    private int size;
     public CandidateSolution(ArrayList<Student> students, ArrayList<Project> projects) throws InvalidArgumentException{
         this(students, projects, 0);
     }
@@ -52,8 +53,13 @@ public class CandidateSolution {
             throw new InvalidArgumentException();
         }
 
-
+        if(this.candidateSolution==null){ this.size=0;}
+        else{this.size = this.candidateSolution.size();}
         this.fitness = calculateFitness(this.candidateSolution);
+    }
+
+    public int size(){
+        return this.size;
     }
 
     public int getFitness(){
@@ -97,22 +103,25 @@ public class CandidateSolution {
         Project project = entry.getValue();
         ArrayList<Project> preferences = student.getPreferences();
         // assumes student has exactly 10 preferences
-        for(int i = 0; i<10;i++){
-            if(student.getPreferences().get(1)==project){
-                fitness = fitness + 10;
+        for(int i = 0; i<preferences.size();i++){
+            if(preferences.get(0).getProjectName()==project.getProjectName()){
+                return 20;
             }
             if(preferences.get(i).getProjectName()==project.getProjectName()){
-                fitness = 10 - i;       // if the assigned project is first preference, fitness is 10, if it's second, fitness is 9 etc.
+                return 20 - i;       // if the assigned project is first preference, fitness is 10, if it's second, fitness is 9 etc.
             }
         }
-        if(fitness<1){fitness = -50;} // if the assigned project is not in student's preferences, penalise 50 fitness points
+        if(fitness<1){
+            fitness = -50;
+            everyStudentHasProjectInPreference = false;
+        } // if the assigned project is not in student's preferences, penalise 50 fitness points
         return fitness;
     }
 
     private int calculateFitness(Map<Student, Project> map){
         int score = 0;
         for(Map.Entry solution : map.entrySet()){
-            /*Student student = (Student)solution.getKey();
+           /* Student student = (Student)solution.getKey();
             ArrayList<Project> studentPreferences = student.getPreferences();
             Project project = (Project)solution.getValue();
             for(int i=0;i<10;i++){
@@ -181,6 +190,7 @@ public class CandidateSolution {
             // deduct points if assigned project is not on the student's preference list
             else{
                 fitness-=50;
+                this.everyStudentHasProjectInPreference = false;
             }
             if(!student.canDoProject(projects.get(i))) fitness = students.size() * 100; // if the project is unfitting, make solution unfit
         }

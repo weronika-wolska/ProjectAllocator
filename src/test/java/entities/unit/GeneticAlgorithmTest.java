@@ -11,33 +11,115 @@ import entities.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+
 public class GeneticAlgorithmTest {
-    public static void main(String[] args) throws FileNotFoundException, IOException, InvalidArgumentException{
-        CandidateSolution solution = setup();
-        for(int i=0;i<500;i++){
-            Student student = (Student) solution.getStudents().get(i);
-            Project project = (Project) solution.getProjects().get(i);
-            System.out.println(student.getFirstName() + student.getSurname() + project.getProjectName());
+    @Test
+    public void geneticAlgorithmTest() throws InvalidArgumentException{
+        Project project = new Project("the effects of Jake Paul on today's youth");
+        Project project2 = new Project("Why this project is giving me mental breakdowns");
+        Project project3 = new Project("Why techno is not real music");
+        Project project4 = new Project("Humanity is doomed");
+        Project project5 = new Project("I hate my life");
+        Project project6= new Project("projectName");
+        Project project7 = new Project("It's as easy as 123");
+        Project project8 = new Project("Breakfast at Tiffany's by Deep Blue Something");
+        Project project9 = new Project("Tiger King is not a real documentary");
+        Project project10 = new Project("Mr Nobody is the best movie ever made");
+        Project project11= new Project("Test");
+        Project project12 = new Project("Still a test");
+        Project project13 = new Project("Test again");
+        Project project14 = new Project("Still a test aagain");
+        Project project15 = new Project("Still testing");
+        Project project16 = new Project("Hi, still testing");
+        Project project17 = new Project("plz work");
+        Project project18 = new Project("this is so tedious");
+        Project project19 = new Project("Almost there");
+        Project project20 = new Project("Finally");
+        ArrayList<Project> projects = new ArrayList<>();
+        projects.add(project);
+        projects.add(project2);
+        projects.add(project3);
+        projects.add(project4);
+        projects.add(project5);
+        projects.add(project6);
+        projects.add(project7);
+        projects.add(project8);
+        projects.add(project9);
+        projects.add(project10);
+        projects.add(project11);
+        projects.add(project12);
+        projects.add(project13);
+        projects.add(project14);
+        projects.add(project15);
+        projects.add(project16);
+        projects.add(project17);
+        projects.add(project18);
+        projects.add(project19);
+        projects.add(project20);
+        ProjectRepository projectRepository = new ProjectRepository(projects);
+        Student student = new Student("Dolly", "Parton", (long) 12345, 3.5, Stream.CSDS, null, projectRepository);
+        Student student2 = new Student("Billy", "Joel", (long) 23456, 3.2, Stream.CSDS, null, projectRepository);
+        Student student3 = new Student("Don", "McLean", (long) 17462, 3.9, Stream.CSDS, null, projectRepository);
+        Student student4 = new Student("Brandon", "Urie", (long) 28414, 3.4, Stream.CSDS, null, projectRepository);
+        Student student5 = new Student("Stephen", "Hawking", (long) 65809, 3.4, Stream.CSDS, null, projectRepository);
+        Student student6 = new Student("Albert", "Einstein", (long) 93472, 3.4, Stream.CSDS, null, projectRepository);
+        Student student7 = new Student("Elon", "Musk", (long) 785326, 3.4, Stream.CSDS, null, projectRepository);
+        Student student8 = new Student("Drew", "Gooden", (long) 823161, 3.4, Stream.CSDS, null, projectRepository);
+        Student student9 = new Student("Danny", "Gonzalez", (long) 734291, 3.4, Stream.CSDS, null, projectRepository);
+        Student student10 = new Student("Kurtis", "Connor", (long) 432781, 3.4, Stream.CSDS, null, projectRepository);
+        ArrayList<Student> students = new ArrayList<>();
+        students.add(student);
+        students.add(student2);
+        students.add(student3);
+        students.add(student4);
+        students.add(student5);
+        students.add(student6);
+        students.add(student7);
+        students.add(student8);
+        students.add(student9);
+        students.add(student10);
+        StudentRepository studentRepository = new StudentRepository(students);
+        GeneticAlgorithm ga = new GeneticAlgorithm(studentRepository, projectRepository, 0.0);
+        CandidateSolution  solution = ga.applyAlgorithm();
+        try{
+            Assert.assertEquals(false, solution.isThereDuplicateProjects());
+            Assert.assertEquals(true, ga.wasTerminatedConditionMet()||ga.getIterationLimitReached());
+        } catch(Exception e){
+            e.getCause();
         }
+        
+
     }
 
-
-
-    public static CandidateSolution setup() throws IOException, FileNotFoundException, InvalidArgumentException{
+    @Test
+    public void testGeneticAlgorithmWithFileInput() throws Exception{
         StaffReader staffReader = new StaffReader();
-        StaffRepository staffRepository = staffReader.readXLSX(1031, "src/main/resources/staff.xlsx");
+        StaffRepository staffRepository = staffReader.readXLSX("src/main/resources/staff.xlsx");
+        Assert.assertEquals(1030, staffRepository.getSize());
         ProjectReader projectReader = new ProjectReader();
         ProjectRepository projectRepository = projectReader.read("src/main/resources/projects500.xlsx", staffRepository);
+        Assert.assertEquals(500, projectRepository.getSize());
         StudentReader studentReader = new StudentReader(projectRepository);
-        StudentRepository studentRepository = studentReader.readXLSX(500, "src/main/resources/studentPreferences500.xlsx");
-
-        GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(studentRepository, projectRepository);
-        geneticAlgorithm.applyAlgorithm();
-        return geneticAlgorithm.getBestSolution();
+        studentReader.setTesting(false);
+        StudentRepository studentRepository = studentReader.readXLSX("src/main/resources/students.xlsx");
+        Assert.assertEquals(1000, studentRepository.getSize());
+        StudentPreferenceReader studentPreferenceReader = new StudentPreferenceReader(studentRepository, projectRepository);
+        studentPreferenceReader.readXLSX("src/main/resources/studentPreferences500.xlsx");
+        studentRepository = studentPreferenceReader.getStudents();
+        Assert.assertEquals(1000, studentRepository.getSize());
+        GeneticAlgorithm ga = new GeneticAlgorithm(studentRepository, projectRepository, 0.0);
+        CandidateSolution solution = ga.applyAlgorithm();
+        try{
+            Assert.assertEquals(false, solution.isThereDuplicateProjects());
+            Assert.assertEquals(true, ga.wasTerminatedConditionMet()||ga.getIterationLimitReached());
+        } catch(Exception e){
+            e.getCause();
+        }
     }
     
 }

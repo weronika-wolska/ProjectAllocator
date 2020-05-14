@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - ApplicationTest",
+            "request": "launch",
+            "mainClass": "application.ApplicationTest",
+            "projectName": "cthulhu"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - MainApplication",
             "request": "launch",
             "mainClass": "applications.MainApplication",
