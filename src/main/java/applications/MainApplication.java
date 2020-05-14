@@ -16,6 +16,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javax.swing.SwingUtilities;
+import javafx.embed.swing.JFXPanel;
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.ArrayList;
 
@@ -28,6 +33,8 @@ import interfaces.ApplicationInterfaceImplementation;
 import exceptions.*;
 import windows.InvalidArgumentErrorBox;
 import windows.*;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 
 public class MainApplication extends Application {
 
@@ -40,7 +47,9 @@ public class MainApplication extends Application {
     Button goToGPA, setWeight, downloadSolution;
     TextField getStudents, getStaff, getProjects, getPreferences;
     Slider getGpaWeight;
-    TableView solution = null;
+    @FXML
+    TableView<TableRow> solution;
+    ObservableList<TableRow> solutionList;
     CandidateSolution bestSolutionFound;
     ApplicationInterfaceImplementation appInterface = new ApplicationInterfaceImplementation();
     ProjectRepository projects;
@@ -55,8 +64,11 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        displayApplication(primaryStage);
-        primaryStage.show();
+       
+            displayApplication(primaryStage);
+            primaryStage.show();
+      
+        
 
     }
 
@@ -88,11 +100,12 @@ public class MainApplication extends Application {
          // input boxes
          HBox staffInput = new HBox(10);
          staffInput.setAlignment(Pos.CENTER);
+         Label information = new Label("IMPORTANT: Please make sure the file paths you enter ar in the format C/Users/mary/...");
          Label staffLabel = new Label("Staff:  ");
          TextField getStaff = new TextField();
          getStaff.setMaxWidth(500);
          getStaff.setText("src/main/resources/staff.xlsx");
-         staffInput.getChildren().addAll(staffLabel, getStaff);
+         staffInput.getChildren().addAll( staffLabel, getStaff);
  
          HBox projectInput = new HBox(10);
          projectInput.setAlignment(Pos.CENTER);
@@ -107,7 +120,7 @@ public class MainApplication extends Application {
          Label studentLabel = new Label("Students:  ");
          TextField getStudents = new TextField();
          getStudents.setMaxWidth(500);
-         getStudents.setText("src/main/resources/students.xlsx");
+         getStudents.setText("src/main/resources/students60.xlsx");
          studentInput.getChildren().addAll(studentLabel, getStudents);
  
          HBox preferencesInput = new HBox(10);
@@ -119,10 +132,20 @@ public class MainApplication extends Application {
          preferencesInput.getChildren().addAll(studentPreferencesLabel, getPreferences);
          Button goToAlgorithms = new Button("Continue");
          goToGPA = new Button("Continue");
+
+         Label or = new Label("OR");
+         or.setMinSize(20, 20);
+
+         HBox oneFileInput = new HBox(10);
+         oneFileInput.setAlignment(Pos.CENTER);
+         Label oneFileLabel = new Label("Enter one file: ");
+         TextField getOneFile = new TextField();
+         oneFileInput.getChildren().addAll(oneFileLabel, getOneFile);
+
  
-         window.getChildren().addAll(staffInput, projectInput, studentInput, preferencesInput, goToGPA);
+         window.getChildren().addAll(information, staffInput, projectInput, studentInput, preferencesInput, or, oneFileInput, goToGPA);
  
-         Scene scene = new Scene(window, 800, 500);
+         Scene scene = new Scene(window, 1000, 700);
          primaryStage.setScene(scene);
          try{
              if(students.getSize()==projects.getSize()){
@@ -135,7 +158,7 @@ public class MainApplication extends Application {
                  bestSolutionFound = new CandidateSolution(students.getStudents(), p);
              }
          } catch(NullPointerException e){
-             errorBox.displayErrorBox();
+             //errorBox.displayErrorBox();
              primaryStage.setScene(scene);
          }
          // set GPA weight window
@@ -168,17 +191,54 @@ public class MainApplication extends Application {
          Scene chooseAlgorithmScene = new Scene(algorithms, 800, 500);
         
          // display candidate solution window
-         Label outcome = new Label("This is the best solution we found");
-         solution = appInterface.showCandidateSolution(bestSolutionFound);
-         Label averageSatisfaction = new Label(appInterface.getAverageStudentSatisfaction(bestSolutionFound) + " / 10");
+         Label outcome = new Label("This is the best solution we found: ");
+         // prevents initialization error for TableView
+         SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new JFXPanel(); // this will prepare JavaFX toolkit and environment
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                       
+                    }
+                });
+            }
+        });
+        try{
+            this.solution = new TableView<TableRow>();
+            TableColumn<TableRow, Long> studentIDColumn = new TableColumn("Student ID");
+            studentIDColumn.setMaxWidth(100);
+            studentIDColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+            TableColumn<TableRow, String> studentNameColumn = new TableColumn("Student name");
+            studentNameColumn.setMaxWidth(200);
+            studentNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+            TableColumn<TableRow, String> projectColumn = new TableColumn<>("Assigned Project");
+            projectColumn.setMaxWidth(300);
+            projectColumn.setCellValueFactory(new PropertyValueFactory<>("project"));
+            this.solution.getColumns().addAll(studentIDColumn,studentNameColumn, projectColumn);
+            this.solution.setItems(this.solutionList);
+        } catch (Exception x){
+            x.getCause();
+        }
+
+         //solution = appInterface.showCandidateSolution(bestSolutionFound);
+         Label averageSatisfaction = new Label("Average student satisfaction: "+appInterface.getAverageStudentSatisfaction(bestSolutionFound) + " / 10");
          Button downloadSolution = new Button("Download");
          VBox displaySolution = new VBox(20);
          displaySolution.setAlignment(Pos.CENTER);
-         displaySolution.getChildren().addAll(outcome, downloadSolution);
+         displaySolution.getChildren().add(outcome);
+         try{
+             displaySolution.getChildren().add(this.solution);
+         } catch(Exception a){
+             a.getCause();
+         }
+         displaySolution.getChildren().addAll(averageSatisfaction, downloadSolution);
+         //displaySolution.getChildren().addAll(outcome,this.solution, averageSatisfaction, downloadSolution);
+            
+         
          Scene displaySolutionScene = new Scene(displaySolution, 800, 500);
-         geneticAlgorithm.setOnAction(e -> primaryStage.setScene(displaySolutionScene));
-         simulatedAnnealing.setOnAction(e -> primaryStage.setScene(displaySolutionScene));
-         hillClimbing.setOnAction(e -> primaryStage.setScene(displaySolutionScene));
+         
  
          // event handler
          studentTemplateDownload.setOnAction(e -> {
@@ -194,28 +254,34 @@ public class MainApplication extends Application {
              appInterface.downloadStaffTemplate(path);
          });
          goToGPA.setOnAction(e -> {
-             
-             
-             String staffPath = getStaff.getText();
-             System.out.println("Staff Path: " +staffPath);
-             staff = appInterface.readStaffInput("src/main/resources/staff.xlsx");
-             String projectPath = getProjects.getText();
-             System.out.println("Project Path: "+projectPath);
-             projects = appInterface.readProjectInput("src/main/resources/projects500.xlsx", staff);
-             String studentPath = getStudents.getText();
-             System.out.println("Student Path: " + studentPath);
-             students = appInterface.readStudentInput("src/main/resources/students.xlsx", projects);
-             String preferencesPath = getPreferences.getText(); 
-             System.out.println("Preferences Path: " + preferencesPath);
-            // students = appInterface.readStudentPreferencesInput("src/main/resources/studentPreferences60.xlsx", students, projects);
             try {
-                 students = appInterface.readStudentPreferencesInput("src/main/resources/studentPreferences60.xlsx", students, projects);
+                if(getStaff.getText()!=null || getStaff.getText()!=""){
+                    String staffPath = getStaff.getText();
+                    System.out.println("Staff Path: " +staffPath);
+                    this.staff = appInterface.readStaffInput(staffPath);
+                    System.out.println(staff.getSize());
+                    String projectPath = getProjects.getText();
+                    System.out.println("Project Path: "+projectPath);
+                    this.projects = appInterface.readProjectInput(projectPath, staff);
+                    System.out.println(projects.getSize());
+                    String studentPath = getStudents.getText();
+                    System.out.println("Student Path: " + studentPath);
+                    this.students = appInterface.readStudentInput(studentPath, projects);
+                    System.out.println(students.getSize());
+                    String preferencesPath = getPreferences.getText(); 
+                    System.out.println("Preferences Path: " + preferencesPath);
+                    students = appInterface.readStudentPreferencesInput("src/main/resources/studentPreferences60.xlsx", students, projects);
+                    System.out.println(students.getSize());
+                } else{
+                    //appInterface.readInputFromOneFile()
+                }
+                
+                primaryStage.setScene(gpaScene);
              } catch (InvalidArgumentException e2) {
                  
                  errorBox.displayErrorBox();
                  primaryStage.setScene(scene);
              } 
-             primaryStage.setScene(gpaScene);
          });
          setWeight.setOnAction(e -> {
              double weight = getGpaWeight.getValue();
@@ -227,21 +293,37 @@ public class MainApplication extends Application {
          geneticAlgorithm.setOnAction(e -> {
              System.out.println("Genetic Algorithm was chosen");
              try{
-                bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
-                bestSolutionFound.setGpaWeight(appInterface.getGPAWeight());
-                solution = appInterface.showCandidateSolution(bestSolutionFound);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        new JFXPanel(); // this will prepare JavaFX toolkit and environment
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                               
+                            }
+                        });
+                    }
+                });
+                this.bestSolutionFound = appInterface.applyGeneticAlgorithm(this.students, this.projects);
+                this.solutionList = appInterface.showCandidateSolution(bestSolutionFound);
+                if(this.bestSolutionFound!=null)System.out.println(this.bestSolutionFound.size());
+                else System.out.println("candidate solution is null");
+                //for(int i=0; i<this.bestSolutionFound.size(); i++){
+
+               // }
                 primaryStage.setScene(displaySolutionScene);
              } catch (Exception e4){
+                 System.out.println("error somewhere");
                  e4.getCause();
                  primaryStage.setScene(scene);
              }
              
          });
          simulatedAnnealing.setOnAction(e -> {
-             bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
-             bestSolutionFound = appInterface.applySimulatedAnnealing(bestSolutionFound);
-             solution = appInterface.showCandidateSolution(bestSolutionFound);
-             bestSolutionFound.setGpaWeight(appInterface.getGPAWeight());
+             //bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
+             bestSolutionFound = appInterface.applySimulatedAnnealing();
+             this.solutionList = appInterface.showCandidateSolution(bestSolutionFound);
              System.out.println("Simulated Annealing was chosen");
              primaryStage.setScene(displaySolutionScene);
          });

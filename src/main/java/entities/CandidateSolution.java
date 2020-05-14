@@ -8,6 +8,8 @@ import java.util.Map.Entry;
 
 import exceptions.InvalidArgumentException;
 import exceptions.NoRandomChangeWasMadeException;
+import entities.*;
+import repositories.*;
 
 public class CandidateSolution {
     public static final int FULL_STUDENT_FITNESS = 10;
@@ -17,8 +19,62 @@ public class CandidateSolution {
     private ArrayList<Student> students;
     private ArrayList<Project> projects;
     private Map<Student, Project> backupSolution;
+    private ArrayList<Project> leftoverProjects;
+    private ArrayList<Project> backupLeftoverProjects;
+
     public boolean everyStudentHasProjectInPreference = true;
     private int size;
+    public ArrayList<Project> getBackupLeftoverProjects() throws NoRandomChangeWasMadeException {
+        if(backupLeftoverProjects == null) {
+            throw new NoRandomChangeWasMadeException();
+        }
+        else {
+            return backupLeftoverProjects;
+        }
+    }
+
+    public void setBackupLeftoverProjects(ArrayList<Project> backupLeftoverProjects) {
+        this.backupLeftoverProjects = backupLeftoverProjects;
+    }
+
+    public ArrayList<Project> getLeftoverProjects() {
+        return leftoverProjects;
+    }
+
+    public void setLeftoverProjects(ArrayList<Project> leftoverProjects) {
+        this.leftoverProjects = leftoverProjects;
+    }
+
+    public CandidateSolution(StudentRepository students, ProjectRepository projects) throws InvalidArgumentException {
+        this(students, projects, 0);
+    }
+
+    public CandidateSolution(StudentRepository students, ProjectRepository projects, double gpaWeight) throws InvalidArgumentException {
+        this.students = new ArrayList<>();
+        this.projects = new ArrayList<>();
+        this.candidateSolution = new HashMap<>(students.getSize());
+        this.leftoverProjects = new ArrayList<>();
+        for( int i = 0; i < projects.getSize(); ++i) {
+            if( i < students.getSize()) {
+                this.students.add(students.getStudent(i));
+                this.projects.add(projects.getProject(i));
+            }
+            else {
+                this.leftoverProjects.add(projects.getProject(i));
+            }
+        }
+        setGpaWeight(gpaWeight);
+        for( int i = 0; i < students.getSize(); ++i){
+            candidateSolution.put(students.getStudent(i), projects.getProject(i));
+        }
+        if (isThereDuplicateProjects()) {
+            throw new InvalidArgumentException();
+        }
+        this.fitness = calculateFitness(candidateSolution);
+        this.backupSolution = null; // this map is so by default, only pointed to an actual map when needed, no setters/getters necessary
+        this.backupLeftoverProjects = null;
+    }
+
     public CandidateSolution(ArrayList<Student> students, ArrayList<Project> projects) throws InvalidArgumentException{
         this(students, projects, 0);
     }
@@ -49,13 +105,15 @@ public class CandidateSolution {
             candidateSolution.put(students.get(i), projects.get(i));
         }
 
-        if (isThereDuplicateProjects()) {
-            throw new InvalidArgumentException();
-        }
 
         if(this.candidateSolution==null){ this.size=0;}
         else{this.size = this.candidateSolution.size();}
         this.fitness = calculateFitness(this.candidateSolution);
+
+        if (isThereDuplicateProjects()) {
+            //throw new InvalidArgumentException();
+            this.fitness -= 50;
+        }
     }
 
     public int size(){
@@ -67,7 +125,10 @@ public class CandidateSolution {
     }
 
 
-    public double getEnergy() { return ( (double) 1 / this.fitness ) * 1000; }
+    public double getEnergy() {
+        return fitness * -1;
+    }
+
 
     public Map getCandidateSolution(){
         return this.candidateSolution;

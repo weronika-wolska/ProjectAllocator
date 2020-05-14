@@ -82,6 +82,14 @@ public class Student{
         return Student.projectRepository;
     }
 
+    public String getName(){
+        return this.name;
+    }
+
+    public void setName(String name){
+        this.name = name;
+    }
+
     public String getFirstName() {
         return firstName;
     }

@@ -1,10 +1,12 @@
 package interfaces;
 
 import entities.CandidateSolution;
+import entities.TableRow;
 import exceptions.InvalidArgumentException;
 import repositories.ProjectRepository;
 import repositories.StaffRepository;
 import repositories.StudentRepository;
+import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
@@ -20,15 +22,15 @@ public interface ApplicationInterface{
 
     public double getGPAWeight(double weight);
 
-    public CandidateSolution applyGeneticAlgorithm(StudentRepository studentRepository, ProjectRepository projectRepository);
+    public CandidateSolution applyGeneticAlgorithm(StudentRepository studentRepository, ProjectRepository projectRepository) throws Exception;
 
-    public CandidateSolution applySimulatedAnnealing(CandidateSolution originalSolution);
+    public CandidateSolution applySimulatedAnnealing();
 
-    public CandidateSolution applyHillClimbing(CandidateSolution candidateSolution);
+    public CandidateSolution applyHillClimbing();
 
     public double getAverageStudentSatisfaction(CandidateSolution bestSolutionFound);
 
-    public TableView showCandidateSolution(CandidateSolution candidateSolution);
+    public ObservableList<TableRow> showCandidateSolution(CandidateSolution candidateSolution);
 
     public void downloadCandidateSolution(String filePath, CandidateSolution candidateSolution);
 

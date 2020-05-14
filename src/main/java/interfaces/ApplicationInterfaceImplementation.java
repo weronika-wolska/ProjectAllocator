@@ -5,7 +5,6 @@ import entities.ProjectWriter;
 import entities.StudentPreferenceWriter;
 import entities.*;
 import exceptions.*;
-import interfaces.ApplicationInterfaceImplementation.TableRow;
 import repositories.ProjectRepository;
 import repositories.StaffRepository;
 import repositories.StudentRepository;
@@ -23,6 +22,9 @@ import javafx.fxml.Initializable;
 import repositories.ProjectRepository;
 import repositories.StaffRepository;
 import repositories.StudentRepository;
+import javax.swing.SwingUtilities;
+import javafx.embed.swing.JFXPanel;
+import javafx.application.Platform;
 
 import java.util.Random;
 import java.util.Map.Entry;
@@ -38,8 +40,9 @@ import javafx.fxml.Initializable;
 
 public class ApplicationInterfaceImplementation implements ApplicationInterface {
     private double GPAWeight=0.5;
-    @FXML
-    private TableView<TableRow> table;
+    private CandidateSolution originalSolution;
+    private StudentRepository studentRepository;
+    private ProjectRepository projectRepository;
 
     public double getGPAWeight(){
         return this.GPAWeight;
@@ -61,6 +64,7 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
             e.printStackTrace();
             return null;
         }
+        this.projectRepository = projectRepository;
         return projectRepository;
     }
 
@@ -69,45 +73,49 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
             ProjectRepository projectRepository) throws InvalidArgumentException {
         StudentPreferenceReader reader = new StudentPreferenceReader(studentRepository, projectRepository);
         reader.readXLSX(filePath);
+        this.studentRepository = reader.getStudents();
+        this.originalSolution = new CandidateSolution(this.studentRepository, this.projectRepository);
         return reader.getStudents();
     }
 
     @Override
     public double getGPAWeight(double weight) {
         this.GPAWeight = weight;
+        this.originalSolution.setGpaWeight(weight);
         return weight;
     }
 
     // TODO check with Weronika
     @Override
     public CandidateSolution applyGeneticAlgorithm(StudentRepository studentRepository,
-            ProjectRepository projectRepository) {
-        GeneticAlgorithm algorithm;
-        try {
-            algorithm = new GeneticAlgorithm(studentRepository, projectRepository, this.GPAWeight);
-        } catch (InvalidArgumentException e) {
-            e.printStackTrace();
+            ProjectRepository projectRepository) throws Exception {
+        //GeneticAlgorithm algorithm;
+        try{
+            GeneticAlgorithm algorithm = new GeneticAlgorithm(studentRepository, projectRepository, this.GPAWeight);
+            System.out.println(algorithm.getBestSolution().getGpaWeight());
+            CandidateSolution bestSolution = algorithm.applyAlgorithm();
+            System.out.println(algorithm.getBestSolution().size());
+            return bestSolution;
+        } catch (Exception exception){
+            exception.getCause();
             return null;
         }
-        try {
-            algorithm.applyAlgorithm();
-        } catch (InvalidArgumentException e) {
-            e.printStackTrace();
-            return null;
-        }
-        return algorithm.getBestSolution();
+            
+        
+        
+        
     }
 
     @Override
-    public CandidateSolution applyHillClimbing(CandidateSolution candidateSolution) {
-        HillClimbingAlgorithm algorithm = new HillClimbingAlgorithm(candidateSolution);
+    public CandidateSolution applyHillClimbing() {
+        HillClimbingAlgorithm algorithm = new HillClimbingAlgorithm(this.originalSolution);
         algorithm.createAssignment();
         return algorithm.giveOutput();
     }
 
     @Override
-    public CandidateSolution applySimulatedAnnealing(CandidateSolution originalSolution) {
-        SimulatedAnnealing algorithm = new SimulatedAnnealing(originalSolution);
+    public CandidateSolution applySimulatedAnnealing() {
+        SimulatedAnnealing algorithm = new SimulatedAnnealing(this.originalSolution);
         algorithm.createAssignment();
         return algorithm.giveOutput();
     }
@@ -131,10 +139,22 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
     }
 
     @Override
-    public TableView showCandidateSolution(CandidateSolution candidateSolution) {
+    public ObservableList<TableRow> showCandidateSolution(CandidateSolution candidateSolution) {
+        // prevents initialization error
         try{
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    new JFXPanel(); // this will prepare JavaFX toolkit and environment
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                           
+                        }
+                    });
+                }
+            });
             Map<Student, Project> map = candidateSolution.getCandidateSolution();
-            table = new TableView<TableRow>();
             TableColumn<TableRow, Long> studentIDColumn = new TableColumn("Student ID");
             studentIDColumn.setMaxWidth(100);
             studentIDColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -147,7 +167,7 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
             ObservableList<TableRow> solution = FXCollections.observableArrayList();
             //ArrayList<Student> students = candidateSolution.getStudents();
             //ArrayList<Project> projects = candidateSolution.getProjects(); 
-            table.getColumns().addAll(studentIDColumn, studentNameColumn, projectColumn);
+            //table.getColumns().addAll(studentIDColumn, studentNameColumn, projectColumn);
             /*for(int i=0;i<candidateSolution.getStudents().size();i++){
                 String name = students.get(i).getFirstName() + " " + students.get(i).getSurname();
                 TableRow newRow = new TableRow(students.get(i).getStudentId(), name, projects.get(i).getProjectName());
@@ -156,12 +176,10 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
             for(Entry<Student, Project> entry: map.entrySet()){
                 Student student = entry.getKey();
                 Project project = entry.getValue();
-                String name = student.getFirstName() + " " + student.getSurname();
-                TableRow newRow = new TableRow(student.getStudentId(), name, project.getProjectName());
+                TableRow newRow = new TableRow(student.getStudentId(), student.getName(), project.getProjectName());
                 solution.add(newRow);
             }
-            table.setItems(solution);
-            return table;
+            return solution;
         } catch (NullPointerException e){
             return null;
         }
@@ -256,39 +274,5 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
     }
 
 
-    class TableRow{
-        private long id;
-        private String name;
-        private String project;
-        public TableRow(Long id, String name, String project){
-            this.id = id;
-            this.name = name;
-            this.project = project;
-        }
-
-        public long getId(){
-            return this.id;
-        }
-
-        public String getName(){
-            return this.name;
-        }
-
-        public String getProject(){
-            return this.project;
-        }
-
-        public void setId(long newId){
-            this.id = newId;
-        }
-
-        public void setName(String newName){
-            this.name = newName;
-        }
-
-        public void setProject(String project){
-            this.project = project;
-        }
-    }
-
+    
 }

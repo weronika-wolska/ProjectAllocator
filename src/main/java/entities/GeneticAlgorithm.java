@@ -26,8 +26,6 @@ public class GeneticAlgorithm {
         this.studentRepository = studentRepository;
         this.projectRepository = projectRepository;
         this.gpaweight=gpaweight;
-        this.population = new Population(populationSize, studentRepository, projectRepository);
-        this.bestSolutionFound = population.getNthFittest(1);
     }
 
     public CandidateSolution getBestSolution(){
@@ -42,6 +40,8 @@ public class GeneticAlgorithm {
     // 1,000 iterations and the condition is still not satisfied
     // returns the solution with the highest fitness
     public CandidateSolution applyAlgorithm() throws InvalidArgumentException{
+        this.population = new Population(populationSize, studentRepository, projectRepository);
+        if(this.population.population[0]==null){throw new InvalidArgumentException();}
         Random rand = new Random();
         int a, b;
         this.bestSolutionFound = this.population.getNthFittest(1);
@@ -49,7 +49,7 @@ public class GeneticAlgorithm {
         while(!isTerminatingCoditionMet(bestSolutionFound)){
             if(iterations==1000){ 
                 this.iterationsReachedLimit = true;
-                this.bestSolutionFound = population.getNthFittest(1);
+                this.bestSolutionFound = this.population.getNthFittest(1);
                 return this.bestSolutionFound;
             }
             do{
@@ -124,10 +124,17 @@ public class GeneticAlgorithm {
         private ProjectRepository projectRepository;
 
         public Population(int populationSize, StudentRepository studentRepository, ProjectRepository projectRepository)throws InvalidArgumentException{
+            if(studentRepository==null || projectRepository == null) throw new InvalidArgumentException();
             this.studentRepository=studentRepository;
             this.projectRepository=projectRepository;
-            this.population = new CandidateSolution[populationSize];
-            this.population = generatePopulation();
+            //this.population = new CandidateSolution[populationSize];
+            try{
+                this.population = generatePopulation();
+            } catch (Exception e){
+                System.out.println(e.toString());
+                e.getCause();
+            }
+            //this.population = generatePopulation();
         }
 
         public CandidateSolution[] getPopulation(){
@@ -146,14 +153,14 @@ public class GeneticAlgorithm {
             this.populationFitness = newFitness;
         }
 
-        private CandidateSolution[] generatePopulation() throws InvalidArgumentException{
+        private CandidateSolution[] generatePopulation() throws Exception{
             Random rand = new Random();
             ArrayList<Student> students = new ArrayList<>();
             ArrayList<Project> projects = new ArrayList<>();
             int a,b;
             int i = 0;
             CandidateSolution[] population = new CandidateSolution[populationSize];
-            while(population.length!=populationSize){
+            while(i!=populationSize){
                 for(int j=0;j<studentRepository.getSize();j++){
                     a = rand.nextInt(this.studentRepository.getSize());
                     students.add(studentRepository.getStudent(a));
@@ -161,7 +168,7 @@ public class GeneticAlgorithm {
                     projects.add(projectRepository.getProject(b));
                 }
                 CandidateSolution potentialSolution = new CandidateSolution(students, projects);
-                potentialSolution.setGpaWeight(gpaweight);
+                //potentialSolution.setGpaWeight(gpaweight);
                 // if the solution has no duplicate projects and all students have a project, the solution is viable
                 if(isViable(potentialSolution)){
                     population[i] = potentialSolution;
@@ -169,6 +176,9 @@ public class GeneticAlgorithm {
                 }
                students.clear();
                projects.clear();
+            }
+            if(population[i]==null){
+                throw new Exception("population not initialized correctly");
             }
             return population;
 
@@ -229,6 +239,22 @@ public class GeneticAlgorithm {
                 
 	        }
         }
+    }
+
+    public StudentRepository getStudentRepository() {
+        return studentRepository;
+    }
+
+    public void setStudentRepository(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
+    }
+
+    public ProjectRepository getProjectRepository() {
+        return projectRepository;
+    }
+
+    public void setProjectRepository(ProjectRepository projectRepository) {
+        this.projectRepository = projectRepository;
     }
 
 }

@@ -87,6 +87,10 @@ public class GeneticAlgorithmTest {
         GeneticAlgorithm ga = new GeneticAlgorithm(studentRepository, projectRepository, 0.0);
         CandidateSolution  solution = ga.applyAlgorithm();
         try{
+            Assert.assertEquals(studentRepository, ga.getStudentRepository());
+            Assert.assertEquals(projectRepository, ga.getProjectRepository());
+            Assert.assertEquals(1000, ga.getPopulation().length);
+            //Assert.assertNotNull(solution);
             Assert.assertEquals(false, solution.isThereDuplicateProjects());
             Assert.assertEquals(true, ga.wasTerminatedConditionMet()||ga.getIterationLimitReached());
         } catch(Exception e){
@@ -115,6 +119,7 @@ public class GeneticAlgorithmTest {
         GeneticAlgorithm ga = new GeneticAlgorithm(studentRepository, projectRepository, 0.0);
         CandidateSolution solution = ga.applyAlgorithm();
         try{
+            Assert.assertNotNull(ga.getBestSolution());
             Assert.assertEquals(false, solution.isThereDuplicateProjects());
             Assert.assertEquals(true, ga.wasTerminatedConditionMet()||ga.getIterationLimitReached());
         } catch(Exception e){

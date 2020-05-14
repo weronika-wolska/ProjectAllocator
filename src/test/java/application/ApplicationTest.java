@@ -33,16 +33,7 @@ public class ApplicationTest {
     ProjectRepository projects;
     StaffRepository staff;
 
-    class TableRow{
-        private long id;
-        private String name;
-        private String project;
-        public TableRow(Long id, String name, String project){
-            this.id = id;
-            this.name = name;
-            this.project = project;
-        }
-    }
+    
 
     @FXML
     private TableView<TableRow> displaySolution;
@@ -160,6 +151,52 @@ public class ApplicationTest {
     }
 
     @Test
+    public void testApplyGeneticAlgorithmWithFileInput() throws Exception{
+        StaffReader staffReader = new StaffReader();
+        StaffRepository staffRepository = staffReader.readXLSX("src/main/resources/staff.xlsx");
+        Assert.assertEquals(1030, staffRepository.getSize());
+        ProjectReader projectReader = new ProjectReader();
+        ProjectRepository projectRepository = projectReader.read("src/main/resources/projects500.xlsx", staffRepository);
+        Assert.assertEquals(500, projectRepository.getSize());
+        StudentReader studentReader = new StudentReader(projectRepository);
+        studentReader.setTesting(false);
+        StudentRepository studentRepository = studentReader.readXLSX("src/main/resources/students.xlsx");
+        Assert.assertEquals(1000, studentRepository.getSize());
+        StudentPreferenceReader studentPreferenceReader = new StudentPreferenceReader(studentRepository, projectRepository);
+        studentPreferenceReader.readXLSX("src/main/resources/studentPreferences500.xlsx");
+        studentRepository = studentPreferenceReader.getStudents();
+        Assert.assertEquals(1000, studentRepository.getSize());
+        GeneticAlgorithm ga = new GeneticAlgorithm(studentRepository, projectRepository, 0.0);
+        //CandidateSolution solution = ga.applyAlgorithm();
+        CandidateSolution solution = appInterface.applyGeneticAlgorithm(studentRepository, projectRepository);
+        try{
+            Assert.assertNotNull(solution);
+            Assert.assertEquals(false, solution.isThereDuplicateProjects());
+            Assert.assertEquals(true, ga.wasTerminatedConditionMet()||ga.getIterationLimitReached());
+        } catch(Exception e){
+            e.getCause();
+        }
+    }
+
+    @Test
+    public void testApplySimulatedAnnealing()throws Exception{
+        StaffReader staffReader = new StaffReader();
+        StaffRepository staffRepository = staffReader.readXLSX("src/main/resources/staff.xlsx");
+        Assert.assertEquals(1030, staffRepository.getSize());
+        ProjectReader projectReader = new ProjectReader();
+        ProjectRepository projectRepository = projectReader.read("src/main/resources/projects500.xlsx", staffRepository);
+        Assert.assertEquals(500, projectRepository.getSize());
+        StudentReader studentReader = new StudentReader(projectRepository);
+        studentReader.setTesting(false);
+        StudentRepository studentRepository = studentReader.readXLSX("src/main/resources/students.xlsx");
+        Assert.assertEquals(1000, studentRepository.getSize());
+        StudentPreferenceReader studentPreferenceReader = new StudentPreferenceReader(studentRepository, projectRepository);
+        studentPreferenceReader.readXLSX("src/main/resources/studentPreferences500.xlsx");
+        CandidateSolution solution = appInterface.applySimulatedAnnealing();
+        Assert.assertNotNull(solution);
+    }
+
+    @Test
     public void testShowCandidateSolution()throws InvalidArgumentException{
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -168,23 +205,7 @@ public class ApplicationTest {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                       /* StageBuilder.create()
-                                .scene(SceneBuilder.create()
-                                        .width(320)
-                                        .height(240)
-                                        .root(LabelBuilder.create()
-                                                .font(Font.font("Arial", 54))
-                                                .text("JavaFX")
-                                                .build())
-                                        .build())
-                                .onCloseRequest(new EventHandler<WindowEvent>() {
-                                    @Override
-                                    public void handle(WindowEvent windowEvent) {
-                                        System.exit(0);
-                                    }
-                                })
-                                .build()
-                                .show(); */
+                       
                     }
                 });
             }
@@ -259,9 +280,11 @@ public class ApplicationTest {
         }
         displaySolution.setItems(list);
         
-        Assert.assertEquals(displaySolution.getChildrenUnmodifiable(),appInterface.showCandidateSolution(solution).getChildrenUnmodifiable());
-
-
+        Assert.assertEquals(list.get(0).toString(), appInterface.showCandidateSolution(solution).get(0).toString());
+        Assert.assertEquals(list.get(1).toString(), appInterface.showCandidateSolution(solution).get(1).toString());
+        Assert.assertEquals(list.get(2).toString(), appInterface.showCandidateSolution(solution).get(2).toString());
+        Assert.assertNotNull(list.get(0));
+        Assert.assertNotNull(appInterface.showCandidateSolution(solution).get(0));
         
     
     }
