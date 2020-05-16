@@ -1,21 +1,19 @@
 package applications;
 
 // javafx imports
+import entities.TableRow;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.application.Application;
-import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.geometry.*;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+
 import javax.swing.SwingUtilities;
 import javafx.embed.swing.JFXPanel;
 import javafx.application.Platform;
@@ -47,6 +45,7 @@ public class MainApplication extends Application {
     Button goToGPA, setWeight, downloadSolution;
     TextField getStudents, getStaff, getProjects, getPreferences;
     Slider getGpaWeight;
+    TableColumn<TableRow, String> projectColumn;
     @FXML
     TableView<TableRow> solution;
     ObservableList<TableRow> solutionList;
@@ -96,6 +95,7 @@ public class MainApplication extends Application {
          downloadButtons.getChildren().add(staffTemplateDownload);
          window.getChildren().add(downloadButtons);
          window.getChildren().add(inputFiles);
+         window.setId("background-image");
  
          // input boxes
          HBox staffInput = new HBox(10);
@@ -188,7 +188,7 @@ public class MainApplication extends Application {
          algorithms.setAlignment(Pos.TOP_CENTER);
          algorithms.getChildren().addAll(emptyLabel, chooseAlgorithm, simulatedAnnealing, hillClimbing,
                  geneticAlgorithm);
-         Scene chooseAlgorithmScene = new Scene(algorithms, 800, 500);
+         Scene chooseAlgorithmScene = new Scene(algorithms, 1000, 700);
         
          // display candidate solution window
          Label outcome = new Label("This is the best solution we found: ");
@@ -200,7 +200,7 @@ public class MainApplication extends Application {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                       
+
                     }
                 });
             }
@@ -208,18 +208,20 @@ public class MainApplication extends Application {
         try{
             this.solution = new TableView<TableRow>();
             TableColumn<TableRow, Long> studentIDColumn = new TableColumn("Student ID");
-            studentIDColumn.setMaxWidth(100);
+            studentIDColumn.setMinWidth(100);
             studentIDColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
             TableColumn<TableRow, String> studentNameColumn = new TableColumn("Student name");
-            studentNameColumn.setMaxWidth(200);
+            studentNameColumn.setMinWidth(200);
             studentNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-            TableColumn<TableRow, String> projectColumn = new TableColumn<>("Assigned Project");
-            projectColumn.setMaxWidth(300);
+            projectColumn = new TableColumn<>("Assigned Project");
+            projectColumn.setMinWidth(300);
             projectColumn.setCellValueFactory(new PropertyValueFactory<>("project"));
+
             this.solution.getColumns().addAll(studentIDColumn,studentNameColumn, projectColumn);
-            this.solution.setItems(this.solutionList);
+
         } catch (Exception x){
             x.getCause();
+            x.printStackTrace();
         }
 
          //solution = appInterface.showCandidateSolution(bestSolutionFound);
@@ -232,12 +234,13 @@ public class MainApplication extends Application {
              displaySolution.getChildren().add(this.solution);
          } catch(Exception a){
              a.getCause();
+             a.printStackTrace();
          }
          displaySolution.getChildren().addAll(averageSatisfaction, downloadSolution);
          //displaySolution.getChildren().addAll(outcome,this.solution, averageSatisfaction, downloadSolution);
             
          
-         Scene displaySolutionScene = new Scene(displaySolution, 800, 500);
+         Scene displaySolutionScene = new Scene(displaySolution, 1000, 700);
          
  
          // event handler
@@ -255,7 +258,7 @@ public class MainApplication extends Application {
          });
          goToGPA.setOnAction(e -> {
             try {
-                if(getStaff.getText()!=null || getStaff.getText()!=""){
+                //if(getStaff.getText().trim().equals("")){
                     String staffPath = getStaff.getText();
                     System.out.println("Staff Path: " +staffPath);
                     this.staff = appInterface.readStaffInput(staffPath);
@@ -272,12 +275,19 @@ public class MainApplication extends Application {
                     System.out.println("Preferences Path: " + preferencesPath);
                     students = appInterface.readStudentPreferencesInput("src/main/resources/studentPreferences60.xlsx", students, projects);
                     System.out.println(students.getSize());
-                } else{
-                    //appInterface.readInputFromOneFile()
-                }
+               /* } else{
+                    String filePath = getOneFile.getText();
+                    try{
+                        appInterface.readOneInputFile(filePath);
+                    } catch (Exception e7) {
+                        errorBox.displayErrorBox(e7.getMessage());
+                        e7.printStackTrace();
+                    }
+
+                } */
                 
                 primaryStage.setScene(gpaScene);
-             } catch (InvalidArgumentException e2) {
+             } catch (Exception e2) {
                  
                  errorBox.displayErrorBox();
                  primaryStage.setScene(scene);
@@ -305,17 +315,63 @@ public class MainApplication extends Application {
                         });
                     }
                 });
-                this.bestSolutionFound = appInterface.applyGeneticAlgorithm(this.students, this.projects);
+                if(this.students==null && this.projects==null){
+                    this.bestSolutionFound = appInterface.applyGeneticAlgorithm();
+                } else {
+                    GeneticAlgorithm ga = new GeneticAlgorithm(this.students, this.projects, 0.5);
+                    this.bestSolutionFound = ga.applyAlgorithm();
+                }
+                 System.out.println("try entered");
+                //this.bestSolutionFound = appInterface.applyGeneticAlgorithm(this.students, this.projects);
+                if(bestSolutionFound!=null) System.out.println("solution okay");
+                else System.out.println("solution is null ?????");
                 this.solutionList = appInterface.showCandidateSolution(bestSolutionFound);
-                if(this.bestSolutionFound!=null)System.out.println(this.bestSolutionFound.size());
-                else System.out.println("candidate solution is null");
+                if(this.solutionList==null) System.out.println("list empty tho");
+                else{
+                    System.out.println(this.solutionList.toString());
+                }
+                 projectColumn.setCellFactory(column -> {
+                     return new TableCell<TableRow, String>(){
+                         @Override
+                         protected void updateItem(String item, boolean empty){
+                             if (item == null || empty) { //If the cell is empty
+                                 setText(null);
+                                 setStyle("");
+                             } else {
+                                 setText(item);
+                                 TableRow row = solutionList.get(getIndex());
+                                 Student student = students.getStudentById(row.getId());
+                                 Project project = projects.getProjectByName(row.getProject());
+                                 try {
+                                     if (!student.getPreferences().contains(project)) {
+                                         setTextFill(Color.RED);
+                                     }// else if (student.getPreferences().get(0) == project) {
+                                        // setTextFill(Color.BLUE);
+                                      else if (student.getPreferences().get(1) == project || student.getPreferences().get(2) == project) {
+                                         setTextFill(Color.DARKGREEN);
+                                     } else if (getTableView().getItems().contains(project) && getTableView().getItems().indexOf(project) != getIndex()) {
+                                         setTextFill(Color.MAROON);
+                                     } else {
+                                         setTextFill(Color.BLACK);
+                                     }
+                                 } catch(NullPointerException ne){
+                                     ne.printStackTrace();
+                                 }
+
+                             }
+                         }
+                     };
+                 });
+                 this.solution.setItems(this.solutionList);
+                //if(this.bestSolutionFound!=null)System.out.println(this.bestSolutionFound.size());
+                //else System.out.println("candidate solution is null");
                 //for(int i=0; i<this.bestSolutionFound.size(); i++){
 
                // }
                 primaryStage.setScene(displaySolutionScene);
              } catch (Exception e4){
                  System.out.println("error somewhere");
-                 e4.getCause();
+                 //e4.getCause().getMessage();
                  primaryStage.setScene(scene);
              }
              
@@ -324,12 +380,15 @@ public class MainApplication extends Application {
              //bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
              bestSolutionFound = appInterface.applySimulatedAnnealing();
              this.solutionList = appInterface.showCandidateSolution(bestSolutionFound);
+             this.solution.setItems(this.solutionList);
              System.out.println("Simulated Annealing was chosen");
              primaryStage.setScene(displaySolutionScene);
          });
          hillClimbing.setOnAction(e -> {
-            // bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
-             //bestSolutionFound = appInterface.applyHillClimbing(bestSolutionFound);
+            //bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
+             bestSolutionFound = appInterface.applyHillClimbing();
+             this.solutionList = appInterface.showCandidateSolution(bestSolutionFound);
+             this.solution.setItems(this.solutionList);
              //solution = appInterface.showCandidateSolution(bestSolutionFound);
              System.out.println("Hill Climbing was chosen");
              primaryStage.setScene(displaySolutionScene);
@@ -337,7 +396,13 @@ public class MainApplication extends Application {
          downloadSolution.setOnAction(e -> {
              String path = pathInput.displayBox();
              System.out.println("Download solution request made ");
-             appInterface.downloadCandidateSolution(path, bestSolutionFound);
+             try{
+                appInterface.downloadCandidateSolution(path, bestSolutionFound);
+             } catch (Exception ex){
+                 errorBox.displayErrorBox(ex.getMessage());
+                 ex.printStackTrace();
+             }
+             
          });
  
         // primaryStage.show();

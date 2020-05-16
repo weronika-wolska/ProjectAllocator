@@ -39,9 +39,9 @@ public class GeneticAlgorithm {
     // the algorithm finishes if the terminating condition is met or if it reaches
     // 1,000 iterations and the condition is still not satisfied
     // returns the solution with the highest fitness
-    public CandidateSolution applyAlgorithm() throws InvalidArgumentException{
+    public CandidateSolution applyAlgorithm() throws Exception{
         this.population = new Population(populationSize, studentRepository, projectRepository);
-        if(this.population.population[0]==null){throw new InvalidArgumentException();}
+        //if(this.population.population[0]==null){throw new InvalidArgumentException();}
         Random rand = new Random();
         int a, b;
         this.bestSolutionFound = this.population.getNthFittest(1);
@@ -56,11 +56,15 @@ public class GeneticAlgorithm {
                 a = rand.nextInt(10);
                 b = rand.nextInt(10);
             }while(a!=b);
-            CandidateSolution potentialSolution = this.mutate(population.getPopulation()[a], population.getPopulation()[b]);
-            if(population.isViable(potentialSolution)&&potentialSolution.getFitness()>this.population.getPopulation()[populationSize-1].getFitness()){
-                population.setIndividual(populationSize-1, potentialSolution);
-            }
-           iterations++;
+            if(this.population.getPopulation()==null) throw new Exception();
+            if(this.population.getPopulation()[a]!=null && this.population.getPopulation()[b]!=null){
+                CandidateSolution potentialSolution = this.mutate(population.getPopulation()[a], population.getPopulation()[b]);
+                if(population.isViable(potentialSolution)&&potentialSolution.getFitness()>this.population.getPopulation()[populationSize-1].getFitness()){
+                    population.setIndividual(populationSize-1, potentialSolution);
+                }
+            iterations++;
+            } else throw new Exception("population contains null values");
+            
         }
         this.bestSolutionFound = population.getNthFittest(1);
         return this.bestSolutionFound;
@@ -74,12 +78,11 @@ public class GeneticAlgorithm {
     // terminating condition is that all assigned projects are different and each student
     // gets a project that's in their preference list
     private boolean isTerminatingCoditionMet(CandidateSolution solution){ 
-        try{
-            return solution.everyStudentHasProjectInPreference;
-        } catch(Exception e){
-            e.getCause();
-        }
-        return false;
+        if(solution==null){ throw new NullPointerException();}
+        return solution.everyStudentHasProjectInPreference && !solution.isThereDuplicateProjects();
+        
+         
+        //return false;
     }
 
     public boolean wasTerminatedConditionMet(){
@@ -123,17 +126,14 @@ public class GeneticAlgorithm {
         private StudentRepository studentRepository;
         private ProjectRepository projectRepository;
 
-        public Population(int populationSize, StudentRepository studentRepository, ProjectRepository projectRepository)throws InvalidArgumentException{
-            if(studentRepository==null || projectRepository == null) throw new InvalidArgumentException();
+        public Population(int populationSize, StudentRepository studentRepository, ProjectRepository projectRepository)throws InvalidArgumentException, Exception{
+            if(studentRepository.getSize()==0 || projectRepository.getSize() == 0 || projectRepository.getSize()<studentRepository.getSize()) throw new InvalidArgumentException();
             this.studentRepository=studentRepository;
             this.projectRepository=projectRepository;
             //this.population = new CandidateSolution[populationSize];
-            try{
+            
                 this.population = generatePopulation();
-            } catch (Exception e){
-                System.out.println(e.toString());
-                e.getCause();
-            }
+            
             //this.population = generatePopulation();
         }
 
@@ -155,38 +155,37 @@ public class GeneticAlgorithm {
 
         private CandidateSolution[] generatePopulation() throws Exception{
             Random rand = new Random();
-            ArrayList<Student> students = new ArrayList<>();
-            ArrayList<Project> projects = new ArrayList<>();
+            //ArrayList<Student> students = new ArrayList<>();
+            if(projectRepository.getSize()==0) throw new Exception();
+            ArrayList<Student> students = this.studentRepository.getStudents();
+            ArrayList<Project> projects = new ArrayList<>(students.size());
             int a,b;
             int i = 0;
             CandidateSolution[] population = new CandidateSolution[populationSize];
-            while(i!=populationSize){
+            while(i!=populationSize-1){
                 for(int j=0;j<studentRepository.getSize();j++){
-                    a = rand.nextInt(this.studentRepository.getSize());
-                    students.add(studentRepository.getStudent(a));
+                    //a = rand.nextInt(this.studentRepository.getSize());
+                    //students.add(studentRepository.getStudent(j));
                     b = rand.nextInt(this.projectRepository.getSize());
-                    projects.add(projectRepository.getProject(b));
+                    projects.add(j, projectRepository.getProject(b));
                 }
                 CandidateSolution potentialSolution = new CandidateSolution(students, projects);
-                //potentialSolution.setGpaWeight(gpaweight);
                 // if the solution has no duplicate projects and all students have a project, the solution is viable
-                if(isViable(potentialSolution)){
+                
                     population[i] = potentialSolution;
                     i++;
-                }
-               students.clear();
+                
+               
                projects.clear();
             }
-            if(population[i]==null){
-                throw new Exception("population not initialized correctly");
-            }
+            
             return population;
 
         }
 
         public boolean isViable(CandidateSolution potentialSolution){
             try{
-                return (!potentialSolution.isThereDuplicateProjects()&&potentialSolution.getCandidateSolution().size()==this.studentRepository.getSize());
+                return (potentialSolution.getCandidateSolution().size()==this.studentRepository.getSize());
             } catch (Exception e){
                 e.getCause();
                 return false;
@@ -195,25 +194,29 @@ public class GeneticAlgorithm {
         }
 
         public CandidateSolution getNthFittest(int n){
-            Arrays.sort(this.population, new Comparator<CandidateSolution>() {
-                @Override
-                public int compare(CandidateSolution firstIndividual, CandidateSolution secondIndividual){
-                    if(secondIndividual!=null){
-                        if(firstIndividual.getFitness()>secondIndividual.getFitness()){
-                            return -1;
-                       }
-                       else if(firstIndividual.getFitness()<secondIndividual.getFitness()){ 
-                           return 1;
-                       }
-                       else{
-                           return 0;
-                       }
+            if(this.population!=null){
+                Arrays.sort(this.population, new Comparator<CandidateSolution>() {
+                    @Override
+                    public int compare(CandidateSolution firstIndividual, CandidateSolution secondIndividual){
+                        if(secondIndividual!=null&&firstIndividual!=null){
+                            if(firstIndividual.getFitness()>secondIndividual.getFitness()){
+                                return -1;
+                           }
+                           else if(firstIndividual.getFitness()<secondIndividual.getFitness()){ 
+                               return 1;
+                           }
+                           else{
+                               return 0;
+                           }
+                        }
+                        return 0;
                     }
-                    return 0;
-                }
-            });
-
-            return this.population[n];
+                });
+    
+                return this.population[n];
+            }
+            else return null;
+            
         }
 
         public int getPopulationSize(){

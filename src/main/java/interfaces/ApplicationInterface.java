@@ -32,7 +32,7 @@ public interface ApplicationInterface{
 
     public ObservableList<TableRow> showCandidateSolution(CandidateSolution candidateSolution);
 
-    public void downloadCandidateSolution(String filePath, CandidateSolution candidateSolution);
+    public void downloadCandidateSolution(String filePath, CandidateSolution candidateSolution) throws  Exception;
 
     public void downloadStudentTemplate(String filePath);
 

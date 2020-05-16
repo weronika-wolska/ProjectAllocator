@@ -80,7 +80,7 @@ public class StudentReader{
         }
         return repository;
     }
-    
+
 
 
 
@@ -106,7 +106,7 @@ public class StudentReader{
         Random rand = new Random();
         return rand.nextInt(range);
     }
-    
+
 
     // TODO
 
@@ -128,7 +128,7 @@ public class StudentReader{
         student.setFirstName(cellString);
         //System.out.println(student.getFirstName());
 
-        
+
         currentCell = row.getCell(1);
         try {
             cellString = currentCell.getStringCellValue();
@@ -139,7 +139,7 @@ public class StudentReader{
         //System.out.println(cellString1);
         student.setSurname(cellString);
 
-        
+
         //long num = Long.parseLong(currentCell.getStringCellValue());
         currentCell = row.getCell(2);
         double id = 0;

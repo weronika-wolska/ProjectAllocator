@@ -3,6 +3,7 @@ package entities;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.StringTokenizer;
 
 import exceptions.InvalidArgumentException;
 import repositories.ProjectRepository;
@@ -39,7 +40,7 @@ public class Student{
     }
 
     public Student() throws InvalidArgumentException{
-        this("DefaultName", "DefaultSurname", (long) 12345678, 2.1, Stream.CS, null, null);
+        this("DefaultName",  (long) 12345678, 2.1,  null);
     }
 
     public Student(String firstName, String surname, Long studentId, Double gpa, Stream stream, ArrayList<Project> preferences) throws InvalidArgumentException {
@@ -57,8 +58,10 @@ public class Student{
         setProjectRepository(projectRepository);
         Student.projectRepository=projectRepository;
         if(preferences==null){ preferences = new ArrayList<>();}
-        setPreferences2(preferences);
+        if(projectRepository==null) this.preferences=null;
+        else setPreferences2(preferences);
     }
+
 
     public Student(String name, long id ,double GPA, ArrayList<Project> preferences){
         this.name = name;
@@ -224,4 +227,48 @@ public class Student{
             return studentId.equals(other.studentId);
         }
     }
+
+    public void setByOneName(String name) {
+        boolean hasSpace = name.trim().toLowerCase().contains(" ");
+        if( hasSpace) {
+            // eliminating white space in the string
+            ArrayList<String> names = new ArrayList<>();
+            if(hasSpace) {
+                names = tokenizeBySpace(name);
+            }
+
+            // getting surname
+            surname = names.get(names.size() - 1);
+            names.set(names.size() - 1, null);
+
+            // getting first name/s
+            firstName = "";
+            for (String aName :
+                    names) {
+                if (aName != null) {
+                    firstName += " " + aName;
+                }
+            }
+            firstName = firstName.trim();
+        }
+        else {
+            firstName = "";
+            surname = name.trim();
+        }
+    }
+
+    public ArrayList<String> tokenizeBySpace(String string) {
+        //System.out.println("In tokenizeByComma with:" + string);
+        ArrayList<String> tokens = new ArrayList<>();
+        StringTokenizer tokenizer = new StringTokenizer(string," ");
+        while(tokenizer.hasMoreTokens()) {
+            String token = tokenizer.nextToken();
+            if(!token.equals("") && !token.trim().isEmpty()) {
+                tokens.add(token);
+            }
+        }
+        //System.out.println("In tokenizeByComma with tokens:" + tokens);
+        return tokens;
+    }
+
 }

@@ -43,6 +43,8 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
     private CandidateSolution originalSolution;
     private StudentRepository studentRepository;
     private ProjectRepository projectRepository;
+    private CandidateSolution solutionAlreadyAssigned;
+    private boolean inputThroughOneFile = false;
 
     public double getGPAWeight(){
         return this.GPAWeight;
@@ -78,6 +80,16 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
         return reader.getStudents();
     }
 
+    public void readOneInputFile(String filePath) throws InvalidArgumentException, Exception {
+        InputReader inputReader = new InputReader();
+        inputReader.readXLSX(filePath);
+        inputThroughOneFile = true;
+        this.studentRepository = inputReader.getStudentRepository();
+        this.projectRepository = inputReader.getProjectRepository();
+        this.originalSolution = new CandidateSolution(this.studentRepository, this.projectRepository);
+        solutionAlreadyAssigned = new CandidateSolution(inputReader.getStudentRepositoryAssigned(), inputReader.getProjectRepositoryAssigned());
+    }
+
     @Override
     public double getGPAWeight(double weight) {
         this.GPAWeight = weight;
@@ -85,7 +97,21 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
         return weight;
     }
 
-    // TODO check with Weronika
+
+    public  CandidateSolution applyGeneticAlgorithm() throws  Exception{
+        try{
+            GeneticAlgorithm algorithm = new GeneticAlgorithm(this.studentRepository, this.projectRepository, this.GPAWeight);
+            System.out.println(algorithm.getBestSolution().getGpaWeight());
+            CandidateSolution bestSolution = algorithm.applyAlgorithm();
+
+            System.out.println(algorithm.getBestSolution().size());
+            return bestSolution;
+        } catch (Exception exception){
+            exception.getCause();
+            throw new Exception();
+        }
+    }
+
     @Override
     public CandidateSolution applyGeneticAlgorithm(StudentRepository studentRepository,
             ProjectRepository projectRepository) throws Exception {
@@ -94,11 +120,12 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
             GeneticAlgorithm algorithm = new GeneticAlgorithm(studentRepository, projectRepository, this.GPAWeight);
             System.out.println(algorithm.getBestSolution().getGpaWeight());
             CandidateSolution bestSolution = algorithm.applyAlgorithm();
+            
             System.out.println(algorithm.getBestSolution().size());
             return bestSolution;
         } catch (Exception exception){
             exception.getCause();
-            return null;
+            throw new Exception();
         }
             
         
@@ -121,11 +148,10 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
     }
 
     @Override
-    public void downloadCandidateSolution(String filePath, CandidateSolution candidateSolution) {
-        // TODO implement CandidateSolutionWriter class
-        // CandidateSolutionWriter writer = new CandidateSolutionWriter();
-        // writer.writeXLSX(filePath, candidateSolution);
-
+    public void downloadCandidateSolution(String filePath, CandidateSolution candidateSolution) throws  Exception{
+        if( inputThroughOneFile) candidateSolution.combineWithAnotherSolution(solutionAlreadyAssigned);
+        CandidateSolutionWriter writer = new CandidateSolutionWriter();
+        writer.writeXLSX(filePath, candidateSolution);
     }
 
     @Override
@@ -149,7 +175,7 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
-                           
+
                         }
                     });
                 }
@@ -166,7 +192,7 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
             projectColumn.setCellValueFactory(new PropertyValueFactory<>("project"));
             ObservableList<TableRow> solution = FXCollections.observableArrayList();
             //ArrayList<Student> students = candidateSolution.getStudents();
-            //ArrayList<Project> projects = candidateSolution.getProjects(); 
+            //ArrayList<Project> projects = candidateSolution.getProjects();
             //table.getColumns().addAll(studentIDColumn, studentNameColumn, projectColumn);
             /*for(int i=0;i<candidateSolution.getStudents().size();i++){
                 String name = students.get(i).getFirstName() + " " + students.get(i).getSurname();
@@ -183,9 +209,7 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
         } catch (NullPointerException e){
             return null;
         }
-        
-            
-        
+
     }
 
     @Override

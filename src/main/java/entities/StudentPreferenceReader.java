@@ -6,8 +6,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import repositories.ProjectRepository;
-
-
 import exceptions.InvalidArgumentException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -15,7 +13,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import repositories.ProjectRepository;
 import repositories.StudentRepository;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -45,16 +42,18 @@ public class StudentPreferenceReader {
             FileInputStream file = new FileInputStream(new File(filePath));
             XSSFWorkbook workbook = new XSSFWorkbook(file);
             XSSFSheet sheet = workbook.getSheetAt(0);
-            int rowCount = sheet.getLastRowNum(); // + 1;
+            int rowCount = sheet.getLastRowNum() + 1;
             //System.out.println("File input obtained, row count:" + rowCount);
-            for (int i = 0; i < students.getSize(); i++) {
+            for (int i = 1; i < rowCount; ++i) {
                 Row row = sheet.getRow(i);
                 Student newStudent;
                 try {
                     newStudent = parseRowIntoStudent(row);
+                    //tem.out.println("BEFORE:" + students.getStudent(newStudent));
                     //transferPreferencesBetweenStudents(newStudent, students.getStudent(newStudent));
-                    transferPreferencesBetweenStudents(newStudent, students.getStudentById(newStudent.getStudentId()));
+                    transferPreferencesBetweenStudents(newStudent, students.getStudent(newStudent));
                     //System.out.println("Just added prefs for:" + newStudent.getFirstName());
+                    //System.out.println("AFTER:" + students.getStudent(newStudent));
                 }
                 catch (IllegalArgumentException e) {
                     //System.out.println("Illegal data in StudentPreferenceReader for row:" + i + ", skipping the addition of these preferences to student in question.");
@@ -117,6 +116,7 @@ public class StudentPreferenceReader {
             try {
                 currentCell = row.getCell(3 + i);
                 cellString = currentCell.getStringCellValue();
+                //System.out.println("Found another string:" + cellString);
 
             } catch (NullPointerException npe) {
                 cellString = "";
@@ -126,23 +126,26 @@ public class StudentPreferenceReader {
         //System.out.println(cellString3);
         for (String projectName :
                 preferenceNames) {
+            //System.out.println("Searching projects for projectName:" + projectName);
             if (projects.hasProjectByName(projectName)) {
+                //System.out.println("The above was found in projects, adding to new students preferences");
                 preferences.add(projects.getProjectByName(projectName));
             }
         }
         newStudent.setPreferences(preferences); // should randomize leftover slots
 
-        if(students.hasStudentById(newStudent.getStudentId())) {
+        if(students.hasStudent(newStudent)) {
+            //System.out.println("This new student is accepted and returned by parser");
             return newStudent;
         }
-        else throw new IllegalArgumentException();
+        else throw new IllegalArgumentException("error: student " + newStudent.getStudentId() + " not present in student input file");
     }
-/*
-    private void setPreferencesOfUnpreferringStudents() throws InvalidArgumentException {
+
+    /*private void setPreferencesOfUnpreferringStudents() throws InvalidArgumentException {
         ArrayList<Student> boringStudents = students.getStudentsWithoutPreferences();
         for (Student student :
                 boringStudents) {
             student.setPreferences(new ArrayList<>());
         }
-    } */
+    }*/
 }

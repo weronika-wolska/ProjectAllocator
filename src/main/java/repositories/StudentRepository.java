@@ -1,31 +1,40 @@
 package repositories;
 
-import java.util.ArrayList;
-
-
+import entities.Project;
 import entities.Student;
+import exceptions.DuplicateStudentIdException;
+import exceptions.InvalidArgumentException;
 
-import entities.*;
-import exceptions.*;
+import java.util.ArrayList;
 
 public class StudentRepository{
     private ArrayList<Student> students;
 
+    public void setStudents(ArrayList<Student> students) {
+        this.students = students;
+    }
+
     public StudentRepository(){
-        this.students = new ArrayList<Student>();
+        students = new ArrayList<>();
     }
 
     public StudentRepository(ArrayList<Student> students){
         this.students = students;
     }
 
-    public void addStudent(Student student) throws NullPointerException{
-        students.add(student);
+    public void addStudent(Student student) throws NullPointerException, DuplicateStudentIdException {
+        if(!hasStudentById(student.getStudentId())) {
+            students.add(student);
+        }
+        else {
+            throw new DuplicateStudentIdException();
+        }
     }
 
     public ArrayList<Student> getStudents(){
         return this.students;
     }
+
     public Student getStudent(int index){
         return students.get(index);
     }
@@ -37,15 +46,33 @@ public class StudentRepository{
     public int getSize(){
         return students.size();
     }
-    public boolean hasStudentById(long id) {
-        boolean status = false;
+
+    public Student getStudentById(long id) {
+        Student studentWanted = null;
         for (Student student :
                 students) {
             if (student.getStudentId() == id) {
-                status = true;
+                studentWanted = student;
                 break;
             }
         }
+        return studentWanted;
+        // else throw new InvalidArgumentException();
+    }
+
+    public boolean hasStudentById(long id) {
+        //System.out.println("Entered hasStudentById with id:" + id);
+        boolean status = false;
+        for (Student student :
+                students) {
+            //System.out.println("Iterating over students, current id:" + student.getStudentId());
+            if (student.getStudentId() == id) {
+                status = true;
+                //System.out.println("Common id was found with the above, status equals true");
+                break;
+            }
+        }
+        //System.out.println("About to leave hasStudentById with:" + status);
         return status;
     }
 
@@ -88,19 +115,6 @@ public class StudentRepository{
         }
         return studentWanted;
     }
-    public Student getStudentById(long id) throws InvalidArgumentException {
-        Student studentWanted = null;
-        for (Student student :
-                students) {
-            if (student.getStudentId() == id) {
-                studentWanted = student;
-                break;
-            }
-        }
-        if(studentWanted != null) return studentWanted;
-        else throw new InvalidArgumentException();
-    }
-
 
     public ArrayList<Student> getStudentsWithoutPreferences() throws InvalidArgumentException{
         ArrayList<Student> studentsInQuestion = new ArrayList<>();
@@ -118,4 +132,14 @@ public class StudentRepository{
         return studentsInQuestion;
     }
 
+    public String toString() {
+        String string = "";
+        for (Student student :
+                students) {
+            string += student.getName().trim() + " " + student.getStudentId() + " gpa:" + student.getGpa() + "\n";
+            //string = string.trim();
+        }
+        string = string.trim();
+        return string;
+    }
 }

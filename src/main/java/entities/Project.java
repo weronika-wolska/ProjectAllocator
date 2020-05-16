@@ -65,5 +65,10 @@ public class Project{
         return realNameOfPotentialTwinProject.equals(realNameOfThisProject);
     }
 
-    
+    public static boolean isValidProjectName(String projectName) {
+        return projectName != null &&
+                !projectName.equals("");
+    }
+
+
 }

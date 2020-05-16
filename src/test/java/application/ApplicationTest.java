@@ -43,6 +43,8 @@ public class ApplicationTest {
     public void testReadStaffInput(){
         staff = appInterface.readStaffInput("src/main/resources/staff.xlsx");
         Assert.assertEquals(1030, staff.getSize());
+        Assert.assertNotNull(staff.getStaffMember(0));
+        Assert.assertNotNull(staff.getStaffMember(50));
     }
 
     @Test
@@ -50,22 +52,28 @@ public class ApplicationTest {
         StaffRepository staff2 = appInterface.readStaffInput("src/main/resources/staff.xlsx");
         projects = appInterface.readProjectInput("src/main/resources/projects240.xlsx", staff2);
         Assert.assertEquals(240, projects.getSize());
+        Assert.assertNotNull(projects.getProject(0));
+        Assert.assertNotNull(projects.getProject(100));
     }
     @Test
     public void testStudentInputReader(){
         StaffRepository staff2 = appInterface.readStaffInput("src/main/resources/staff.xlsx");
         projects = appInterface.readProjectInput("src/main/resources/projects240.xlsx", staff2);
-        students = appInterface.readStudentInput("src/main/resources/students.xlsx", projects);
-        Assert.assertEquals(1000, students.getSize());
+        students = appInterface.readStudentInput("src/main/resources/students60.xlsx", projects);
+        Assert.assertEquals(60, students.getSize());
+        Assert.assertNotNull(students.getStudent(0));
+        Assert.assertNotNull(students.getStudent(58));
     }
 
     @Test
     public void testStudentPreferenceReader()throws InvalidArgumentException{
         StaffRepository staff2 = appInterface.readStaffInput("src/main/resources/staff.xlsx");
         projects = appInterface.readProjectInput("src/main/resources/projects240.xlsx", staff2);
-        students = appInterface.readStudentInput("src/main/resources/students.xlsx", projects);
+        students = appInterface.readStudentInput("src/main/resources/students60.xlsx", projects);
         students = appInterface.readStudentPreferencesInput("src/main/resources/studentPreferences60.xlsx", students, projects);
-
+        Assert.assertEquals(60, students.getSize());
+        Assert.assertNotNull(students.getStudent(0));
+        Assert.assertNotNull(students.getStudent(50));
         //Assert.assertEquals(expected, actual);
     }
 
@@ -144,8 +152,10 @@ public class ApplicationTest {
         studentRepository = appInterface.readStudentPreferencesInput("src/main/resources/studentPreferences60.xlsx", studentRepository, projectRepository);*/
         try{
             CandidateSolution bestSolution = appInterface.applyGeneticAlgorithm(studentRepository, projectRepository);
+        
         } catch (Exception e){
             e.getCause();
+            e.printStackTrace();
         }
    
     }
@@ -160,21 +170,26 @@ public class ApplicationTest {
         Assert.assertEquals(500, projectRepository.getSize());
         StudentReader studentReader = new StudentReader(projectRepository);
         studentReader.setTesting(false);
-        StudentRepository studentRepository = studentReader.readXLSX("src/main/resources/students.xlsx");
-        Assert.assertEquals(1000, studentRepository.getSize());
+        StudentRepository studentRepository = studentReader.readXLSX("src/main/resources/students60.xlsx");
+        Assert.assertEquals(60, studentRepository.getSize());
         StudentPreferenceReader studentPreferenceReader = new StudentPreferenceReader(studentRepository, projectRepository);
-        studentPreferenceReader.readXLSX("src/main/resources/studentPreferences500.xlsx");
+        studentPreferenceReader.readXLSX("src/main/resources/studentPreferences60.xlsx");
         studentRepository = studentPreferenceReader.getStudents();
-        Assert.assertEquals(1000, studentRepository.getSize());
-        GeneticAlgorithm ga = new GeneticAlgorithm(studentRepository, projectRepository, 0.0);
+        Assert.assertEquals(60, studentRepository.getSize());
+        GeneticAlgorithm ga = new GeneticAlgorithm(studentRepository, projectRepository, 0.5);
         //CandidateSolution solution = ga.applyAlgorithm();
-        CandidateSolution solution = appInterface.applyGeneticAlgorithm(studentRepository, projectRepository);
+
         try{
+            CandidateSolution solution = appInterface.applyGeneticAlgorithm(studentRepository, projectRepository);
             Assert.assertNotNull(solution);
-            Assert.assertEquals(false, solution.isThereDuplicateProjects());
-            Assert.assertEquals(true, ga.wasTerminatedConditionMet()||ga.getIterationLimitReached());
+            Assert.assertEquals(60, solution.size());
+            //Assert.assertEquals(false, solution.isThereDuplicateProjects());
+            //Assert.assertEquals(true, ga.wasTerminatedConditionMet());
+            //Assert.assertEquals(true, ga.getIterationLimitReached());
+            //Assert.assertEquals(true, solution.everyStudentHasProjectInPreference && !solution.isThereDuplicateProjects());
         } catch(Exception e){
             e.getCause();
+            e.printStackTrace();
         }
     }
 

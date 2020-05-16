@@ -201,7 +201,7 @@ public class CandidateSolution {
             int count = 0;
             for (Project otherProject :
                     candidateSolution.values()) {
-                if (otherProject.getProjectName().equals(project.getProjectName())) {
+                if (otherProject.getProjectName().equals(project.getProjectName())&&otherProject!=project) {
                     ++count;
                 }
             }
@@ -370,6 +370,15 @@ public class CandidateSolution {
         //System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
     }
 
+    private double calculateStudentsFitness(double preferencePoints, double gpa) {
+        double overallFitnessPoints;
+        double pointsFromPreferencesAlone = (1 - gpaWeight) * preferencePoints;
+        double pointsFromGpaAlone = gpaWeight * CandidateSolution.FULL_STUDENT_FITNESS * (gpa / Student.FULL_GPA);
+        overallFitnessPoints = pointsFromPreferencesAlone + pointsFromGpaAlone + pointsFromGpaAlone * pointsFromPreferencesAlone;
+        return overallFitnessPoints;
+    }
+
+
     public void undoRandomChange() throws NoRandomChangeWasMadeException {
         //System.out.println("STARTING UNDORANDOMCHANGE HERE");
         //System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
@@ -423,5 +432,72 @@ public class CandidateSolution {
         }
         return satisfactionSum / candidateSolution.size();
     }
+
+
+    public int getStudentsSatisfaction(Student student) {
+        //System.out.println("Getting this student/project satisfaction:");
+        //System.out.println(student);
+        Project assignedProject = candidateSolution.get(student);
+        //System.out.println(assignedProject);
+        for (int i = 0; i < student.getPreferences().size(); ++i) {
+            if (assignedProject.isTheSameProject(student.getPreferences().get(i).getProjectName())) {
+                //System.out.println("Counting individual satisfaction:" + (FULL_STUDENT_FITNESS - i));
+                return (FULL_STUDENT_FITNESS - i) / 2;
+            }
+        }
+        if(!student.canDoProject(candidateSolution.get(student))) return -100;
+        else return 0;
+    }
+
+    public int countProjectsOfAStreamAvailableInSolution(Stream streamCounted) {
+        int streamCount = 0;
+        for (Project project :
+                projects) {
+            if( project.getStream() == streamCounted) ++streamCount;
+        }
+        if( leftoverProjects != null) {
+            //System.out.println("leftover pojects aren't null, here they are" + leftoverProjects);
+            for (Project project :
+                    leftoverProjects) {
+                if (project.getStream() == streamCounted) ++streamCount;
+            }
+        }
+        return streamCount;
+    }
+
+    public int countStudentsOfAStreamAvailableInSolution(Stream streamCounted) {
+        int streamCount = 0;
+        for (Student student :
+                students) {
+            if( student.getStream() == streamCounted) ++streamCount;
+        }
+        return streamCount;
+    }
+
+    public boolean isALegalSolutionPossible() {
+        int csStudents, csdsStudents, csProjects, csdsProjects;
+        csStudents = countStudentsOfAStreamAvailableInSolution(Stream.CS);
+        csdsStudents = countStudentsOfAStreamAvailableInSolution(Stream.CSDS) + countStudentsOfAStreamAvailableInSolution(Stream.DS);
+        csProjects = countProjectsOfAStreamAvailableInSolution(Stream.CS);
+        csdsProjects = countProjectsOfAStreamAvailableInSolution(Stream.CSDS) + countProjectsOfAStreamAvailableInSolution(Stream.DS);
+        //System.out.println("In isALegalSolutionPossible with (students - projects (cs,csds)):" + csStudents + " " + csdsStudents + " " + csProjects + " " + csdsProjects);
+        return csStudents <= csProjects && csdsStudents <= csdsProjects && students.size() <= projects.size();
+    }
+
+    public void combineWithAnotherSolution(CandidateSolution otherSolution) throws InvalidArgumentException {
+        // doesn't combine backup of the other solution into this one's
+
+        Map<Student, Project> newSolution = new HashMap<>();
+        newSolution.putAll(candidateSolution);
+        newSolution.putAll(otherSolution.getCandidateSolution());
+        candidateSolution = newSolution;
+
+        students.addAll(otherSolution.getStudents());
+        projects.addAll(otherSolution.getProjects());
+        leftoverProjects.addAll(otherSolution.getLeftoverProjects());
+        fitness = calculateFitness(candidateSolution);
+    }
+
+
 
 }

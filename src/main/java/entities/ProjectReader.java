@@ -1,30 +1,35 @@
 package entities;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import repositories.ProjectRepository;
+import repositories.StaffRepository;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.apache.commons.math3.analysis.function.Ceil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import java.io.File;
-
-import repositories.ProjectRepository;
-import repositories.StaffRepository;
-
 // creates and returns a project repository
 public class ProjectReader {
     private ProjectRepository projectRepository = new ProjectRepository();
+
+    public ProjectRepository getProjectRepository() {
+        return projectRepository;
+    }
+
+    public void setProjectRepository(ProjectRepository projectRepository) {
+        this.projectRepository = projectRepository;
+    }
 
     public ProjectRepository read(String filePath, StaffRepository staffRepository)throws FileNotFoundException, IOException{
         try{
             FileInputStream file = new FileInputStream(new File(filePath));
             XSSFWorkbook workbook = new XSSFWorkbook(file);
             XSSFSheet sheet = workbook.getSheetAt(0);
-            int numOfProjects = sheet.getLastRowNum() +1; 
+            int numOfProjects = sheet.getLastRowNum();
             for (int i = 1; i<numOfProjects;i++){   // assuming first row is the header
                 Project project = parseRowIntoProject(sheet.getRow(i), staffRepository);
                 projectRepository.addProject(project);
@@ -36,18 +41,13 @@ public class ProjectReader {
         return null;
     }
 
-    public ProjectRepository getProjectRepository() {
-        return projectRepository;
-    }
-
-
     private Project parseRowIntoProject(Row row, StaffRepository staffRepository){
         Project project = new Project("");
         Cell currCell = row.getCell(0);
         String cellString;
         if(currCell==null){cellString="";}
         else{cellString=currCell.getStringCellValue();}
-        if(cellString==""){project.setSupervisor(null);}
+        if(cellString.equals("")){project.setSupervisor(null);}
         else{
             StaffMember supervisor = staffRepository.getStaffMember(cellString);
             project.setSupervisor(supervisor);
@@ -60,8 +60,8 @@ public class ProjectReader {
 
         currCell = row.getCell(2);
         if(currCell==null){project.setStream(null);}
-        else if(currCell.getStringCellValue()=="CS"){project.setStream(Stream.CS);}
-        else if(currCell.getStringCellValue()=="DS"){project.setStream(Stream.DS);}
+        else if(currCell.getStringCellValue().equals("CS")){project.setStream(Stream.CS);}
+        else if(currCell.getStringCellValue().equals("DS")){project.setStream(Stream.DS);}
         else{project.setStream(Stream.CSDS);}
 
         return project;
