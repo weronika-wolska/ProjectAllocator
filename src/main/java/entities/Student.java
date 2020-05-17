@@ -250,11 +250,13 @@ public class Student{
                 }
             }
             firstName = firstName.trim();
+
         }
         else {
             firstName = "";
             surname = name.trim();
         }
+        setName(firstName + " " + surname);
     }
 
     public ArrayList<String> tokenizeBySpace(String string) {

@@ -273,7 +273,7 @@ public class MainApplication extends Application {
          });
          goToGPA.setOnAction(e -> {
             try {
-                if(!getStaff.getText().isEmpty()){
+                if(getOneFile.getText().trim().equals("")){
                     String staffPath = getStaff.getText();
                     System.out.println("Staff Path: " +staffPath);
                     this.staff = appInterface.readStaffInput(staffPath);
@@ -315,82 +315,7 @@ public class MainApplication extends Application {
              primaryStage.setScene(chooseAlgorithmScene);
          });
          
-         geneticAlgorithm.setOnAction(e -> {
-             System.out.println("Genetic Algorithm was chosen");
-             try{
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        new JFXPanel(); // this will prepare JavaFX toolkit and environment
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                               
-                            }
-                        });
-                    }
-                });
-                if(this.students==null && this.projects==null){
-                    this.bestSolutionFound = appInterface.applyGeneticAlgorithm();
-                } else {
-                    GeneticAlgorithm ga = new GeneticAlgorithm(this.students, this.projects, 0.5);
-                    this.bestSolutionFound = ga.applyAlgorithm();
-                }
-                 System.out.println("try entered");
-                //this.bestSolutionFound = appInterface.applyGeneticAlgorithm(this.students, this.projects);
-                if(bestSolutionFound!=null) System.out.println("solution okay");
-                else System.out.println("solution is null ?????");
-                this.solutionList = appInterface.showCandidateSolution(bestSolutionFound);
-                if(this.solutionList==null) System.out.println("list empty tho");
-                else{
-                    System.out.println(this.solutionList.toString());
-                }
-                 projectColumn.setCellFactory(column -> {
-                     return new TableCell<TableRow, String>(){
-                         @Override
-                         protected void updateItem(String item, boolean empty){
-                             if (item == null || empty) { //If the cell is empty
-                                 setText(null);
-                                 setStyle("");
-                             } else {
-                                 setText(item);
-                                 TableRow row = solutionList.get(getIndex());
-                                 Student student = students.getStudentById(row.getId());
-                                 Project project = projects.getProjectByName(row.getProject());
-                                 try {
-                                     if (!student.getPreferences().contains(project)) {
-                                         setTextFill(Color.RED);
-                                     } else if (student.getPreferences().get(0) == project) {
-                                         setTextFill(Color.BLUE);
-                                     }else if (student.getPreferences().get(1) == project || student.getPreferences().get(2) == project) {
-                                         setTextFill(Color.DARKGREEN);
-                                     } else if (getTableView().getItems().contains(project) && getTableView().getItems().indexOf(project) != getIndex()) {
-                                         setTextFill(Color.MAROON);
-                                     } else {
-                                         setTextFill(Color.BLACK);
-                                     }
-                                 } catch(NullPointerException ne){
-                                     ne.printStackTrace();
-                                 }
 
-                             }
-                         }
-                     };
-                 });
-                 this.solution.setItems(this.solutionList);
-                //if(this.bestSolutionFound!=null)System.out.println(this.bestSolutionFound.size());
-                //else System.out.println("candidate solution is null");
-                //for(int i=0; i<this.bestSolutionFound.size(); i++){
-
-               // }
-                primaryStage.setScene(displaySolutionScene);
-             } catch (Exception e4){
-                 System.out.println("error somewhere");
-                 //e4.getCause().getMessage();
-                 primaryStage.setScene(scene);
-             }
-             
-         });
          simulatedAnnealing.setOnAction(e -> {
              //bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
              bestSolutionFound = appInterface.applySimulatedAnnealing();
@@ -404,23 +329,25 @@ public class MainApplication extends Application {
                              setText(null);
                              setStyle("");
                          } else {
-                             setText(item);
-                             TableRow row = solutionList.get(getIndex());
-                             Student student = students.getStudentById(row.getId());
-                             Project project = projects.getProjectByName(row.getProject());
                              try {
+                                 setText(item);
+                                 TableRow row = solutionList.get(getIndex());
+                                 Student student = students.getStudentById(row.getId());
+                                 Project project = projects.getProjectByName(row.getProject());
+                                 //if(student==null || project==null) setTextFill(Color.BLACK);
                                  if (!student.getPreferences().contains(project)) {
                                      setTextFill(Color.RED);
-                                 }// else if (student.getPreferences().get(0) == project) {
-                                 // setTextFill(Color.BLUE);
-                                 else if (student.getPreferences().get(1) == project || student.getPreferences().get(2) == project) {
-                                     setTextFill(Color.DARKGREEN);
+                                 } else if (student.getPreferences().get(0) == project) {
+                                     setTextFill(Color.BLUE);
+                                 } else if (student.getPreferences().get(1) == project || student.getPreferences().get(2) == project) {
+                                     setTextFill(Color.GREEN);
                                  } else if (getTableView().getItems().contains(project) && getTableView().getItems().indexOf(project) != getIndex()) {
                                      setTextFill(Color.MAROON);
                                  } else {
                                      setTextFill(Color.BLACK);
                                  }
-                             } catch(NullPointerException ne){
+
+                             }catch (NullPointerException ne){
                                  ne.printStackTrace();
                              }
 
@@ -431,6 +358,81 @@ public class MainApplication extends Application {
              System.out.println("Simulated Annealing was chosen");
              primaryStage.setScene(displaySolutionScene);
          });
+        geneticAlgorithm.setOnAction(e -> {
+            System.out.println("Genetic Algorithm was chosen");
+            try{
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        new JFXPanel(); // this will prepare JavaFX toolkit and environment
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+
+                            }
+                        });
+                    }
+                });
+
+                try{
+                    GeneticAlgorithm ga = new GeneticAlgorithm(this.students, this.projects, appInterface.getGPAWeight());
+                    this.bestSolutionFound = ga.applyAlgorithm();
+                } catch (Exception exc){
+                    exc.printStackTrace();
+                }
+                this.solutionList = appInterface.showCandidateSolution(bestSolutionFound);
+                this.solution.setItems(this.solutionList);
+                projectColumn.setCellFactory(column -> {
+                    return new TableCell<TableRow, String>(){
+                        @Override
+                        protected void updateItem(String item, boolean empty){
+                            if (item == null || empty) { //If the cell is empty
+                                setText(null);
+                                setStyle("");
+                            } else {
+                                try {
+                                    setText(item);
+                                    TableRow row = solutionList.get(getIndex());
+                                    Student student = students.getStudentById(row.getId());
+                                    Project project = projects.getProjectByName(row.getProject());
+
+                                    if(student==null||project==null){
+                                        setTextFill(Color.BLACK);
+                                    }
+                                    else if (!student.getPreferences().contains(project)) {
+                                        setTextFill(Color.RED);
+                                    } else if (student.getPreferences().get(0) == project) {
+                                        setTextFill(Color.BLUE);
+                                    } else if (student.getPreferences().get(1) == project || student.getPreferences().get(2) == project) {
+                                        setTextFill(Color.GREEN);
+                                    } else if (getTableView().getItems().contains(project) && getTableView().getItems().indexOf(project) != getIndex()) {
+                                        setTextFill(Color.MAROON);
+                                    } else {
+                                        setTextFill(Color.BLACK);
+                                    }
+
+                                }catch (NullPointerException ne){
+                                    ne.printStackTrace();
+                                }
+
+                            }
+                        }
+                    };
+                });
+
+                //if(this.bestSolutionFound!=null)System.out.println(this.bestSolutionFound.size());
+                //else System.out.println("candidate solution is null");
+                //for(int i=0; i<this.bestSolutionFound.size(); i++){
+
+                // }
+                primaryStage.setScene(displaySolutionScene);
+            } catch (Exception e4){
+                System.out.println("error somewhere");
+                //e4.getCause().getMessage();
+                primaryStage.setScene(scene);
+            }
+
+        });
          hillClimbing.setOnAction(e -> {
             //bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
              bestSolutionFound = appInterface.applyHillClimbing();
@@ -448,24 +450,23 @@ public class MainApplication extends Application {
                              TableRow row = solutionList.get(getIndex());
                              Student student = students.getStudentById(row.getId());
                              Project project = projects.getProjectByName(row.getProject());
-                             try {
-                                 if (!student.getPreferences().contains(project)) {
+                            // if(student==null || project == null ) setTextFill(Color.BLACK);
+                                if (!student.getPreferences().contains(project)) {
                                      setTextFill(Color.RED);
-                                 }// else if (student.getPreferences().get(0) == project) {
-                                 // setTextFill(Color.BLUE);
-                                 else if (student.getPreferences().get(1) == project || student.getPreferences().get(2) == project) {
-                                     setTextFill(Color.DARKGREEN);
+                                 } else if (student.getPreferences().get(0) == project) {
+                                     setTextFill(Color.BLUE);
+                                 }else if (student.getPreferences().get(1) == project || student.getPreferences().get(2) == project) {
+                                     setTextFill(Color.GREEN);
                                  } else if (getTableView().getItems().contains(project) && getTableView().getItems().indexOf(project) != getIndex()) {
                                      setTextFill(Color.MAROON);
                                  } else {
                                      setTextFill(Color.BLACK);
                                  }
-                             } catch(NullPointerException ne){
-                                 ne.printStackTrace();
+
                              }
 
                          }
-                     }
+
                  };
              });
              //solution = appInterface.showCandidateSolution(bestSolutionFound);
@@ -476,12 +477,18 @@ public class MainApplication extends Application {
              primaryStage.setScene(chooseAlgorithmScene);
          });
          downloadSolution.setOnAction(e -> {
-             String path = pathInput.displayBox();
-             System.out.println("Download solution request made ");
-             try{
+             String path;
+             do {
+                 path = PathInputBox.displayBox();
+                 System.out.println("Path: " + path);
+                 System.out.println("Download solution request made ");
+             } while(!path.isEmpty());
+            try{
                 appInterface.downloadCandidateSolution(path, bestSolutionFound);
              } catch (Exception ex){
-                 errorBox.displayErrorBox(ex.getMessage());
+
+                 //errorBox.displayErrorBox(ex.getMessage());
+                 errorBox.displayErrorBox(ex.getErrorMessage());
                  ex.printStackTrace();
              }
              

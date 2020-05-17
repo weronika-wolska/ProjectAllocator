@@ -14,7 +14,7 @@ public class CandidateSolutionWriter {
 
     private CandidateSolution solution;
 
-    public void writeXLSX(String filePath, CandidateSolution solution) {
+    public boolean writeXLSX(String filePath, CandidateSolution solution) {
         this.solution = solution;
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("Candidate Solution");
@@ -32,8 +32,10 @@ public class CandidateSolutionWriter {
             FileOutputStream outputFile = new FileOutputStream(new File(filePath));
             workbook.write(outputFile);
             outputFile.close();
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
     }
 
