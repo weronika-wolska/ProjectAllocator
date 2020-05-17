@@ -11,7 +11,6 @@ import repositories.StudentRepository;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -115,9 +114,9 @@ public class InputReader {
     private void parseRow(Row currentRow) throws InvalidArgumentException {
         // attributes which can be obtained here: student number, first name, surname, gpa, stream, proposer, supervisor, name, 1 (preferences)
         Student currentStudent = new Student();
-        Cell currentCell = null;
-        String currentCellString = null;
-        String currentLocationString = null;
+        Cell currentCell;
+        String currentCellString;
+        String currentLocationString;
 
         // obtaining student number
         // moving cell
@@ -127,10 +126,10 @@ public class InputReader {
 
         // parsing cell
         //System.out.println("About to parse another student number with " + currentCellString);
-        long studentNumber = 0;
+        long studentNumber;
         if( !isStringANumber(currentCellString)) /*return; // */throw new InvalidArgumentException("error: cannot read a student number at " + currentLocationString);
         else {
-            studentNumber = getNumericValueAsLong(Double.valueOf(currentCellString));
+            studentNumber = getNumericValueAsLong(Double.parseDouble(currentCellString));
             //System.out.println("Just parsed student id:" + studentNumber);
         }
         if(studentRepository.hasStudentById(studentNumber) ||
@@ -178,9 +177,11 @@ public class InputReader {
             currentCell = currentRow.getCell(schemaAttributes.get("gpa"));
             currentLocationString = "row " + currentRow.getRowNum() + " column " + currentCell.getColumnIndex();
             currentCellString = getCellsString(currentCell).trim();
+            //System.out.println("String read in:" + currentCellString);
             // parsing cell
             try {
                 double currentGpa = Double.parseDouble(currentCellString);
+                //System.out.println("Double obtained:" + currentGpa);
                 currentStudent.setGpa(currentGpa);
             }
             catch (Exception e) {
@@ -249,7 +250,7 @@ public class InputReader {
                 currentCellString = getCellsString(currentCell).trim();
                 if( Project.isValidProjectName(currentCellString)) {
                     if(!projectRepositoryAssigned.hasProjectByName(currentCellString)) {
-                        Project currentProject = null;
+                        Project currentProject;
                         if( projectRepository.hasProjectByName(currentCellString)) currentProject = projectRepository.getProjectByName(currentCellString);
                         else currentProject = new Project(currentCellString);
                         if( !currentPreferences.contains(currentProject)) currentPreferences.add(currentProject);
@@ -271,9 +272,7 @@ public class InputReader {
         int firstAttributesIndex = getFirstAttributeIndex(sheet);
         int lastAttributesIndex = getLastAttributesIndex(sheet);
         Row header = sheet.getRow(0);
-        Cell currentCell = null;
-        String currentCellString = null;
-        int preferencesFirst, preferencesLast;
+        String currentCellString;
 
         for(int i = firstAttributesIndex; i <= lastAttributesIndex; ++i) {
             currentCellString = getCellsString(header.getCell(i));
@@ -337,8 +336,7 @@ public class InputReader {
     }
 
     public String getCellsString(Cell cell) {
-        String cellsString = null;
-        if( cell == null) cellsString = "";
+        String cellsString;
         try{
             cellsString = cell.getStringCellValue();
         }
@@ -346,6 +344,9 @@ public class InputReader {
             double number = cell.getNumericCellValue();
             cellsString = String.valueOf(number);
             //System.out.println("The string is now " + cellsString + " where the number as double was " + number + " and as a long would be " + getNumericValueAsLong(number));
+        }
+        catch (NullPointerException npe) {
+            cellsString = "";
         }
         return cellsString;
     }
@@ -460,100 +461,5 @@ public class InputReader {
             return false;
         }
     }
-
-    // currently unused may be deleted later
-    private int findNumberInString(String string) {
-        int number = -1;
-        try{
-            number = Integer.parseInt(string);
-        } catch (NumberFormatException nfe) {
-            for( int i = 0; i < string.length(); ++i) {
-                if( Character.isDigit(string.charAt(i))) {
-                    if( ( i + 1 ) < string.length()) {
-                        if( Character.isDigit(string.charAt(i + 1))) {
-                            number = ( string.charAt(i) * 10) + ( string.charAt(i));
-                        }
-                        else {
-                            number = string.charAt(i);
-                        }
-                    }
-                    else {
-                        number = string.charAt(i);
-                    }
-                }
-            }
-        }
-        return number;
-    }
-
-
-    /*private void transferPreferencesBetweenStudents(Student from, Student to) throws InvalidArgumentException {
-        to.setPreferences(from.getPreferences());
-    }
-
-    private Student parseRowIntoStudent(Row row) throws InvalidArgumentException {
-        //System.out.println("parsing row");
-        Student newStudent = new Student(projects);
-        Cell currentCell;
-
-        String cellString0;
-        try {
-            currentCell = row.getCell(0);
-            cellString0 = currentCell.getStringCellValue();
-        }
-        catch (NullPointerException npe) {
-            cellString0 = "";
-        }
-        //System.out.println(cellString0);
-        newStudent.setFirstName(cellString0);
-
-        String cellString1;
-        try {
-            currentCell = row.getCell(1);
-            cellString1 = currentCell.getStringCellValue();
-        }
-        catch (NullPointerException npe) {
-            cellString1 = "";
-        }
-        //System.out.println(cellString1);
-        newStudent.setSurname(cellString1);
-
-        long cellValue2;
-        try {
-            currentCell = row.getCell(2);
-            cellValue2 = (long) currentCell.getNumericCellValue();
-        }
-        catch (Exception e) {
-            cellValue2 = 0;
-        }
-        //System.out.println(cellValue2);
-        newStudent.setStudentId(cellValue2);
-
-        ArrayList<Project> preferences = new ArrayList<>();
-        ArrayList<String> preferenceNames = new ArrayList<>();
-        String cellString;
-        for(int i = 0; i < 10; ++i) {
-            try {
-                currentCell = row.getCell(3 + i);
-                cellString = currentCell.getStringCellValue();
-
-            } catch (NullPointerException npe) {
-                cellString = "";
-            }
-            preferenceNames.add(cellString);
-        }
-        //System.out.println(cellString3);
-        for (String projectName :
-                preferenceNames) {
-            if (projects.hasProjectByName(projectName)) {
-                preferences.add(projects.getProjectByName(projectName));
-            }
-        }
-        newStudent.setPreferences(preferences); // should randomize leftover slots
-
-        if(students.hasStudent(newStudent)) {
-            return newStudent;
-        }
-        else throw new IllegalArgumentException();
-    }*/
 }
+

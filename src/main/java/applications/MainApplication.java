@@ -14,7 +14,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.geometry.*;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
+
 import javafx.embed.swing.JFXPanel;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -42,7 +43,7 @@ public class MainApplication extends Application {
     Button geneticAlgorithm;
     Button simulatedAnnealing;
     Button hillClimbing;
-    Button goToGPA, setWeight, downloadSolution;
+    Button goToGPA, setWeight, downloadSolution, differentAlgorithm;
     TextField getStudents, getStaff, getProjects, getPreferences;
     Slider getGpaWeight;
     TableColumn<TableRow, String> projectColumn;
@@ -104,7 +105,6 @@ public class MainApplication extends Application {
          Label staffLabel = new Label("Staff:  ");
          TextField getStaff = new TextField();
          getStaff.setMaxWidth(500);
-         getStaff.setText("src/main/resources/staff.xlsx");
          staffInput.getChildren().addAll( staffLabel, getStaff);
  
          HBox projectInput = new HBox(10);
@@ -112,7 +112,6 @@ public class MainApplication extends Application {
          Label projectsLabel = new Label("Projects:  ");
          TextField getProjects = new TextField();
          getProjects.setMaxWidth(500);
-         getProjects.setText("src/main/resources/projects60.xlsx");
          projectInput.getChildren().addAll(projectsLabel, getProjects);
  
          HBox studentInput = new HBox();
@@ -120,7 +119,7 @@ public class MainApplication extends Application {
          Label studentLabel = new Label("Students:  ");
          TextField getStudents = new TextField();
          getStudents.setMaxWidth(500);
-         getStudents.setText("src/main/resources/students60.xlsx");
+
          studentInput.getChildren().addAll(studentLabel, getStudents);
  
          HBox preferencesInput = new HBox(10);
@@ -128,7 +127,6 @@ public class MainApplication extends Application {
          Label studentPreferencesLabel = new Label("Student Preferences:  ");
          TextField getPreferences = new TextField();
          getPreferences.setMaxWidth(500);
-         getPreferences.setText("src/main/resources/studentPreferences60.xlsx");
          preferencesInput.getChildren().addAll(studentPreferencesLabel, getPreferences);
          Button goToAlgorithms = new Button("Continue");
          goToGPA = new Button("Continue");
@@ -192,6 +190,22 @@ public class MainApplication extends Application {
         
          // display candidate solution window
          Label outcome = new Label("This is the best solution we found: ");
+
+         // colour key
+        HBox key = new HBox(30);
+        key.setAlignment(Pos.CENTER);
+        Label red = new Label("Assigned project not in preference");
+        red.setTextFill(Color.RED);
+        Label blue = new Label("Gets first preference");
+        blue.setTextFill(Color.BLUE);
+        key.getChildren().addAll(red, blue);
+        HBox key2 = new HBox(30);
+        key2.setAlignment(Pos.CENTER);
+        Label green = new Label("Gets second or third preference");
+        green.setTextFill(Color.GREEN);
+        Label maroon = new Label("duplicate projects assigned");
+        maroon.setTextFill(Color.MAROON);
+        key2.getChildren().addAll(green, maroon);
          // prevents initialization error for TableView
          SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -229,14 +243,15 @@ public class MainApplication extends Application {
          Button downloadSolution = new Button("Download");
          VBox displaySolution = new VBox(20);
          displaySolution.setAlignment(Pos.CENTER);
-         displaySolution.getChildren().add(outcome);
+         displaySolution.getChildren().addAll(outcome, key, key2);
          try{
              displaySolution.getChildren().add(this.solution);
          } catch(Exception a){
              a.getCause();
              a.printStackTrace();
          }
-         displaySolution.getChildren().addAll(averageSatisfaction, downloadSolution);
+         differentAlgorithm = new Button("Try different algorithm");
+         displaySolution.getChildren().addAll(averageSatisfaction, downloadSolution, differentAlgorithm);
          //displaySolution.getChildren().addAll(outcome,this.solution, averageSatisfaction, downloadSolution);
             
          
@@ -258,7 +273,7 @@ public class MainApplication extends Application {
          });
          goToGPA.setOnAction(e -> {
             try {
-                //if(getStaff.getText().trim().equals("")){
+                if(!getStaff.getText().isEmpty()){
                     String staffPath = getStaff.getText();
                     System.out.println("Staff Path: " +staffPath);
                     this.staff = appInterface.readStaffInput(staffPath);
@@ -275,7 +290,7 @@ public class MainApplication extends Application {
                     System.out.println("Preferences Path: " + preferencesPath);
                     students = appInterface.readStudentPreferencesInput("src/main/resources/studentPreferences60.xlsx", students, projects);
                     System.out.println(students.getSize());
-               /* } else{
+                } else{
                     String filePath = getOneFile.getText();
                     try{
                         appInterface.readOneInputFile(filePath);
@@ -284,7 +299,7 @@ public class MainApplication extends Application {
                         e7.printStackTrace();
                     }
 
-                } */
+                }
                 
                 primaryStage.setScene(gpaScene);
              } catch (Exception e2) {
@@ -345,9 +360,9 @@ public class MainApplication extends Application {
                                  try {
                                      if (!student.getPreferences().contains(project)) {
                                          setTextFill(Color.RED);
-                                     }// else if (student.getPreferences().get(0) == project) {
-                                        // setTextFill(Color.BLUE);
-                                      else if (student.getPreferences().get(1) == project || student.getPreferences().get(2) == project) {
+                                     } else if (student.getPreferences().get(0) == project) {
+                                         setTextFill(Color.BLUE);
+                                     }else if (student.getPreferences().get(1) == project || student.getPreferences().get(2) == project) {
                                          setTextFill(Color.DARKGREEN);
                                      } else if (getTableView().getItems().contains(project) && getTableView().getItems().indexOf(project) != getIndex()) {
                                          setTextFill(Color.MAROON);
@@ -381,6 +396,38 @@ public class MainApplication extends Application {
              bestSolutionFound = appInterface.applySimulatedAnnealing();
              this.solutionList = appInterface.showCandidateSolution(bestSolutionFound);
              this.solution.setItems(this.solutionList);
+             projectColumn.setCellFactory(column -> {
+                 return new TableCell<TableRow, String>(){
+                     @Override
+                     protected void updateItem(String item, boolean empty){
+                         if (item == null || empty) { //If the cell is empty
+                             setText(null);
+                             setStyle("");
+                         } else {
+                             setText(item);
+                             TableRow row = solutionList.get(getIndex());
+                             Student student = students.getStudentById(row.getId());
+                             Project project = projects.getProjectByName(row.getProject());
+                             try {
+                                 if (!student.getPreferences().contains(project)) {
+                                     setTextFill(Color.RED);
+                                 }// else if (student.getPreferences().get(0) == project) {
+                                 // setTextFill(Color.BLUE);
+                                 else if (student.getPreferences().get(1) == project || student.getPreferences().get(2) == project) {
+                                     setTextFill(Color.DARKGREEN);
+                                 } else if (getTableView().getItems().contains(project) && getTableView().getItems().indexOf(project) != getIndex()) {
+                                     setTextFill(Color.MAROON);
+                                 } else {
+                                     setTextFill(Color.BLACK);
+                                 }
+                             } catch(NullPointerException ne){
+                                 ne.printStackTrace();
+                             }
+
+                         }
+                     }
+                 };
+             });
              System.out.println("Simulated Annealing was chosen");
              primaryStage.setScene(displaySolutionScene);
          });
@@ -389,9 +436,44 @@ public class MainApplication extends Application {
              bestSolutionFound = appInterface.applyHillClimbing();
              this.solutionList = appInterface.showCandidateSolution(bestSolutionFound);
              this.solution.setItems(this.solutionList);
+             projectColumn.setCellFactory(column -> {
+                 return new TableCell<TableRow, String>(){
+                     @Override
+                     protected void updateItem(String item, boolean empty){
+                         if (item == null || empty) { //If the cell is empty
+                             setText(null);
+                             setStyle("");
+                         } else {
+                             setText(item);
+                             TableRow row = solutionList.get(getIndex());
+                             Student student = students.getStudentById(row.getId());
+                             Project project = projects.getProjectByName(row.getProject());
+                             try {
+                                 if (!student.getPreferences().contains(project)) {
+                                     setTextFill(Color.RED);
+                                 }// else if (student.getPreferences().get(0) == project) {
+                                 // setTextFill(Color.BLUE);
+                                 else if (student.getPreferences().get(1) == project || student.getPreferences().get(2) == project) {
+                                     setTextFill(Color.DARKGREEN);
+                                 } else if (getTableView().getItems().contains(project) && getTableView().getItems().indexOf(project) != getIndex()) {
+                                     setTextFill(Color.MAROON);
+                                 } else {
+                                     setTextFill(Color.BLACK);
+                                 }
+                             } catch(NullPointerException ne){
+                                 ne.printStackTrace();
+                             }
+
+                         }
+                     }
+                 };
+             });
              //solution = appInterface.showCandidateSolution(bestSolutionFound);
              System.out.println("Hill Climbing was chosen");
              primaryStage.setScene(displaySolutionScene);
+         });
+         differentAlgorithm.setOnAction(e -> {
+             primaryStage.setScene(chooseAlgorithmScene);
          });
          downloadSolution.setOnAction(e -> {
              String path = pathInput.displayBox();
