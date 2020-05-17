@@ -6,13 +6,13 @@ public class Project{
     private StaffMember supervisor;
 
     public Project(String projectName, Stream stream, StaffMember supervisor){
-        this.projectName=projectName;
-        this.stream=stream;
-        this.supervisor=supervisor;
+        setProjectName(projectName);
+        setStream(stream);
+        setSupervisor(supervisor);
     }
 
     public Project(String projectName){
-        this.projectName=projectName;
+        this(projectName, null, null);
     }
 
     public String getProjectName() {
@@ -36,6 +36,7 @@ public class Project{
     }
 
     public void setSupervisor(StaffMember supervisor) {
+        if(supervisor == null) supervisor = new StaffMember();
         this.supervisor = supervisor;
     }
 

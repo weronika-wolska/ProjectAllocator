@@ -82,6 +82,7 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
 
     public void readOneInputFile(String filePath) throws InvalidArgumentException, Exception {
         InputReader inputReader = new InputReader();
+        inputReader.setIgnoreDuplicatesFound(true);
         inputReader.readXLSX(filePath);
         inputThroughOneFile = true;
         this.studentRepository = inputReader.getStudentRepository();
@@ -101,9 +102,8 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
     public  CandidateSolution applyGeneticAlgorithm() throws  Exception{
         try{
             GeneticAlgorithm algorithm = new GeneticAlgorithm(this.studentRepository, this.projectRepository, this.GPAWeight);
-            System.out.println(algorithm.getBestSolution().getGpaWeight());
             CandidateSolution bestSolution = algorithm.applyAlgorithm();
-
+            System.out.println(algorithm.getBestSolution().getGpaWeight());
             System.out.println(algorithm.getBestSolution().size());
             return bestSolution;
         } catch (Exception exception){

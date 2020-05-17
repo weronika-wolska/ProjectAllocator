@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
-import javax.activity.InvalidActivityException;
+//import javax.activity.InvalidActivityException;
 
 public class StudentIT {
 
