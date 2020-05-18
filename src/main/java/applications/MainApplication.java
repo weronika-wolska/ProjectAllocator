@@ -672,6 +672,7 @@ public class MainApplication extends Application {
         if(bestSolutionFound == null) System.out.println("best solution is null");
         Label averageSatisfaction = new Label("Average student satisfaction: "+appInterface.getAverageStudentSatisfaction(bestSolutionFound) + " / 10");
         Button downloadSolution = new Button("Download");
+        Button differentFileInput = new Button("Use different file");
         VBox displaySolution = new VBox(20);
         displaySolution.setAlignment(Pos.CENTER);
         displaySolution.getChildren().addAll(outcome, key, key2);
@@ -682,7 +683,7 @@ public class MainApplication extends Application {
             a.printStackTrace();
         }
         differentAlgorithm = new Button("Try different algorithm");
-        displaySolution.getChildren().addAll(averageSatisfaction, downloadSolution, differentAlgorithm);
+        displaySolution.getChildren().addAll(averageSatisfaction, downloadSolution, differentAlgorithm, differentFileInput);
         //displaySolution.getChildren().addAll(outcome,this.solution, averageSatisfaction, downloadSolution);
 
 
@@ -694,6 +695,16 @@ public class MainApplication extends Application {
             displayChooseAlgorithmScene();
             //stage.setScene(chooseAlgorithmScene);
         });
+
+        differentFileInput.setOnAction(e -> {
+            try {
+                displayApplication(stage);
+            } catch (Exception excep){
+                excep.printStackTrace();
+            }
+        });
+
+
 
         downloadSolution.setOnAction(e -> {
             String path = pathInput.displayBox();
