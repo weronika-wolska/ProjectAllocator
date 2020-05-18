@@ -25,7 +25,7 @@ public class StudentRepository{
     public void addStudent(Student student) throws NullPointerException, DuplicateStudentIdException {
         if(!hasStudentById(student.getStudentId())) {
             students.add(student);
-            System.out.println("Adding student to sRep:" + student.getName());
+            //System.out.println("Adding student to sRep:" + student.getName());
         }
         else {
             throw new DuplicateStudentIdException();

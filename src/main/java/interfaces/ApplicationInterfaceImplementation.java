@@ -33,6 +33,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.collections.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -75,10 +77,9 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
         ArrayList<Student> students = solutionAlreadyAssigned.getStudents();
         for(int i =0;i<students.size();i++){
             try {
-                if(!fullRepository.hasStudent(students.get(i))) {
                     fullRepository.addStudent(students.get(i));
-                }
-            } catch (Exception e){
+            }
+            catch (Exception e){
                 e.printStackTrace();
             }
         }
@@ -206,8 +207,10 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
     @Override
     public CandidateSolution applyHillClimbing() {
         HillClimbingAlgorithm algorithm = new HillClimbingAlgorithm(this.originalSolution);
+        System.out.println("Solution with:" + originalSolution.getAverageStudentSatisfaction() + " satisfaction, this is before algo:" + originalSolution);
         algorithm.createAssignment();
         this.bestSolution = algorithm.giveOutput();
+        System.out.println("Solution with:" + originalSolution.getAverageStudentSatisfaction() + " satisfaction, this is after algo:" + bestSolution);
         return algorithm.giveOutput();
     }
 
@@ -272,6 +275,14 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
                 solution.add(newRow);
             } */
             for(Entry<Student, Project> entry: map.entrySet()){
+                Student student = entry.getKey();
+                Project project = entry.getValue();
+                TableRow newRow = new TableRow(student.getStudentId(), student.getName(), project.getProjectName());
+                //System.out.println("Current pair:" + student.getName() + " and " + project.getProjectName());
+                //System.out.println("Current row:" + newRow);
+                solution.add(newRow);
+            }
+            for(Entry<Student, Project> entry: (Set<Entry<Student, Project>>) solutionAlreadyAssigned.getCandidateSolution().entrySet()) {
                 Student student = entry.getKey();
                 Project project = entry.getValue();
                 TableRow newRow = new TableRow(student.getStudentId(), student.getName(), project.getProjectName());

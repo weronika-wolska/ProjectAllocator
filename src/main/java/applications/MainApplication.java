@@ -197,8 +197,8 @@ public class MainApplication extends Application {
                     String filePath = getOneFile.getText();
                     try{
                         appInterface.readOneInputFile(filePath);
-                        this.students = appInterface.getStudentRepository();
-                        this.projects = appInterface.getProjectRepository();
+                        this.students = appInterface.getFullStudentRepository();
+                        this.projects = appInterface.getFullProjectRepository();
                     } catch (Exception e7) {
                         errorBox.displayErrorBox(e7.getMessage());
                         e7.printStackTrace();
@@ -403,7 +403,7 @@ public class MainApplication extends Application {
             System.out.println("applying algorithm");
             try {
                 //bestSolutionFound = appInterface.applyGeneticAlgorithm(this.students,this.projects);
-                GeneticAlgorithm ga = new GeneticAlgorithm(this.students, this.projects, 0.5);
+                GeneticAlgorithm ga = new GeneticAlgorithm(appInterface.getStudentRepository(), appInterface.getProjectRepository(), 0.5);
                 this.bestSolutionFound = ga.applyAlgorithm();
             } catch (Exception exception) {
                 exception.printStackTrace();
@@ -570,10 +570,10 @@ public class MainApplication extends Application {
                             TableRow row = solutionList.get(getIndex());
                             System.out.println("This is the row:" + row);
                             System.out.println("This is the students:" + students.toString());
-                            //Student student = students.getStudentById(row.getId());
-                            Student student = appInterface.getFullStudentRepository().getStudentById(row.getId());
-                            //Project project = projects.getProjectByName(row.getProject());
-                            Project project = appInterface.getFullProjectRepository().getProjectByName(row.getProject());
+                            Student student = students.getStudentById(row.getId());
+                            //Student student = appInterface.getFullStudentRepository().getStudentById(row.getId());
+                            Project project = projects.getProjectByName(row.getProject());
+                            //Project project = appInterface.getFullProjectRepository().getProjectByName(row.getProject());
                             System.out.println("meant to start changing colours here");
                             try {
                                 if (!student.getPreferences().contains(project)) {
