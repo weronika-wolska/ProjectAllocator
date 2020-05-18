@@ -197,6 +197,8 @@ public class MainApplication extends Application {
                     String filePath = getOneFile.getText();
                     try{
                         appInterface.readOneInputFile(filePath);
+                        this.students = appInterface.getStudentRepository();
+                        this.projects = appInterface.getProjectRepository();
                     } catch (Exception e7) {
                         errorBox.displayErrorBox(e7.getMessage());
                         e7.printStackTrace();
@@ -407,15 +409,19 @@ public class MainApplication extends Application {
             this.projectColumn.setMinWidth(300);
             this.projectColumn.setCellValueFactory(new PropertyValueFactory<>("project"));
             projectColumn.setCellFactory(column -> {
+
                 return new TableCell<TableRow, String>(){
                     @Override
                     protected void updateItem(String item, boolean empty){
+                        System.out.println("THERE");
                         if (item == null || empty) { //If the cell is empty
                             setText(null);
                             setStyle("");
                         } else {
                             setText(item);
                             TableRow row = solutionList.get(getIndex());
+                            System.out.println("This is the row:" + row);
+                            System.out.println("This is the students:" + students.toString());
                             Student student = students.getStudentById(row.getId());
                             Project project = projects.getProjectByName(row.getProject());
                             System.out.println("meant to start changing colours here");
@@ -493,9 +499,15 @@ public class MainApplication extends Application {
             TableColumn<TableRow, String> studentNameColumn = new TableColumn("Student name");
             studentNameColumn.setMinWidth(200);
             studentNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
             //this.projectColumn = new TableColumn<>("Assigned Project");
             //this.projectColumn.setMinWidth(300);
             //this.projectColumn.setCellValueFactory(new PropertyValueFactory<>("project"));
+
+            this.projectColumn = new TableColumn<>("Assigned Project");
+            this.projectColumn.setMinWidth(300);
+            this.projectColumn.setCellValueFactory(new PropertyValueFactory<>("project"));
+
 
 
                 System.out.println("I should have gotten project column");

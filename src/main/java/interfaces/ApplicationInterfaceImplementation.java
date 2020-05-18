@@ -86,6 +86,7 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
         inputReader.readXLSX(filePath);
         inputThroughOneFile = true;
         this.studentRepository = inputReader.getStudentRepository();
+        System.out.println(studentRepository);
         this.projectRepository = inputReader.getProjectRepository();
         this.originalSolution = new CandidateSolution(this.studentRepository, this.projectRepository);
         solutionAlreadyAssigned = new CandidateSolution(inputReader.getStudentRepositoryAssigned(), inputReader.getProjectRepositoryAssigned());
@@ -297,6 +298,19 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
         return reader.readXLSX(filePath);
     }
 
+    public ProjectRepository getProjectRepository() {
+        return projectRepository;
+    }
 
-    
+    public void setProjectRepository(ProjectRepository projectRepository) {
+        this.projectRepository = projectRepository;
+    }
+
+    public StudentRepository getStudentRepository() {
+        return studentRepository;
+    }
+
+    public void setStudentRepository(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
+    }
 }
