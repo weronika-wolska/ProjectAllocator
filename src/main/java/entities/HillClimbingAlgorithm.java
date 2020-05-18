@@ -29,7 +29,7 @@ public class HillClimbingAlgorithm implements AssignmentAlgorithm {
         for(; currentTemp > endTemp; currentTemp -= tempChange) {
             //System.out.println("ANOTHER ITERATION OF ANNEAL:" + currentTemp + " " + endTemp);
             double currentEnergy = currentSolution.getEnergy();
-            currentSolution.makeRandomChange();
+            currentSolution.makeRandomChangeWithLeftovers();
             double potentialNewEnergy = currentSolution.getEnergy();
             double changeInEnergy = potentialNewEnergy - currentEnergy;
             //System.out.println("In the iteration still with:" + currentEnergy + " " + potentialNewEnergy + " " + changeInEnergy);
