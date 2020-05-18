@@ -428,4 +428,7 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
     public void setStudentRepository(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
+
+    private void randomizeCurrentSolution() {
+    }
 }
