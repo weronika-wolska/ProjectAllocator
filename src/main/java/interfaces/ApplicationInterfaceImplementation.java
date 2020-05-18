@@ -43,9 +43,65 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
     private CandidateSolution originalSolution;
     private StudentRepository studentRepository;
     private ProjectRepository projectRepository;
-    private CandidateSolution solutionAlreadyAssigned;
+    private CandidateSolution solutionAlreadyAssigned = null;
+    private CandidateSolution bestSolution;
     private boolean inputThroughOneFile = false;
 
+    public void setBestSolution(CandidateSolution bestSolution){
+        this.bestSolution = bestSolution;
+    }
+
+    public ProjectRepository getFullProjectRepository(){
+        ProjectRepository fullRepository = this.projectRepository;
+        ArrayList<Project> projects = solutionAlreadyAssigned.getProjects();
+        for(int i=0;i<projects.size();i++){
+            fullRepository.addProject(projects.get(0));
+        }
+        return fullRepository;
+    }
+
+    public StudentRepository getFullStudentRepository(){
+        StudentRepository fullRepository = this.studentRepository;
+        ArrayList<Student> students = solutionAlreadyAssigned.getStudents();
+        for(int i =0;i<students.size();i++){
+            try {
+                if(!fullRepository.hasStudent(students.get(i))) {
+                    fullRepository.addStudent(students.get(i));
+                }
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return fullRepository;
+    }
+
+    public CandidateSolution getBestSolution() throws InvalidArgumentException{
+        if(this.solutionAlreadyAssigned==null){
+            return this.bestSolution;
+        }
+        else{
+            ArrayList<Student> students = this.bestSolution.getStudents();
+            ArrayList<Project> projects = this.bestSolution.getProjects();
+            ArrayList<Student> studentsAlreadyAssigned = this.solutionAlreadyAssigned.getStudents();
+            ArrayList<Project> projectsAlreadyAssigned = this.solutionAlreadyAssigned.getProjects();
+            ArrayList<Student> allStudents = students;
+            for(int i = 0;i<studentsAlreadyAssigned.size();i++){
+                allStudents.add(studentsAlreadyAssigned.get(i));
+            }
+            ArrayList<Project> allProjects = projects;
+            for(int i=0;i<projectsAlreadyAssigned.size();i++){
+                allProjects.add(projectsAlreadyAssigned.get(i));
+            }
+            try {
+                CandidateSolution candidateSolution = new CandidateSolution(allStudents, allProjects, getGPAWeight());
+                return candidateSolution;
+            }catch (Exception e){
+                e.printStackTrace();
+                throw new InvalidArgumentException();
+            }
+
+        }
+    }
     public double getGPAWeight(){
         return this.GPAWeight;
     }
@@ -124,6 +180,7 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
             System.out.println("studentsRep after algo" + studentRepository);
             System.out.println(algorithm.getBestSolution().getGpaWeight());
             System.out.println(algorithm.getBestSolution().size());
+            this.bestSolution = bestSolution;
             return bestSolution;
         } catch (Exception exception){
             System.out.println("Caught exception, not returning solution");
@@ -140,6 +197,7 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
     public CandidateSolution applyHillClimbing() {
         HillClimbingAlgorithm algorithm = new HillClimbingAlgorithm(this.originalSolution);
         algorithm.createAssignment();
+        this.bestSolution = algorithm.giveOutput();
         return algorithm.giveOutput();
     }
 
@@ -147,6 +205,7 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
     public CandidateSolution applySimulatedAnnealing() {
         SimulatedAnnealing algorithm = new SimulatedAnnealing(this.originalSolution);
         algorithm.createAssignment();
+        this.bestSolution = algorithm.giveOutput();
         return algorithm.giveOutput();
     }
 

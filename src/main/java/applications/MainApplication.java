@@ -282,6 +282,8 @@ public class MainApplication extends Application {
                     try {
                         GeneticAlgorithm ga = new GeneticAlgorithm(this.students, this.projects, this.appInterface.getGPAWeight());
                         this.bestSolutionFound = ga.applyAlgorithm();
+                        appInterface.setBestSolution(this.bestSolutionFound);
+                        this.bestSolutionFound = appInterface.getBestSolution();
                     }
                     catch(Exception ee) {
                         System.out.println("Hi2.5");
@@ -349,8 +351,10 @@ public class MainApplication extends Application {
                                 TableRow row = solutionList.get(getIndex());
                                 System.out.println("This is the row:" + row);
                                 System.out.println("This is the students:" + students.toString());
-                                Student student = students.getStudentById(row.getId());
-                                Project project = projects.getProjectByName(row.getProject());
+                                //Student student = students.getStudentById(row.getId());
+                                Student student = appInterface.getFullStudentRepository().getStudentById(row.getId());
+                                //Project project = projects.getProjectByName(row.getProject());
+                                Project project = appInterface.getFullProjectRepository().getProjectByName(row.getProject());
                                 System.out.println("meant to start changing colours here");
                                 try {
                                     if (!student.getPreferences().contains(project)) {
@@ -465,15 +469,26 @@ public class MainApplication extends Application {
         simulatedAnnealing.setOnAction(e -> {
             System.out.println("applying algorithm");
             bestSolutionFound = appInterface.applySimulatedAnnealing();
+            try {
+                this.bestSolutionFound = appInterface.getBestSolution();
+            } catch (InvalidArgumentException invalid){
+                InvalidArgumentErrorBox.displayErrorBox();
+                invalid.printStackTrace();
+            }
             System.out.println("assigning value to solutionList");
-            this.solutionList = appInterface.showCandidateSolution(bestSolutionFound);
+            this.solutionList = appInterface.showCandidateSolution(this.bestSolutionFound);
             System.out.println("setting table as solutionList");
             this.solution.setItems(this.solutionList);
+
+            //projectColumn = new TableColumn<>();
+            /*projectColumn.setCellFactory(column -> {
+
             System.out.println("should enter lambda");
             this.projectColumn = new TableColumn<TableRow, String>("Project ");
             this.projectColumn.setMinWidth(300);
             this.projectColumn.setCellValueFactory(new PropertyValueFactory<>("project"));
             projectColumn.setCellFactory(column -> {
+
                 return new TableCell<TableRow, String>(){
                     @Override
                     protected void updateItem(String item, boolean empty){
@@ -514,18 +529,27 @@ public class MainApplication extends Application {
                         }
                     }
                 };
-            });
-            //solution = appInterface.showCandidateSolution(bestSolutionFound);
-            System.out.println("Hill Climbing was chosen");
-            //primaryStage.setScene(displaySolutionScene);
-            displaySolution(projectColumn);
+
+            });*/
+            System.out.println("Simulated Annealing was chosen");
+            displaySolution(this.projectColumn);
+
+
         });
         hillClimbing.setOnAction(e -> {
             //bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
             System.out.println("applying algorithm");
             bestSolutionFound = appInterface.applyHillClimbing();
+            System.out.println(bestSolutionFound.size());
+            try {
+                this.bestSolutionFound = appInterface.getBestSolution();
+            } catch (Exception exc){
+                InvalidArgumentErrorBox.displayErrorBox();
+                exc.printStackTrace();
+            }
+            System.out.println(this.bestSolutionFound.size());
             System.out.println("assigning value to solutionList");
-            this.solutionList = appInterface.showCandidateSolution(bestSolutionFound);
+            this.solutionList = appInterface.showCandidateSolution(this.bestSolutionFound);
             System.out.println("setting table as solutionList");
             this.solution.setItems(this.solutionList);
             System.out.println("should enter lambda");
@@ -546,8 +570,10 @@ public class MainApplication extends Application {
                             TableRow row = solutionList.get(getIndex());
                             System.out.println("This is the row:" + row);
                             System.out.println("This is the students:" + students.toString());
-                            Student student = students.getStudentById(row.getId());
-                            Project project = projects.getProjectByName(row.getProject());
+                            //Student student = students.getStudentById(row.getId());
+                            Student student = appInterface.getFullStudentRepository().getStudentById(row.getId());
+                            //Project project = projects.getProjectByName(row.getProject());
+                            Project project = appInterface.getFullProjectRepository().getProjectByName(row.getProject());
                             System.out.println("meant to start changing colours here");
                             try {
                                 if (!student.getPreferences().contains(project)) {
@@ -623,9 +649,15 @@ public class MainApplication extends Application {
             TableColumn<TableRow, String> studentNameColumn = new TableColumn("Student name");
             studentNameColumn.setMinWidth(200);
             studentNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+            //this.projectColumn = new TableColumn<>("Assigned Project");
+            //this.projectColumn.setMinWidth(300);
+            //this.projectColumn.setCellValueFactory(new PropertyValueFactory<>("project"));
+
             this.projectColumn = new TableColumn<>("Assigned Project");
             this.projectColumn.setMinWidth(300);
             this.projectColumn.setCellValueFactory(new PropertyValueFactory<>("project"));
+
 
 
                 System.out.println("I should have gotten project column");
