@@ -54,7 +54,7 @@ public class ProjectRepository{
             }
         }
         if(projectWanted != null) return projectWanted;
-        else throw new IllegalArgumentException();
+        else return null;
     }
 
 

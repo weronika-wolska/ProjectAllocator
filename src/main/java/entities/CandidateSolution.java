@@ -12,7 +12,7 @@ import entities.*;
 import repositories.*;
 
 public class CandidateSolution {
-    public static final int FULL_STUDENT_FITNESS = 10;
+    public static final int FULL_STUDENT_FITNESS = 20;
     private Map<Student, Project> candidateSolution;
     private int fitness;
     private double gpaWeight;
@@ -50,6 +50,7 @@ public class CandidateSolution {
     }
 
     public CandidateSolution(StudentRepository students, ProjectRepository projects, double gpaWeight) throws InvalidArgumentException {
+        if(students.getSize() > projects.getSize()) throw new InvalidArgumentException("error: not enough projects in the input file");
         this.students = new ArrayList<>();
         this.projects = new ArrayList<>();
         this.candidateSolution = new HashMap<>(students.getSize());
@@ -94,7 +95,7 @@ public class CandidateSolution {
 
     public CandidateSolution(ArrayList<Student> students, ArrayList<Project> projects, double gpaWeight) throws InvalidArgumentException{
         if(students.size()!=projects.size()){
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException("error: array lists used to construct candidate solution differ in length, use repository constructor instead");
         }
         setGpaWeight(gpaWeight);
         this.candidateSolution = new HashMap<Student, Project>(students.size());
@@ -166,10 +167,10 @@ public class CandidateSolution {
         // assumes student has exactly 10 preferences
         for(int i = 0; i<preferences.size();i++){
             if(preferences.get(0).getProjectName()==project.getProjectName()){
-                return 20;
+                return FULL_STUDENT_FITNESS;
             }
             if(preferences.get(i).getProjectName()==project.getProjectName()){
-                return 20 - i;       // if the assigned project is first preference, fitness is 10, if it's second, fitness is 9 etc.
+                return FULL_STUDENT_FITNESS - i;       // if the assigned project is first preference, fitness is 10, if it's second, fitness is 9 etc.
             }
         }
         if(fitness<1){
@@ -185,9 +186,9 @@ public class CandidateSolution {
            /* Student student = (Student)solution.getKey();
             ArrayList<Project> studentPreferences = student.getPreferences();
             Project project = (Project)solution.getValue();
-            for(int i=0;i<10;i++){
+            for(int i=0;i<20;i++){
                 if(studentPreferences.get(i)==project){
-                    score += (10 -i);
+                    score += (20 -i);
                 } //else {score -=50;}
             } */
             score += calculateIndividualFitness(solution);
@@ -265,7 +266,9 @@ public class CandidateSolution {
     // otherwise, the candidate solution stays the same and the method returns false
     public boolean changeSolution(Map<Student, Project> candidateSolution, ArrayList<Student> students) throws InvalidArgumentException{
         // must be at least two elements in order to perform a change
-        if(candidateSolution.size()<2){ throw new InvalidArgumentException(); }
+        int leftoverCount = 0;
+        if( leftoverProjects != null) leftoverCount = leftoverProjects.size();
+        if((candidateSolution.size() + leftoverCount)<2){ throw new InvalidArgumentException("error: no change can be made to the solution, the assignment is already made"); }
 
         Map<Student, Project> alternateSolution = candidateSolution;
         Random random = new Random();
@@ -288,19 +291,21 @@ public class CandidateSolution {
             return true;
         }
     }
-    
-    
-    public String toString(){
-        StringBuilder string = new StringBuilder();
-        for(int i=0;i<this.candidateSolution.size();i++){
-            Student student = students.get(i);
-            Project project = projects.get(i);
-            string.append("student ").append(student.getFirstName()).append(" ").append(student.getSurname()).append(" doing ").append(student.getStream());
-            string.append(" was assigned\n");
-            string.append("project ").append(project.getProjectName()).append(" which is in the stream ").append(project.getStream()).append("\n");
+
+    @Override
+    public String toString() {
+        String string = "";
+        for (Map.Entry<Student, Project> pairing :
+                candidateSolution.entrySet()) {
+            Student student = pairing.getKey();
+            Project project = pairing.getValue();
+            string += "student " + student.getFirstName() + " " + student.getSurname() + " doing " + student.getStream();
+            string += "\twas assigned\t";
+            string += "project " + project.getProjectName() + " which is in the stream " + project.getStream() + "\n";
         }
-        return string.toString();
+        return string;
     }
+
     public Map<Student, Project> getBackupSolution() throws NoRandomChangeWasMadeException{
         if(backupSolution == null) {
             throw new NoRandomChangeWasMadeException();
@@ -310,19 +315,14 @@ public class CandidateSolution {
         }
     }
 
-    /*// makes deep copy of map and points one of CandidateSolution's fields to it
-    private void saveBackupSolution() {
-        System.out.println("STARTING SAVEBACKUPSOLUTION HERE");
-        Gson gson = new Gson();
-        //String backupString = gson.toJson(candidateSolution);
-        //System.out.println(candidateSolution);
-        //System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-        //System.out.println(backupString);
-        //Type type = new TypeToken<HashMap<Student, Project>>(){}.getType();
-        //backupSolution = gson.fromJson(backupString, type);
-        backupSolution = gson.fromJson(gson.toJson(candidateSolution), HashMap.class);
-        System.out.println("ENDING SAVEBACKUPSOLUTION HERE");
-    }*/
+    public ArrayList<Project> getDeepCopyOfLeftoverProjects() {
+        ArrayList<Project> copiedLeftoverProjects = new ArrayList<>();
+        for (Project leftoverProject :
+                leftoverProjects) {
+            copiedLeftoverProjects.add(leftoverProject);
+        }
+        return copiedLeftoverProjects;
+    }
 
     private void saveBackupSolution() {
         //System.out.println("\n\n\n\n\n\n\n\n\n\n\n");
@@ -332,6 +332,9 @@ public class CandidateSolution {
         for (Map.Entry<Student, Project> solution:
             candidateSolution.entrySet()) {
             backupSolution.put(solution.getKey(), solution.getValue());
+        }
+        if(leftoverProjects != null) {
+            backupLeftoverProjects = getDeepCopyOfLeftoverProjects();
         }
         //System.out.println("\n\n\n\n\n\n\n\n\n\n\n");
         //System.out.println("ENDING SAVEBACKUPSOLUTION HERE");
@@ -344,7 +347,7 @@ public class CandidateSolution {
         //System.out.println("STARTING MAKERANDOMCHANGE HERE");
         //System.out.println("unchanged solution:" + "\n" + toString());
         //System.out.println("\n\n\n\n\n\n\n\n\n\n");
-        if(candidateSolution.size()<2) throw new InvalidArgumentException();
+
         saveBackupSolution();
         Random random = new Random();
         int x, y;
@@ -360,6 +363,60 @@ public class CandidateSolution {
         Project project = candidateSolution.get(studentX);
         candidateSolution.put(studentX, candidateSolution.get(studentY));
         candidateSolution.put(studentY, project);
+        fitness = calculateFitness(candidateSolution);
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n");
+        //System.out.println("changed current solution:" + toString());
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n\n");
+        //System.out.println("backup:" + backupSolution);
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n");
+        //System.out.println("ENDING MAKERANDOMCHANGE HERE");
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    }
+
+    public void makeRandomChangeWithLeftovers() throws InvalidArgumentException {
+        // TODO test
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n\n");
+        //System.out.println("STARTING MAKERANDOMCHANGE HERE");
+        //System.out.println("unchanged solution:" + "\n" + toString());
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n");
+        if((candidateSolution.size() + leftoverProjects.size())<2) throw new InvalidArgumentException("error: no change can be made to the solution, the assignment is already made");
+        saveBackupSolution();
+        Random random = new Random();
+        int x, y;
+        int studentCount = students.size();
+        int projectCount = projects.size();
+        if(leftoverProjects != null) projectCount += leftoverProjects.size();
+        Student student, otherStudent;
+        Project project, otherProject;
+        boolean areCompatible = false;
+        int searchCount = 0;
+        do {
+            do{
+                x = random.nextInt( studentCount);
+                y = random.nextInt( projectCount);
+            } while ( x == y);
+            ++searchCount;
+            student = (Student) candidateSolution.keySet().toArray()[x];
+            if( y < students.size()) {
+                otherStudent = (Student) candidateSolution.keySet().toArray()[y];
+                areCompatible = doStudentsStudySameStream(student, otherStudent);
+                if( areCompatible) {
+                    project = candidateSolution.get(student);
+                    candidateSolution.put(student, candidateSolution.get(otherStudent));
+                    candidateSolution.put(otherStudent, project);
+                }
+            }
+            else {
+                otherProject = leftoverProjects.get(y - projects.size());
+                areCompatible = student.canDoProject(otherProject);
+                if( areCompatible) {
+                    project = candidateSolution.get(student);
+                    leftoverProjects.add(y - projects.size(), project);
+                    leftoverProjects.remove(project);
+                    candidateSolution.put(student, otherProject);
+                }
+            }
+        } while (!areCompatible && searchCount <= projectCount / 2);
         fitness = calculateFitness(candidateSolution);
         //System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n");
         //System.out.println("changed current solution:" + toString());
@@ -393,6 +450,10 @@ public class CandidateSolution {
         else {
             candidateSolution = backupSolution;
             backupSolution = null;
+            if(backupLeftoverProjects != null) {
+                leftoverProjects = backupLeftoverProjects;
+                backupLeftoverProjects = null;
+            }
             //System.out.println("new current sol (backup was restored):" + candidateSolution);
             //System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
             fitness = calculateFitness(candidateSolution);
@@ -402,6 +463,7 @@ public class CandidateSolution {
 
         }
         //System.out.println("ENDING UNDORANDOMCHANGE HERE");
+
     }
 
     private boolean doStudentsStudySameStream(Student a, Student b) {
@@ -425,12 +487,12 @@ public class CandidateSolution {
             ArrayList<Project> studentPreferences = student.getPreferences();
             for(int i = 0; (i < FULL_STUDENT_FITNESS) && (i < student.getPreferences().size()); i++){
                 if(studentPreferences.get(i)==project){
-                    satisfactionSum += (10 - i);
+                    satisfactionSum += (FULL_STUDENT_FITNESS - i);
                     break;
                 }
             }
         }
-        return satisfactionSum / candidateSolution.size();
+        return satisfactionSum / candidateSolution.size() / 2;
     }
 
 

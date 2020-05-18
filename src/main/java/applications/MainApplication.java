@@ -282,6 +282,8 @@ public class MainApplication extends Application {
                     try {
                         GeneticAlgorithm ga = new GeneticAlgorithm(this.students, this.projects, this.appInterface.getGPAWeight());
                         this.bestSolutionFound = ga.applyAlgorithm();
+                        appInterface.setBestSolution(this.bestSolutionFound);
+                        this.bestSolutionFound = appInterface.getBestSolution();
                     }
                     catch(Exception ee) {
                         System.out.println("Hi2.5");
@@ -302,8 +304,10 @@ public class MainApplication extends Application {
                 else{
                     System.out.println(this.solutionList.toString());
                 }
+                this.projectColumn = new TableColumn<TableRow, String>("Project ");
+                this.projectColumn.setMinWidth(300);
                 this.projectColumn.setCellFactory(column -> {
-                    return new TableCell<TableRow, String>(){
+                    /*return new TableCell<TableRow, String>(){
                         @Override
                         protected void updateItem(String item, boolean empty){
                             if (item == null || empty) { //If the cell is empty
@@ -332,6 +336,49 @@ public class MainApplication extends Application {
 
                             }
                         }
+                    };*/
+                    return new TableCell<TableRow, String>(){
+                        @Override
+                        protected void updateItem(String item, boolean empty){
+                            System.out.println("THERE");
+                            if (item == null || empty) { //If the cell is empty
+                                setText(null);
+                                setStyle("");
+                                System.out.println("The cell was empty");
+                            } else {
+                                setText(item);
+                                TableRow row = solutionList.get(getIndex());
+                                System.out.println("This is the row:" + row);
+                                System.out.println("This is the students:" + students.toString());
+                                //Student student = students.getStudentById(row.getId());
+                                Student student = appInterface.getFullStudentRepository().getStudentById(row.getId());
+                                //Project project = projects.getProjectByName(row.getProject());
+                                Project project = appInterface.getFullProjectRepository().getProjectByName(row.getProject());
+                                System.out.println("meant to start changing colours here");
+                                try {
+                                    if (!student.getPreferences().contains(project)) {
+                                        setTextFill(Color.RED);
+                                        System.out.println("red");
+                                    } else if (student.getPreferences().get(0) == project) {
+                                        setTextFill(Color.BLUE);
+                                        System.out.println("blue");
+                                    }else if (student.getPreferences().get(1) == project || student.getPreferences().get(2) == project) {
+                                        setTextFill(Color.GREEN);
+                                        System.out.println("green");
+                                    } else if (getTableView().getItems().contains(project) && getTableView().getItems().indexOf(project) != getIndex()) {
+                                        setTextFill(Color.MAROON);
+                                        System.out.println("maroon");
+                                    } else {
+                                        setTextFill(Color.BLACK);
+                                        System.out.println("black");
+                                    }
+                                } catch(NullPointerException ne){
+                                    ne.printStackTrace();
+                                    System.out.println("colour assignment failed");
+                                }
+                                System.out.println("colour meant to be changed after this");
+                            }
+                        }
                     };
                 });
                 this.solution.setItems(this.solutionList);
@@ -352,58 +399,22 @@ public class MainApplication extends Application {
 
         });
         simulatedAnnealing.setOnAction(e -> {
-            //bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
-            bestSolutionFound = appInterface.applySimulatedAnnealing();
-            //solution = new TableView<>();
-            this.solutionList = appInterface.showCandidateSolution(bestSolutionFound);
-            if( this.solution == null) System.out.println("solution is null");
-            if( this.solutionList == null) System.out.println("solutionList is null");
-            this.solution.setItems(this.solutionList);
-            //projectColumn = new TableColumn<>();
-            /*projectColumn.setCellFactory(column -> {
-                return new TableCell<TableRow, String>(){
-                    @Override
-                    protected void updateItem(String item, boolean empty){
-                        if (item == null || empty) { //If the cell is empty
-                            setText(null);
-                            setStyle("");
-                        } else {
-                            setText(item);
-                            TableRow row = solutionList.get(getIndex());
-                            Student student = students.getStudentById(row.getId());
-                            Project project = projects.getProjectByName(row.getProject());
-                            try {
-                                if (!student.getPreferences().contains(project)) {
-                                    setTextFill(Color.RED);
-                                }// else if (student.getPreferences().get(0) == project) {
-                                // setTextFill(Color.BLUE);
-                                else if (student.getPreferences().get(1) == project || student.getPreferences().get(2) == project) {
-                                    setTextFill(Color.GREEN);
-                                } else if (getTableView().getItems().contains(project) && getTableView().getItems().indexOf(project) != getIndex()) {
-                                    setTextFill(Color.MAROON);
-                                } else {
-                                    setTextFill(Color.BLACK);
-                                }
-                            } catch(NullPointerException ne){
-                                ne.printStackTrace();
-                            }
-
-                        }
-                    }
-                };
-            });*/
-            System.out.println("Simulated Annealing was chosen");
-            displaySolution(this.projectColumn);
-            //primaryStage.setScene(displaySolutionScene);
-        });
-        hillClimbing.setOnAction(e -> {
-            //bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
             System.out.println("applying algorithm");
-            bestSolutionFound = appInterface.applyHillClimbing();
+            bestSolutionFound = appInterface.applySimulatedAnnealing();
+            try {
+                this.bestSolutionFound = appInterface.getBestSolution();
+            } catch (InvalidArgumentException invalid){
+                InvalidArgumentErrorBox.displayErrorBox();
+                invalid.printStackTrace();
+            }
             System.out.println("assigning value to solutionList");
-            this.solutionList = appInterface.showCandidateSolution(bestSolutionFound);
+            this.solutionList = appInterface.showCandidateSolution(this.bestSolutionFound);
             System.out.println("setting table as solutionList");
             this.solution.setItems(this.solutionList);
+
+            //projectColumn = new TableColumn<>();
+            /*projectColumn.setCellFactory(column -> {
+
             System.out.println("should enter lambda");
             this.projectColumn = new TableColumn<TableRow, String>("Project ");
             this.projectColumn.setMinWidth(300);
@@ -424,6 +435,77 @@ public class MainApplication extends Application {
                             System.out.println("This is the students:" + students.toString());
                             Student student = students.getStudentById(row.getId());
                             Project project = projects.getProjectByName(row.getProject());
+                            System.out.println("meant to start changing colours here");
+                            try {
+                                if (!student.getPreferences().contains(project)) {
+                                    setTextFill(Color.RED);
+                                    System.out.println("red");
+                                } else if (student.getPreferences().get(0) == project) {
+                                    setTextFill(Color.BLUE);
+                                    System.out.println("blue");
+                                }else if (student.getPreferences().get(1) == project || student.getPreferences().get(2) == project) {
+                                    setTextFill(Color.GREEN);
+                                    System.out.println("green");
+                                } else if (getTableView().getItems().contains(project) && getTableView().getItems().indexOf(project) != getIndex()) {
+                                    setTextFill(Color.MAROON);
+                                    System.out.println("maroon");
+                                } else {
+                                    setTextFill(Color.BLACK);
+                                    System.out.println("black");
+                                }
+                            } catch(NullPointerException ne){
+                                ne.printStackTrace();
+                                System.out.println("colour assignment failed");
+                            }
+                            System.out.println("colour meant to be changed after this");
+                        }
+                    }
+                };
+
+            });*/
+            System.out.println("Simulated Annealing was chosen");
+            displaySolution(this.projectColumn);
+
+
+        });
+        hillClimbing.setOnAction(e -> {
+            //bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
+            System.out.println("applying algorithm");
+            bestSolutionFound = appInterface.applyHillClimbing();
+            System.out.println(bestSolutionFound.size());
+            try {
+                this.bestSolutionFound = appInterface.getBestSolution();
+            } catch (Exception exc){
+                InvalidArgumentErrorBox.displayErrorBox();
+                exc.printStackTrace();
+            }
+            System.out.println(this.bestSolutionFound.size());
+            System.out.println("assigning value to solutionList");
+            this.solutionList = appInterface.showCandidateSolution(this.bestSolutionFound);
+            System.out.println("setting table as solutionList");
+            this.solution.setItems(this.solutionList);
+            System.out.println("should enter lambda");
+            this.projectColumn = new TableColumn<TableRow, String>("Project ");
+            this.projectColumn.setMinWidth(300);
+            this.projectColumn.setCellValueFactory(new PropertyValueFactory<>("project"));
+            projectColumn.setCellFactory(column -> {
+
+                return new TableCell<TableRow, String>(){
+                    @Override
+                    protected void updateItem(String item, boolean empty){
+                        System.out.println("THERE");
+                        if (item == null || empty) { //If the cell is empty
+                            setText(null);
+                            setStyle("");
+                        } else {
+                            setText(item);
+                            TableRow row = solutionList.get(getIndex());
+                            System.out.println("This is the row:" + row);
+                            System.out.println("This is the students:" + students.toString());
+                            //Student student = students.getStudentById(row.getId());
+                            Student student = appInterface.getFullStudentRepository().getStudentById(row.getId());
+                            //Project project = projects.getProjectByName(row.getProject());
+                            Project project = appInterface.getFullProjectRepository().getProjectByName(row.getProject());
                             System.out.println("meant to start changing colours here");
                             try {
                                 if (!student.getPreferences().contains(project)) {
