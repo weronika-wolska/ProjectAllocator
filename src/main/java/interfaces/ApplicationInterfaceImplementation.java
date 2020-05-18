@@ -52,16 +52,26 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
     }
 
     public ProjectRepository getFullProjectRepository(){
-        ProjectRepository fullRepository = this.projectRepository;
+        ProjectRepository fullRepository = new ProjectRepository();
+        for(int i = 0;i<this.projectRepository.getSize();i++){
+            fullRepository.addProject(projectRepository.getProject(i));
+        }
         ArrayList<Project> projects = solutionAlreadyAssigned.getProjects();
         for(int i=0;i<projects.size();i++){
-            fullRepository.addProject(projects.get(0));
+            fullRepository.addProject(projects.get(i));
         }
         return fullRepository;
     }
 
     public StudentRepository getFullStudentRepository(){
-        StudentRepository fullRepository = this.studentRepository;
+        StudentRepository fullRepository = new StudentRepository();
+        for(int i =0;i<this.studentRepository.getSize();i++){
+            try {
+                fullRepository.addStudent(studentRepository.getStudent(i));
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
         ArrayList<Student> students = solutionAlreadyAssigned.getStudents();
         for(int i =0;i<students.size();i++){
             try {
