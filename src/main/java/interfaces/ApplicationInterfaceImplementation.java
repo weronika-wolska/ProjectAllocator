@@ -204,10 +204,14 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
                 Student student = entry.getKey();
                 Project project = entry.getValue();
                 TableRow newRow = new TableRow(student.getStudentId(), student.getName(), project.getProjectName());
+                //System.out.println("Current pair:" + student.getName() + " and " + project.getProjectName());
+                //System.out.println("Current row:" + newRow);
                 solution.add(newRow);
             }
+            System.out.println("returning solution");
             return solution;
         } catch (NullPointerException e){
+            System.out.println("returning null");
             return null;
         }
 
