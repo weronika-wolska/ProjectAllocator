@@ -127,7 +127,7 @@ public class GeneticAlgorithm {
         private ProjectRepository projectRepository;
 
         public Population(int populationSize, StudentRepository studentRepository, ProjectRepository projectRepository)throws InvalidArgumentException, Exception{
-            if(studentRepository.getSize()==0 || projectRepository.getSize() == 0 || projectRepository.getSize()<studentRepository.getSize()) throw new InvalidArgumentException();
+            if(studentRepository.getSize()==0 || projectRepository.getSize() == 0 || projectRepository.getSize()<studentRepository.getSize()) throw new InvalidArgumentException("error: can't apply genetic algorithm to these repositories");
             this.studentRepository=studentRepository;
             this.projectRepository=projectRepository;
             //this.population = new CandidateSolution[populationSize];

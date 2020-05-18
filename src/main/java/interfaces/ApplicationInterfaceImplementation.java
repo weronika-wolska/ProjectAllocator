@@ -118,13 +118,15 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
             ProjectRepository projectRepository) throws Exception {
         //GeneticAlgorithm algorithm;
         try{
+            System.out.println("studentRep before algo" + studentRepository);
             GeneticAlgorithm algorithm = new GeneticAlgorithm(studentRepository, projectRepository, this.GPAWeight);
-            System.out.println(algorithm.getBestSolution().getGpaWeight());
             CandidateSolution bestSolution = algorithm.applyAlgorithm();
-            
+            System.out.println("studentsRep after algo" + studentRepository);
+            System.out.println(algorithm.getBestSolution().getGpaWeight());
             System.out.println(algorithm.getBestSolution().size());
             return bestSolution;
         } catch (Exception exception){
+            System.out.println("Caught exception, not returning solution");
             exception.getCause();
             throw new Exception();
         }
