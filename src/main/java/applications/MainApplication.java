@@ -98,7 +98,7 @@ public class MainApplication extends Application {
         downloadButtons.getChildren().add(staffTemplateDownload);
         window.getChildren().add(downloadButtons);
         window.getChildren().add(inputFiles);
-        window.setId("background-image");
+        //window.setId("background-image");
 
         // input boxes
         HBox staffInput = new HBox(10);
@@ -278,7 +278,8 @@ public class MainApplication extends Application {
                 if(this.students==null && this.projects==null){
                     System.out.println("Hi2");
                     try {
-                        this.bestSolutionFound = appInterface.applyGeneticAlgorithm();
+                        GeneticAlgorithm ga = new GeneticAlgorithm(this.students, this.projects, this.appInterface.getGPAWeight());
+                        this.bestSolutionFound = ga.applyAlgorithm();
                     }
                     catch(Exception ee) {
                         System.out.println("Hi2.5");
@@ -299,7 +300,7 @@ public class MainApplication extends Application {
                 else{
                     System.out.println(this.solutionList.toString());
                 }
-                projectColumn.setCellFactory(column -> {
+                this.projectColumn.setCellFactory(column -> {
                     return new TableCell<TableRow, String>(){
                         @Override
                         protected void updateItem(String item, boolean empty){
@@ -317,7 +318,7 @@ public class MainApplication extends Application {
                                     } else if (student.getPreferences().get(0) == project) {
                                         setTextFill(Color.BLUE);
                                     }else if (student.getPreferences().get(1) == project || student.getPreferences().get(2) == project) {
-                                        setTextFill(Color.DARKGREEN);
+                                        setTextFill(Color.GREEN);
                                     } else if (getTableView().getItems().contains(project) && getTableView().getItems().indexOf(project) != getIndex()) {
                                         setTextFill(Color.MAROON);
                                     } else {
@@ -338,13 +339,13 @@ public class MainApplication extends Application {
 
                 // }
                 //primaryStage.setScene(displaySolutionScene);
-                displaySolution();
+                displaySolution(this.projectColumn);
             } catch (Exception e4){
                 System.out.println("error somewhere");
                 //e4.getCause().getMessage();
                 //primaryStage.setScene(scene);
                 //stage.setScene(scene);
-                displaySolution();
+                displaySolution(this.projectColumn);
             }
 
         });
@@ -357,7 +358,7 @@ public class MainApplication extends Application {
             if( this.solutionList == null) System.out.println("solutionList is null");
             this.solution.setItems(this.solutionList);
             //projectColumn = new TableColumn<>();
-            projectColumn.setCellFactory(column -> {
+            /*projectColumn.setCellFactory(column -> {
                 return new TableCell<TableRow, String>(){
                     @Override
                     protected void updateItem(String item, boolean empty){
@@ -375,7 +376,7 @@ public class MainApplication extends Application {
                                 }// else if (student.getPreferences().get(0) == project) {
                                 // setTextFill(Color.BLUE);
                                 else if (student.getPreferences().get(1) == project || student.getPreferences().get(2) == project) {
-                                    setTextFill(Color.DARKGREEN);
+                                    setTextFill(Color.GREEN);
                                 } else if (getTableView().getItems().contains(project) && getTableView().getItems().indexOf(project) != getIndex()) {
                                     setTextFill(Color.MAROON);
                                 } else {
@@ -388,16 +389,23 @@ public class MainApplication extends Application {
                         }
                     }
                 };
-            });
+            });*/
             System.out.println("Simulated Annealing was chosen");
-            displaySolution();
+            displaySolution(this.projectColumn);
             //primaryStage.setScene(displaySolutionScene);
         });
         hillClimbing.setOnAction(e -> {
             //bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
+            System.out.println("applying algorithm");
             bestSolutionFound = appInterface.applyHillClimbing();
+            System.out.println("assigning value to solutionList");
             this.solutionList = appInterface.showCandidateSolution(bestSolutionFound);
+            System.out.println("setting table as solutionList");
             this.solution.setItems(this.solutionList);
+            System.out.println("should enter lambda");
+            this.projectColumn = new TableColumn<TableRow, String>("Project ");
+            this.projectColumn.setMinWidth(300);
+            this.projectColumn.setCellValueFactory(new PropertyValueFactory<>("project"));
             projectColumn.setCellFactory(column -> {
                 return new TableCell<TableRow, String>(){
                     @Override
@@ -410,21 +418,29 @@ public class MainApplication extends Application {
                             TableRow row = solutionList.get(getIndex());
                             Student student = students.getStudentById(row.getId());
                             Project project = projects.getProjectByName(row.getProject());
+                            System.out.println("meant to start changing colours here");
                             try {
                                 if (!student.getPreferences().contains(project)) {
                                     setTextFill(Color.RED);
-                                }// else if (student.getPreferences().get(0) == project) {
-                                // setTextFill(Color.BLUE);
-                                else if (student.getPreferences().get(1) == project || student.getPreferences().get(2) == project) {
-                                    setTextFill(Color.DARKGREEN);
+                                    System.out.println("red");
+                                } else if (student.getPreferences().get(0) == project) {
+                                    setTextFill(Color.BLUE);
+                                    System.out.println("blue");
+                                }else if (student.getPreferences().get(1) == project || student.getPreferences().get(2) == project) {
+                                    setTextFill(Color.GREEN);
+                                    System.out.println("green");
                                 } else if (getTableView().getItems().contains(project) && getTableView().getItems().indexOf(project) != getIndex()) {
                                     setTextFill(Color.MAROON);
+                                    System.out.println("maroon");
                                 } else {
                                     setTextFill(Color.BLACK);
+                                    System.out.println("black");
                                 }
                             } catch(NullPointerException ne){
                                 ne.printStackTrace();
+                                System.out.println("colour assignment failed");
                             }
+                            System.out.println("colour meant to be changed after this");
 
                         }
                     }
@@ -433,11 +449,11 @@ public class MainApplication extends Application {
             //solution = appInterface.showCandidateSolution(bestSolutionFound);
             System.out.println("Hill Climbing was chosen");
             //primaryStage.setScene(displaySolutionScene);
-            displaySolution();
+            displaySolution(projectColumn);
         });
     }
 
-    public void displaySolution() {
+    public void displaySolution(TableColumn<TableRow, String> projectColumn) {
         // display candidate solution window
         Label outcome = new Label("This is the best solution we found: ");
 
@@ -477,11 +493,12 @@ public class MainApplication extends Application {
             TableColumn<TableRow, String> studentNameColumn = new TableColumn("Student name");
             studentNameColumn.setMinWidth(200);
             studentNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-            projectColumn = new TableColumn<>("Assigned Project");
-            projectColumn.setMinWidth(300);
-            projectColumn.setCellValueFactory(new PropertyValueFactory<>("project"));
+            //this.projectColumn = new TableColumn<>("Assigned Project");
+            //this.projectColumn.setMinWidth(300);
+            //this.projectColumn.setCellValueFactory(new PropertyValueFactory<>("project"));
 
-            System.out.println("I should have gotten project column");
+
+                System.out.println("I should have gotten project column");
             this.solution.getColumns().addAll(studentIDColumn,studentNameColumn, projectColumn);
 
         } catch (Exception x){

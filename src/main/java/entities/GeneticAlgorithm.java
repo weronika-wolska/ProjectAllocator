@@ -47,14 +47,14 @@ public class GeneticAlgorithm {
         this.bestSolutionFound = this.population.getNthFittest(1);
         int iterations = 0;
         while(!isTerminatingCoditionMet(bestSolutionFound)){
-            if(iterations==5000){
+            if(iterations==350000){
                 this.iterationsReachedLimit = true;
                 this.bestSolutionFound = this.population.getNthFittest(1);
                 return this.bestSolutionFound;
             }
             do{
-                a = rand.nextInt(7);
-                b = rand.nextInt(7);
+                a = rand.nextInt(20);
+                b = rand.nextInt(20);
             }while(a!=b);
             if(this.population.getPopulation()==null) throw new Exception();
             if(this.population.getPopulation()[a]!=null && this.population.getPopulation()[b]!=null){
