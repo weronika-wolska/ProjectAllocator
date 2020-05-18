@@ -86,36 +86,61 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
         return fullRepository;
     }
 
-    public CandidateSolution getBestSolution() throws InvalidArgumentException{
-        if(this.solutionAlreadyAssigned==null){
-            return this.bestSolution;
-        }
-        else{
+    public CandidateSolution getBestSolution() throws InvalidArgumentException, DuplicateStudentIdException {
+        if (this.solutionAlreadyAssigned != null) {
+            /*
             ArrayList<Student> students = this.bestSolution.getStudents();
             ArrayList<Project> projects = this.bestSolution.getProjects();
             ArrayList<Student> studentsAlreadyAssigned = this.solutionAlreadyAssigned.getStudents();
             ArrayList<Project> projectsAlreadyAssigned = this.solutionAlreadyAssigned.getProjects();
-            ArrayList<Student> allStudents = students;
+            */
+            /*ArrayList<Student> allStudents = new ArrayList<>();
+            for(int i = 0;i<students.size();i++){
+                allStudents.add(students.get(i));
+            }
             for(int i = 0;i<studentsAlreadyAssigned.size();i++){
                 allStudents.add(studentsAlreadyAssigned.get(i));
             }
-            ArrayList<Project> allProjects = projects;
+            ArrayList<Project> allProjects = new ArrayList<>();
+            for(int i=0;i<projects.size();i++){
+                allProjects.add(projects.get(i));
+            }
             for(int i=0;i<projectsAlreadyAssigned.size();i++){
                 allProjects.add(projectsAlreadyAssigned.get(i));
-            }
-            try {
+            }*/
+            /*try {
                 CandidateSolution candidateSolution = new CandidateSolution(allStudents, allProjects, getGPAWeight());
                 return candidateSolution;
-            }catch (Exception e){
+            }catch (InvalidArgumentException e){
                 e.printStackTrace();
-                throw new InvalidArgumentException();
-            }
+                throw new InvalidArgumentException(e.getErrorMessage());
+            }*/
 
+            /*StudentRepository allStudents = new StudentRepository();
+            for (int i = 0; i < students.size(); i++) {
+                allStudents.addStudent(students.get(i));
+            }
+            for (int i = 0; i < studentsAlreadyAssigned.size(); i++) {
+                allStudents.addStudent(studentsAlreadyAssigned.get(i));
+            }
+            ProjectRepository allProjects = new ProjectRepository();
+            for (int i = 0; i < projects.size(); i++) {
+                allProjects.addProject(projects.get(i));
+            }
+            for (int i = 0; i < projectsAlreadyAssigned.size(); i++) {
+                allProjects.addProject(projectsAlreadyAssigned.get(i));
+            }
+            CandidateSolution bestSolution = new CandidateSolution(allStudents, allProjects, getGPAWeight());
+            return bestSolution;*/
+            this.bestSolution.combineWithAnotherSolution(solutionAlreadyAssigned);
         }
+        return this.bestSolution;
     }
+
     public double getGPAWeight(){
         return this.GPAWeight;
     }
+
     @Override
     public StaffRepository readStaffInput(String filePath) {
         StaffReader reader = new StaffReader();
@@ -211,15 +236,17 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
         algorithm.createAssignment();
         this.bestSolution = algorithm.giveOutput();
         System.out.println("Solution with:" + originalSolution.getAverageStudentSatisfaction() + " satisfaction, this is after algo:" + bestSolution);
-        return algorithm.giveOutput();
+        return bestSolution;
     }
 
     @Override
     public CandidateSolution applySimulatedAnnealing() {
         SimulatedAnnealing algorithm = new SimulatedAnnealing(this.originalSolution);
+        System.out.println("Solution with:" + originalSolution.getAverageStudentSatisfaction() + " satisfaction, this is before algo:" + originalSolution);
         algorithm.createAssignment();
         this.bestSolution = algorithm.giveOutput();
-        return algorithm.giveOutput();
+        System.out.println("Solution with:" + originalSolution.getAverageStudentSatisfaction() + " satisfaction, this is after algo:" + bestSolution);
+        return bestSolution;
     }
 
     @Override
@@ -232,7 +259,7 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
     @Override
     public double getAverageStudentSatisfaction(CandidateSolution bestSolutionFound) {
         try{
-            return bestSolutionFound.getAverageStudentSatisfaction();
+            return getBestSolution().getAverageStudentSatisfaction();
         }
         catch (Exception e){
             return 0;
@@ -282,13 +309,15 @@ public class ApplicationInterfaceImplementation implements ApplicationInterface 
                 //System.out.println("Current row:" + newRow);
                 solution.add(newRow);
             }
-            for(Entry<Student, Project> entry: (Set<Entry<Student, Project>>) solutionAlreadyAssigned.getCandidateSolution().entrySet()) {
-                Student student = entry.getKey();
-                Project project = entry.getValue();
-                TableRow newRow = new TableRow(student.getStudentId(), student.getName(), project.getProjectName());
-                //System.out.println("Current pair:" + student.getName() + " and " + project.getProjectName());
-                //System.out.println("Current row:" + newRow);
-                solution.add(newRow);
+            if( solutionAlreadyAssigned != null) {
+                for(Entry<Student, Project> entry: (Set<Entry<Student, Project>>) solutionAlreadyAssigned.getCandidateSolution().entrySet()) {
+                    Student student = entry.getKey();
+                    Project project = entry.getValue();
+                    TableRow newRow = new TableRow(student.getStudentId(), student.getName(), project.getProjectName());
+                    //System.out.println("Current pair:" + student.getName() + " and " + project.getProjectName());
+                    //System.out.println("Current row:" + newRow);
+                    solution.add(newRow);
+                }
             }
             System.out.println("returning solution");
             return solution;

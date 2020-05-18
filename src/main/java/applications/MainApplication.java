@@ -469,21 +469,16 @@ public class MainApplication extends Application {
         simulatedAnnealing.setOnAction(e -> {
             System.out.println("applying algorithm");
             bestSolutionFound = appInterface.applySimulatedAnnealing();
-            try {
+            /*try {
                 this.bestSolutionFound = appInterface.getBestSolution();
-            } catch (InvalidArgumentException invalid){
+            } catch (InvalidArgumentException | DuplicateStudentIdException invalid){
                 InvalidArgumentErrorBox.displayErrorBox();
                 invalid.printStackTrace();
-            }
+            }*/
             System.out.println("assigning value to solutionList");
             this.solutionList = appInterface.showCandidateSolution(this.bestSolutionFound);
             System.out.println("setting table as solutionList");
             this.solution.setItems(this.solutionList);
-
-            //projectColumn = new TableColumn<>();
-            /*projectColumn.setCellFactory(column -> {
-
-            System.out.println("should enter lambda");
             this.projectColumn = new TableColumn<TableRow, String>("Project ");
             this.projectColumn.setMinWidth(300);
             this.projectColumn.setCellValueFactory(new PropertyValueFactory<>("project"));
@@ -500,7 +495,7 @@ public class MainApplication extends Application {
                             setText(item);
                             TableRow row = solutionList.get(getIndex());
                             System.out.println("This is the row:" + row);
-                            System.out.println("This is the students:" + students.toString());
+                            //System.out.println("This is the students:" + students.toString());
                             Student student = students.getStudentById(row.getId());
                             Project project = projects.getProjectByName(row.getProject());
                             System.out.println("meant to start changing colours here");
@@ -530,23 +525,14 @@ public class MainApplication extends Application {
                     }
                 };
 
-            });*/
+            });
             System.out.println("Simulated Annealing was chosen");
             displaySolution(this.projectColumn);
-
-
         });
         hillClimbing.setOnAction(e -> {
-            //bestSolutionFound = appInterface.applyGeneticAlgorithm(students, projects);
             System.out.println("applying algorithm");
             bestSolutionFound = appInterface.applyHillClimbing();
             System.out.println(bestSolutionFound.size());
-            try {
-                this.bestSolutionFound = appInterface.getBestSolution();
-            } catch (Exception exc){
-                InvalidArgumentErrorBox.displayErrorBox();
-                exc.printStackTrace();
-            }
             System.out.println(this.bestSolutionFound.size());
             System.out.println("assigning value to solutionList");
             this.solutionList = appInterface.showCandidateSolution(this.bestSolutionFound);
@@ -569,7 +555,7 @@ public class MainApplication extends Application {
                             setText(item);
                             TableRow row = solutionList.get(getIndex());
                             System.out.println("This is the row:" + row);
-                            System.out.println("This is the students:" + students.toString());
+                            //System.out.println("This is the students:" + students.toString());
                             Student student = students.getStudentById(row.getId());
                             //Student student = appInterface.getFullStudentRepository().getStudentById(row.getId());
                             Project project = projects.getProjectByName(row.getProject());
