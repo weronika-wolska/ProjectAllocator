@@ -98,6 +98,7 @@ public class Student{
     }
 
     public void setFirstName(String firstName) {
+        setName(firstName + " " + surname);
         this.firstName = firstName;
     }
 
@@ -106,6 +107,7 @@ public class Student{
     }
 
     public void setSurname(String surname) {
+        setName(firstName +  " " + surname);
         this.surname = surname;
     }
 

@@ -498,6 +498,38 @@ public class CandidateSolution {
         fitness = calculateFitness(candidateSolution);
     }
 
+    public double getAverageSatisfactionOfGpasWithinClosedInterval(double lowerBound, double upperBound) throws InvalidArgumentException {
+        double averageStatisfaction = 0;
 
+        ArrayList<Student> studentsWithinInterval = getStudentsWithGpasInClosedInterval(lowerBound, upperBound);
+        if( studentsWithinInterval.size() == 0) throw new InvalidArgumentException("error: no students found withing this range of GPAs");
+
+        for (Student student :
+                studentsWithinInterval) {
+            averageStatisfaction += getStudentsSatisfaction(student);
+        }
+
+        averageStatisfaction /= (double) studentsWithinInterval.size();
+
+        return averageStatisfaction;
+    }
+
+    public ArrayList<Student> getStudentsWithGpasInClosedInterval(double lowerBound, double upperBound) throws InvalidArgumentException {
+        // inclusive of both bounds
+        if( lowerBound > upperBound ||
+                lowerBound < 0 ||
+                upperBound < 0 ||
+                lowerBound > Student.FULL_GPA ||
+                upperBound > Student.FULL_GPA) throw new InvalidArgumentException("error: illegal range of GPAs");
+
+        ArrayList<Student> studentsInRange = new ArrayList<>();
+
+        for (Student student :
+                students) {
+            if( lowerBound <= student.getGpa() && student.getGpa() <= upperBound) studentsInRange.add(student);
+        }
+
+        return studentsInRange;
+    }
 
 }
