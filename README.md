@@ -4,7 +4,6 @@ Lucie Konecna 17485964
 
 Genetic Algorithms (Assignment 6)
 
-There are currently errors in the application that will be fixed by the next submission.
 
 Logic behind genetic algorithm:
 - Terminating condition: all students and projects are unique, which is ensured in isViable function in the Population class in
